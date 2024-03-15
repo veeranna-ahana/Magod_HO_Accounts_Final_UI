@@ -1,0 +1,54 @@
+{
+    "paymentreceiptvoucher":[
+        {
+          "pdfname":"Payment Receipt Voucher",
+          "unit":"",
+          "receivedfrom":"M&S SIGNS(0218)",
+          "voucherno":"14/15/0511",
+          "date":"10/10/2014",
+          "vide":"Being,ING Vysya Bank,Chq No-409923,Chq Dt-01/10/2014,(Recd Dt-07/10/2014)",
+          "transactiontype":"Bank",
+          "amount":"25,000.00",
+          "adjusted":"15,367.00",
+          "onaccount":"9,633.00",
+          
+          "srno":"1",
+          "invoicenotype":"1367 23/09/14 Job Work",
+          "invoiced":"45,509.00",
+          "received":"35,000.00",
+          "receivednow":"9,729.00",
+          "referenceno":"1367/14/15"
+  
+        },
+      {
+          "srno":"2",
+          "invoicenotype":"1367 23/09/14 Job Work",
+          "invoiced":"45,509.00",
+          "received":"35,000.00",
+          "receivednow":"9,729.00",
+          "referenceno":"1367/14/15"
+  
+      },
+      {
+          "srno":"3",
+          "invoicenotype":"1367 23/09/14 Job Work",
+          "invoiced":"45,509.00",
+          "received":"35,000.00",
+          "receivednow":"9,729.00",
+          "referenceno":"1367/14/15"
+  
+      },
+      {
+          "srno":"4",
+          "invoicenotype":"1367 23/09/14 Job Work",
+          "invoiced":"45,509.00",
+          "received":"35,000.00",
+          "receivednow":"9,729.00",
+          "referenceno":"1367/14/15",
+          "preparedby":"",
+  
+          "totalreceivenow":"15,367.00"
+  
+      }
+      ]
+}

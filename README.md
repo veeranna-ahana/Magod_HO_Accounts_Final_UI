@@ -1,1 +1,1 @@
-# Magod_HO_Accounts_Final_UI
+# magod-frontend-production
