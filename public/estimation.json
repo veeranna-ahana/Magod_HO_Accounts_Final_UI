@@ -1,0 +1,626 @@
+{
+    "estimationdata":[
+        {
+            "location":"Jigani",
+            "typeofform":"Quotation Estimation Form",
+            "type":"Job Work",
+            "qtnno":"2023/03/013",
+            "status":"Created",
+            
+            "cusname":"MAGOD LASER MACHINING PVT. LTD.",
+            "enquiryref":"test",
+            "enquirydate":"02/03/23",
+            "contact":"Santhosh",
+            "tele":"",
+
+
+            "taskno":"1",
+            "taskname":"Laser Cutting Oxygen / Insp1 / Standard(+/-0.1mm)- 100 Microns",
+            "material":"Mild Steel / HR / 10 mm / Sheet MS HR 10",
+            "loc":"29.9",
+            "pierces":"140",
+            "drawings":"3",
+            "drawingnested":"3",
+            "parts":"3",
+            "partsnested":"30",
+            "nests":"1",
+            "nestssheet":"1",
+            "net":"93.64",
+            "rect":"143.27",
+            "neastdweight":"146.8",
+            "cutting":"100",
+            "piercerate":"1",
+            "setup":"110",
+            "sheetloadingrate":"10",
+            "materialhandling":"1.5",
+            "materialrate":"0",
+            "cuttingcharge":"3,130.00",
+            "programming":"193.00",
+            "setupsheethandling":"110.00",
+            "materialhdlgcharge":"220.20",
+            "baseratejobwork":"3,653.20",
+            "baseratematerial":"0.00",
+            "ratemtr":"122.18",
+            "ratekg":"39.01",
+            "jobwork":"3653.2",
+            "materialcharge":"0.00",
+
+
+            "drawingname":"KBLC05P01523P1_P100",
+            "qty":"10",
+            "nested":"10",
+            "loctable":"0.97",
+            "pierce":"5",
+            "cf":"0.19030",
+            "dwgs":"True",
+            "perimeter":"False",
+            "open":"False",
+            "jwcost":"107.68",
+            "mtrlcost":"0.00",
+            "total":"1,076.80"
+
+        },
+        {
+            "taskno":"2",
+            "taskname":"Laser Cutting Oxygen / Insp1 / Standard(+/-0.1mm)- 100 Microns",
+            "material":"Aluminium / Basic / 0.2 mm / Sheet AL 0.2",
+            "loc":"7.5",
+            "pierces":"50",
+            "drawings":"1",
+            "drawingnested":"1",
+            "parts":"1",
+            "partsnested":"10",
+            "nests":"1",
+            "nestssheet":"1",
+            "net":"0.08",
+            "rect":"0.08",
+            "neastdweight":"0.1",
+            "cutting":"30",
+            "piercerate":"2",
+            "setup":"210",
+            "sheetloadingrate":"10",
+            "materialhandling":"2",
+            "materialrate":"0",
+            "cuttingcharge":"325.00",
+            "programming":"81.00",
+            "setupsheethandling":"210.00",
+            "materialhdlgcharge":"10.00",
+            "baseratejobwork":"626.00",
+            "baseratematerial":"0.00",
+            "ratemtr":"83.47",
+            "ratekg":"7,825.00",
+            "jobwork":"626",
+            "materialcharge":"0.00",
+
+
+            "drawingname":"KBLS03H01745P1_P100",
+            "qty":"10",
+            "nested":"10",
+            "loctable":"0.75",
+            "pierce":"5",
+            "cf":"0.13910",
+            "dwgs":"True",
+            "perimeter":"False",
+            "open":"False",
+            "jwcost":"62.60",
+            "mtrlcost":"0.00",
+            "total":"626.00"
+        },
+        {
+            "taskno":"3",
+            "taskname":"Laser Cutting Oxygen / Insp1 / Standard(+/-0.1mm)- 100 Microns",
+            "material":"Mild Steel / HR / 2 mm / Sheet MS HR 2",
+            "loc":"16.2",
+            "pierces":"40",
+            "drawings":"1",
+            "drawingnested":"1",
+            "parts":"1",
+            "partsnested":"10",
+            "nests":"1",
+            "nestssheet":"1",
+            "net":"11.76",
+            "rect":"23.45",
+            "neastdweight":"24.07",
+            "cutting":"30",
+            "piercerate":"2",
+            "setup":"60",
+            "sheetloadingrate":"10",
+            "materialhandling":"1.5",
+            "materialrate":"0",
+            "cuttingcharge":"566.00",
+            "programming":"71.00",
+            "setupsheethandling":"60.00",
+            "materialhdlgcharge":"36.09",
+            "baseratejobwork":"733.08",
+            "baseratematerial":"0.00",
+            "ratemtr":"45.25",
+            "ratekg":"62.34",
+            "jobwork":"733.09",
+            "materialcharge":"0.00",
+
+
+            "drawingname":"KBLS12P01431P1_P100",
+            "qty":"10",
+            "nested":"10",
+            "loctable":"1.62",
+            "pierce":"4",
+            "cf":"0.02270",
+            "dwgs":"True",
+            "perimeter":"False",
+            "open":"False",
+            "jwcost":"73.31",
+            "mtrlcost":"0.00",
+            "total":"733.10"
+        },
+        {
+            "taskno":"4",
+            "taskname":"Laser Cutting Oxygen / Insp1 / Standard(+/-0.1mm)- 100 Microns",
+            "material":"Mild Steel / HR / 16 mm / Sheet MS HR 16",
+            "loc":"24.6",
+            "pierces":"50",
+            "drawings":"1",
+            "drawingnested":"1",
+            "parts":"1",
+            "partsnested":"10",
+            "nests":"1",
+            "nestssheet":"1",
+            "net":"175.32",
+            "rect":"237.16",
+            "neastdweight":"297.36",
+            "cutting":"160",
+            "piercerate":"2",
+            "setup":"160",
+            "sheetloadingrate":"10",
+            "materialhandling":"1.5",
+            "materialrate":"0",
+            "cuttingcharge":"4,036.00",
+            "programming":"81.00",
+            "setupsheethandling":"160.00",
+            "materialhdlgcharge":"446.04",
+            "baseratejobwork":"4,723.04",
+            "baseratematerial":"0.00",
+            "ratemtr":"191.99",
+            "ratekg":"26.94",
+            "jobwork":"4723.04",
+            "materialcharge":"0.00",
+
+
+            "drawingname":"KBLS12P01432P1_P100",
+            "qty":"10",
+            "nested":"10",
+            "loctable":"2.46",
+            "pierce":"5",
+            "cf":"0.02080",
+            "dwgs":"True",
+            "perimeter":"False",
+            "open":"False",
+            "jwcost":"472.30",
+            "mtrlcost":"0.00",
+            "total":"4723.00"
+        }
+
+    ],
+    
+    "fqestimation":[
+            {
+                "location":"Jigani",
+                "typeofform":"Fabrication Quotation Estimation Form",
+                "type":"Job Work",
+                "qtnno":"2023/03/013",
+                "status":"",
+                
+                "assemblyname":"BICYCLE",
+                "costoflabour":"18,000.00",
+                "costofmaterial":"19,450.00",
+                "totalamount":"37,450.00",
+    
+                "fabricationtype1":"Labour Cost Details",
+                "type1name":"WHEEL ASSEMBLY",
+                "type1estimatedcost":"2,500.00",
+                "type1quantity":"1",
+                "type1lavourcost":"3,000.00",
+                "type1total":"3,000.00",
+    
+                "fabricationtype2":"BOM Cost Details",
+                "type2partname":"BRAKES",
+                "type2quantity":"1",
+                "type2unitcost":"2,500.00",
+                "type2total":"15,000.00"    
+        },
+        {
+            "type1name":"WHEEL ASSEMBLY",
+            "type1estimatedcost":"2,500.00",
+            "type1quantity":"1",
+            "type1lavourcost":"3,000.00",
+            "type1total":"3,000.00",
+    
+            "type2partname":"BRAKES",
+            "type2quantity":"1",
+            "type2unitcost":"2,500.00",
+            "type2total":"15,000.00"   
+    
+    
+    
+        }
+    
+       ],
+    "salesreportdata":[
+        {
+           
+            "typeofform":"Fabrication Quotation Estimation Form",
+
+             
+            
+            "unitname":"Peenya",
+            "date":"04/02/2015",
+            "preparedby":"",
+            "approvedby":"",
+
+            "report1":"Invoice Summary",
+            "report1typename":"Job Work",
+            "report1netbillings":"61,113.00",
+            "report1taxes":"0.00",
+            "report1grandtotal":"61,113.00",
+            "report1discount":"0.00",
+            "report1transport":"0.00",
+            "report1valueadded":"61,194.00",
+            "report1materialvalue":"0.00",
+            
+            "report1totalnetbillings":"61,113.00",
+            "report1totaltaxes":"0.00",
+            "report1totalgrandtotal":"61,113.00",
+            "report1totaldiscount":"0.00",
+            "report1totaltransport":"0.00",
+            "report1totalvalueadded":"61,194.00",
+            "report1totalmaterialvalue":"0.00",
+
+
+
+            "report2":"Tax Summary",
+            "report2typename":"Job Work",
+            "report2invoicevalue":"61,113.00",
+            "report2taxname":"ED",
+            "report2taxableamount":"2,848.00",
+            "report2percent":"12.00",
+            "report2tax":"341.00",
+
+            "report2totaltax":"341.00",
+
+            "report3":"Service",
+            "report3invno":"0259",
+            "report3net":"4,000.00",
+            "report3material":"0.00",
+            "report3discount":"0.00",
+            "report3assessable":"4,000.00",
+            "report3tax":"",
+            "report3transport":"0.00",
+            "report3inv":"4,494.00",
+            "report3roundoff":"-0.40",
+            "report3grandtotal":"4,494.00",
+
+            "report3totalnet":"4,000.00",
+            "report3totalmaterial":"0.00",
+            "report3totaldiscount":"0.00",
+            "report3totalassessable":"4,000.00",
+            "report3totaltax":"716.88",
+            "report3totaltransport":"0.00",
+            "report3totalinv":"4,494.00",
+            "report3totalroundoff":"-0.40",
+            "report3totalgrandtotal":"4,494.00",
+
+
+
+            "report4":"Job Work",
+            "report4invno":"0259",
+            "report4net":"4,000.00",
+            "report4material":"0.00",
+            "report4discount":"0.00",
+            "report4assessable":"4,000.00",
+            "report4tax":"",
+            "report4transport":"0.00",
+            "report4inv":"4,494.00",
+            "report4roundoff":"-0.40",
+            "report4grandtotal":"4,494.00",
+
+            "report4totalnet":"4,000.00",
+            "report4totalmaterial":"0.00",
+            "report4totaldiscount":"0.00",
+            "report4totalassessable":"4,000.00",
+            "report4totaltax":"716.88",
+            "report4totaltransport":"0.00",
+            "report4totalinv":"4,494.00",
+            "report4totalroundoff":"-0.40",
+            "report4totalgrandtotal":"4,494.00",
+
+
+            "report5":"Sales",
+            "report5invno":"0259",
+            "report5net":"4,000.00",
+            "report5material":"0.00",
+            "report5discount":"0.00",
+            "report5assessable":"4,000.00",
+            "report5tax":"",
+            "report5transport":"0.00",
+            "report5inv":"4,494.00",
+            "report5roundoff":"-0.40",
+            "report5grandtotal":"4,494.00",
+
+            "report5totalnet":"4,000.00",
+            "report5totalmaterial":"0.00",
+            "report5totaldiscount":"0.00",
+            "report5totalassessable":"4,000.00",
+            "report5totaltax":"716.88",
+            "report5totaltransport":"0.00",
+            "report5totalinv":"4,494.00",
+            "report5totalroundoff":"-0.40",
+            "report5totalgrandtotal":"4,494.00"
+            
+    },
+    {
+
+       
+        "report3invno":"0259",
+        "report3net":"4,000.00",
+        "report3material":"0.00",
+        "report3discount":"0.00",
+        "report3assessable":"4,000.00",
+        "report3tax":"",
+        "report3transport":"0.00",
+        "report3inv":"4,494.00",
+        "report3roundoff":"-0.40",
+        "report3grandtotal":"4,494.00",
+
+
+       
+        "report4invno":"0259",
+        "report4net":"4,000.00",
+        "report4material":"0.00",
+        "report4discount":"0.00",
+        "report4assessable":"4,000.00",
+        "report4tax":"",
+        "report4transport":"0.00",
+        "report4inv":"4,494.00",
+        "report4roundoff":"-0.40",
+        "report4grandtotal":"4,494.00",
+
+
+       
+        "report5invno":"0259",
+        "report5net":"4,000.00",
+        "report5material":"0.00",
+        "report5discount":"0.00",
+        "report5assessable":"4,000.00",
+        "report5tax":"",
+        "report5transport":"0.00",
+        "report5inv":"4,494.00",
+        "report5roundoff":"-0.40",
+        "report5grandtotal":"4,494.00"
+
+    }
+   
+
+    ] ,
+    
+    "productionreportdata":[
+        {
+           
+            "typeofform":"Production and Clearance Summary",
+            
+             
+            
+            "unitname":"Jigani",
+            "date":"04/02/2015",
+            "preparedby":"",
+            "approvedby":"",
+
+            "taxstutus":"Cleared Without Tax",
+            "exciseregno":"ExciseRegd-214/86",
+            "jobtype":"Job Work",
+             "excileclno":"73269099",
+             "material":"Mild Steel",
+             "totalqty":"2387",
+             "totalweight":"1,04,880.76",
+             "totalvalue":"4,264.247",
+
+             "qtysum":"5989",
+             "weightsum":"2,65,424.16",
+             "valuesum":"4,763.932"
+                   
+       
+    },
+    {
+        "exciseregno":"ExciseRegd-214/86",
+        "jobtype":"Job Work",
+         "excileclno":"73269099",
+         "material":"Mild Steel",
+         "totalqty":"2387",
+         "totalweight":"1,04,880.76",
+         "totalvalue":"4,264.247",
+   
+       
+        "qtysum":"5989",
+        "weightsum":"2,65,424.16",
+        "valuesum":"4,763.932",
+        "totalqtysum":"5989",
+        "totalweightsum":"2,65,424.16",
+        "totalvaluesum":"4,763.932"
+        
+    },
+    {
+        "taxstutus":"Cleared With Tax",
+        "exciseregno":"Excise Job Work",
+        "jobtype":"Job Work",
+         "excileclno":"776169990",
+         "material":"Aluminium",
+         "totalqty":"30",
+         "totalweight":"1,04,880.76",
+         "totalvalue":"4,264.247",
+
+        
+         "qtysum":"5989",
+        "weightsum":"2,65,424.16",
+        "valuesum":"4,763.932"
+       
+       
+       
+    },
+    {
+               
+            "exciseregno":"Excise Job Work",
+            "jobtype":"Job Work",
+             "excileclno":"776169990",
+             "material":"Aluminium",
+             "totalqty":"30",
+             "totalweight":"1,04,880.76",
+             "totalvalue":"4,264.247" ,
+
+
+            
+             "qtysum":"5989",
+            "weightsum":"2,65,424.16",
+            "valuesum":"4,763.932"    
+    },
+    {
+               
+        "exciseregno":"Excise Job Work",
+        "jobtype":"Job Work",
+         "excileclno":"776169990",
+         "material":"Aluminium",
+         "totalqty":"30",
+         "totalweight":"1,04,880.76",
+         "totalvalue":"4,264.247" ,
+         
+         
+         
+             "qtysum":"5989",
+            "weightsum":"2,65,424.16",
+            "valuesum":"4,763.932",
+
+            "totalqtysum":"5989",
+            "totalweightsum":"2,65,424.16",
+            "totalvaluesum":"4,763.932"
+    }
+    ] , 
+    "receiptreportdata":[
+        {
+             
+            "unitname":"Peenya",
+            "date":"04/02/2015",
+            "preparedby":"",
+            "approvedby":"",
+
+            "txntype":"Cash",
+            "amountreceived":"20,000.00",
+            "onaccount":"0.00" ,
+            
+            "customername":"TECHNO SYSTEMS",
+            "customertxntype":"Cash1",
+            "customeramountreceived":"20,000.00",
+            "customeronaccount":"0.00",
+
+
+            "rvrno":"14/15/2054",
+            "customer":"TECHNO SYSTEM",
+            "txntype1":"Cash",
+            "amount":"14,00.00",
+            "onaccount1":"0.00"
+        },
+        {
+            "txntype":"Bank",
+            "amountreceived":"20,000.00",
+            "onaccount":"0.00" ,
+
+            "customertxntype":"Cash2",
+            "customeramountreceived":"20,000.00",
+            "customeronaccount":"0.00",
+
+            "customertotalamountreceived":"20,000.00",
+            "customertotalonaccount":"0.00",
+
+
+
+            "rvrno":"14/15/2054",
+            "customer":"TECHNO SYSTEM",
+            "txntype1":"Cash",
+            "amount":"14,00.00",
+            "onaccount1":"0.00"
+
+           
+        },
+        {
+            "txntype":"TDS/Receivable",
+            "amountreceived":"20,000.00",
+            "onaccount":"0.00",
+
+            "totalamountreceived":"20,000.00",
+            "totalonaccount":"0.00",
+
+            "customername":"PROMAN INFRASTRUCTURE SERVICES PVT LTD",
+            "customertxntype":"Bank",
+            "customeramountreceived":"20,000.00",
+            "customeronaccount":"0.00",
+
+            "customertotalamountreceived":"20,000.00",
+            "customertotalonaccount":"0.00",
+
+            "rvrno":"14/15/2054",
+            "customer":"TECHNO SYSTEM",
+            "txntype1":"Cash",
+            "amount":"14,00.00",
+            "onaccount1":"0.00"
+             
+        },
+        
+        {
+            "customername":"STANLEY LIFESTYLES LTD",
+            "customertxntype":"Bank",
+            "customeramountreceived":"20,000.00",
+            "customeronaccount":"0.00",
+
+            "rvrno":"14/15/2054",
+            "customer":"TECHNO SYSTEM",
+            "txntype1":"Cash",
+            "amount":"14,00.00",
+            "onaccount1":"0.00"
+        },
+        {
+            "customertxntype":"TDS ",
+            "customeramountreceived":"20,000.00",
+            "customeronaccount":"0.00",
+            "customertotalamountreceived":"20,000.00",
+            "customertotalonaccount":"0.00",
+
+            "allcustomertotalamountreceived":"80,000.00",
+            "allcustomertotalonaccount":"0.00",
+
+            "rvrno":"14/15/2054",
+            "customer":"TECHNO SYSTEM",
+            "txntype1":"Cash",
+            "amount":"14,00.00",
+            "onaccount1":"0.00"
+
+            
+        },
+        {
+            "rvrno":"14/15/2054",
+            "customer":"TECHNO SYSTEM",
+            "txntype1":"Cash",
+            "amount":"14,00.00",
+            "onaccount1":"0.00",
+
+            "totalamount":"14,00.00",
+            "totalonaccount1":"0.00"
+        }
+       
+    ],
+    "previewreportdata":[
+        {
+           "branchname":"Peenya",
+           "location":"Plot No 490/G,IV Phase",
+           "area":"Peenya Indl Area",
+           "city":"Bangalore",
+           "pin":"560058",
+           "date":"04/02/2015"
+        }
+    ]   
+}
