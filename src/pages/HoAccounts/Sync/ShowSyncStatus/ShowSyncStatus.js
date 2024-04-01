@@ -17,7 +17,6 @@ export default function ShowSyncStatus() {
   const fileInputRef = useRef(null);
   const [getVersion, setGetVersion] = useState("");
 
-
   const [getHOInvoice, setGetHOInvoice] = useState([]);
   const [getUnitInvoice, setGetUnitInvoice] = useState([]);
   const [invPaymentVrList, setInvPaymentVrList] = useState([]);
@@ -31,16 +30,14 @@ export default function ShowSyncStatus() {
   const [selectRowHO, setSelectRowHO] = useState([]);
 
   const handleButtonClick = (e) => {
-    if(getName){
-    fileInputRef.current.click();
-    console.log("Xml File", fileInputRef);
-    handleApi();
-    }
-    else{
-      toast.warn("Select Unit")
+    if (getName) {
+      fileInputRef.current.click();
+      console.log("Xml File", fileInputRef);
+      handleApi();
+    } else {
+      toast.warn("Select Unit");
     }
   };
-
 
   const arrayToXML = (data) => {
     const openInvoicesData = data.unitOpenInvoices || [];
@@ -184,9 +181,6 @@ export default function ShowSyncStatus() {
       a.click();
       URL.revokeObjectURL(url);
       document.body.removeChild(a);
-
-     
-     
     } catch (error) {
       console.error("Error saving file:", error);
     }
@@ -245,9 +239,9 @@ export default function ShowSyncStatus() {
     axios
       .get(baseURL + `/showSyncStatus/hoUnitNames`)
       .then((res) => {
-         console.log("firstTable", res.data[0].UnitName)
+        console.log("firstTable", res.data[0].UnitName);
         setunitData(res.data);
-        setGetName(res.data[0].UnitName)
+        setGetName(res.data[0].UnitName);
       })
       .catch((err) => {
         console.log("err in table", err);
@@ -262,14 +256,15 @@ export default function ShowSyncStatus() {
     setGetName(e.target.value);
   };
 
-
   //console.log("unit namee1111", getName);
 
   const handleApi = async () => {
-console.log("unit namee", getName);
+    console.log("unit namee", getName);
 
     await axios
-      .put(baseURL + `/showSyncStatus/updateUnitInvoicePaymentStatus/`+getName)
+      .put(
+        baseURL + `/showSyncStatus/updateUnitInvoicePaymentStatus/` + getName
+      )
       .then((res) => {
         console.log("Data updated sucessfully", res.data);
       })
@@ -300,8 +295,8 @@ console.log("unit namee", getName);
     await axios
       .get(
         baseURL +
-        `/showSyncStatus/getUnitOpenInvAndReceiptsForExport/` +
-        getName
+          `/showSyncStatus/getUnitOpenInvAndReceiptsForExport/` +
+          getName
       )
       .then((res) => {
         setGetUnitInvoiceForExport(res.data);
@@ -309,12 +304,7 @@ console.log("unit namee", getName);
       .catch((err) => {
         console.log("err in table", err);
       });
-
-
-
-
   };
-
 
   useEffect(() => {
     if (getUnitInvoiceForExport.length === 1) {
@@ -323,8 +313,6 @@ console.log("unit namee", getName);
     }
   }, [getUnitInvoiceForExport]);
 
-
-
   useEffect(() => {
     if (getUnitInvoice.length === 1) {
       compare(report);
@@ -332,22 +320,16 @@ console.log("unit namee", getName);
     }
   }, [report]);
 
-
-
   useEffect(() => {
     if (getHOInvoice.length === 1) {
       HOCompare(report);
     }
   }, [getHOInvoice]);
 
-
-
-
   const [matchedInvoices, setmatchedInvoices] = useState([]);
   const [unmatchedInvoices, setunmatchedInvoices] = useState([]);
 
   const compare = (report) => {
-   
     if (getUnitInvoice.length === 1) {
       const unitInvoices = getUnitInvoice[0].cmdInvList;
       setInvPaymentVrList(getUnitInvoice[0].cmdInvPaymentVrList);
@@ -360,11 +342,9 @@ console.log("unit namee", getName);
         );
 
         if (matchedInv) {
-         
           // Invoice is matched, add to matchedInvoices array
           matchedInvoices.push({ ...unitInv, matchedInv });
         } else {
-          
           // Invoice is unmatched, add to unmatchedInvoices array
           unmatchedInvoices.push(unitInv);
         }
@@ -376,7 +356,6 @@ console.log("unit namee", getName);
       // Now unmatchedInvoices contains the invoices present in unitInvoices but not in report.open_inv
       console.log("unmatchedInvoices", unmatchedInvoices);
     } else {
-     
       console.log("there is no length");
     }
   };
@@ -416,7 +395,6 @@ console.log("unit namee", getName);
     }
   };
 
-
   const selectedRowFun = (item, index, color) => {
     let list = { ...item, index };
     setSelectRow(list);
@@ -447,22 +425,20 @@ console.log("unit namee", getName);
   //Unit paymentVr
   const selectedPaymentVr = [];
   for (const paymentVr of invPaymentVrList) {
-
     if (paymentVr.dc_inv_no == selectRow.DC_Inv_No) {
-
       console.log("unit dc no", paymentVr.dc_inv_no, selectRow.DC_Inv_No);
       selectedPaymentVr.push(paymentVr);
-      console.log("unit second table",selectedPaymentVr);
+      console.log("unit second table", selectedPaymentVr);
     }
   }
 
- // console.log("vvvvvv", invPaymentVrList);
+  // console.log("vvvvvv", invPaymentVrList);
   //HO paymentVr
   const selectedPaymentVrHO = [];
   for (const paymentVrHO of invPaymentVrListHO) {
     if (paymentVrHO.dc_inv_no == selectRowHO.DC_Inv_No) {
       selectedPaymentVrHO.push(paymentVrHO);
-     // console.log("ho second table",selectedPaymentVrHO);
+      // console.log("ho second table",selectedPaymentVrHO);
     }
   }
 
@@ -482,14 +458,13 @@ console.log("unit namee", getName);
         })
         .then((res) => {
           console.log("HO Data updated sucessfully", res.data);
-          toast.success('HO data updated successfuly')
+          toast.success("HO data updated successfuly");
         })
         .catch((err) => {
           console.log("err in table", err);
         });
     }
   };
-
 
   const handleResetInvoice = () => {
     const dcInvNo = selectRowHO.DC_Inv_No;
@@ -508,9 +483,7 @@ console.log("unit namee", getName);
         .catch((err) => {
           console.log("err in table", err);
         });
-    }
-
-    else {
+    } else {
       toast.error("Please select the row from HO information");
     }
   };
@@ -534,7 +507,6 @@ console.log("unit namee", getName);
     return formattedAmount;
   }
 
-
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const requestSort = (key) => {
     let direction = "asc";
@@ -544,9 +516,6 @@ console.log("unit namee", getName);
     setSortConfig({ key, direction });
   };
 
-
-
-
   const sortedData = () => {
     const dataCopy = [...matchedInvoices];
 
@@ -555,8 +524,11 @@ console.log("unit namee", getName);
         let valueA = a[sortConfig.key];
         let valueB = b[sortConfig.key];
 
-
-        if (sortConfig.key === "Cust_Code" || sortConfig.key === "OutStandingAmount" || sortConfig.key === "OutStandingInvoiceCount") {
+        if (
+          sortConfig.key === "Cust_Code" ||
+          sortConfig.key === "OutStandingAmount" ||
+          sortConfig.key === "OutStandingInvoiceCount"
+        ) {
           valueA = parseFloat(valueA);
           valueB = parseFloat(valueB);
         }
@@ -574,16 +546,71 @@ console.log("unit namee", getName);
   };
 
   return (
-    <div>
-      <div className="col-md-12">
-        <div className="row">
-          <h4 className="title">HO Unit Sync Review</h4>
+    <div style={{ height: "85vh", padding: "10px", overflowY: "scroll" }}>
+      <div className="row">
+        <h4 className="title">HO Unit Sync Review</h4>
+      </div>
+
+      <div className="row mb-1">
+        <div className="col-md-3">
+          <label className="form-label">Magod Laser Machining Pvt Ltd</label>
+        </div>
+        <div className="col-md-2">
+          <label className="form-label">Syncronise Account Details </label>
+        </div>
+        <div className="d-flex col-md-4" style={{ gap: "10px" }}>
+          <div className="mt-2">
+            <select className="ip-select" onChange={(e) => handleUnitSelect(e)}>
+              {unitdata.map((item) => (
+                <option key={item.id} value={item.value}>
+                  {item.UnitName}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <button
+              className="button-style  group-button"
+              onClick={handleButtonClick}
+            >
+              Load Data
+            </button>
+            <input
+              className="in-field"
+              type="file"
+              accept=".xml"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleFileSelect}
+            />
+          </div>
+        </div>
+        <div className="col-md-3">
+          <button
+            className="button-style  group-button"
+            onClick={handleDownload}
+          >
+            Export Report
+          </button>
+          <button
+            className="button-style  group-button"
+            onClick={handleResetInvoice}
+          >
+            Reset Invoice
+          </button>
+          <button
+            className="button-style  group-button "
+            style={{ float: "right" }}
+            onClick={(e) => navigate("/home")}
+          >
+            Close
+          </button>
         </div>
       </div>
-      <div className="col-md-12">
-        <label className="form-label">Magod Laser Machining Pvt Ltd</label>
-      </div>
-      <div className="row mb-3">
+
+      {/* ------------------------------------------ */}
+
+      {/* <div className="row mb-3">
         <div className="col-md-12 col-sm-12" style={{ marginLeft: "0px" }}>
           <div className="ip-box  mt-2">
             <div className="row">
@@ -650,15 +677,15 @@ console.log("unit namee", getName);
             </div>
           </div>
         </div>
-      </div>
-      <hr className="horizontal-line" />
+      </div> */}
+
       <div>
         <div className="row">
           <Tabs
             id="controlled-tab-example"
             activeKey={key}
             onSelect={(k) => setKey(k)}
-            className="mb-3 mt-1 tab_font "
+            className=" mt-1 tab_font "
           >
             <Tab eventKey="Inv" title="Invoices">
               <div className="">
@@ -698,7 +725,7 @@ console.log("unit namee", getName);
                   </div>
                 </div>
               </div>
-              <div className="row">
+              <div className="d-flex">
                 <div
                   className="col-md-6"
                   style={{
@@ -709,14 +736,24 @@ console.log("unit namee", getName);
                 >
                   <Table striped className="table-data border mt-1">
                     <thead className="tableHeaderBGColor">
-                      <tr style={{ whiteSpace: 'nowrap' }}>
-                        <th onClick={() => requestSort("DC_InvType")}>Invv Type</th>
+                      <tr style={{ whiteSpace: "nowrap" }}>
+                        <th onClick={() => requestSort("DC_InvType")}>
+                          Invv Type
+                        </th>
                         <th onClick={() => requestSort("Inv_No")}>Inv No</th>
                         <th onClick={() => requestSort("Dc_inv_Date")}>Date</th>
-                        <th onClick={() => requestSort("InvTotal")}>Inv Total</th>
-                        <th onClick={() => requestSort("PymtAmtRecd")}>Amt Received</th>
-                        <th onClick={() => requestSort("Cust_Name")}>Customer</th>
-                        <th onClick={() => requestSort("DCStatus")}>Inv Status</th>
+                        <th onClick={() => requestSort("InvTotal")}>
+                          Inv Total
+                        </th>
+                        <th onClick={() => requestSort("PymtAmtRecd")}>
+                          Amt Received
+                        </th>
+                        <th onClick={() => requestSort("Cust_Name")}>
+                          Customer
+                        </th>
+                        <th onClick={() => requestSort("DCStatus")}>
+                          Inv Status
+                        </th>
                       </tr>
                     </thead>
 
@@ -912,7 +949,7 @@ console.log("unit namee", getName);
 
               {/* Table3 and table4 */}
 
-              <div className="row">
+              <div className="d-flex">
                 <div
                   className="col-md-6"
                   style={{
@@ -966,7 +1003,7 @@ console.log("unit namee", getName);
                     </thead>
 
                     <tbody className="tablebody">
-                    {selectedPaymentVrHO &&
+                      {selectedPaymentVrHO &&
                         selectedPaymentVrHO.map((item, key) => {
                           return (
                             <tr style={{ whiteSpace: "nowrap" }} key={key}>

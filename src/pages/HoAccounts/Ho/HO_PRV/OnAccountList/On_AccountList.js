@@ -1,27 +1,22 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Col, Table } from "react-bootstrap";
-import { Typeahead } from 'react-bootstrap-typeahead';
-import axios from 'axios';
-import { baseURL } from '../../../../../api/baseUrl';
+import { Typeahead } from "react-bootstrap-typeahead";
+import axios from "axios";
+import { baseURL } from "../../../../../api/baseUrl";
 
-
-
-
-
-import ReactPaginate from 'react-paginate';
+import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
-
-
-
 
 export default function On_AccountList() {
   const navigate = useNavigate();
-  const [onAccountList, setOnAccountList] = useState([])
+  const [onAccountList, setOnAccountList] = useState([]);
 
   // const [selectedUnitName, setSelectedUnitName] = useState([])
-  const [selectedUnitName, setSelectedUnitName] = useState([{ UnitName: 'Jigani' }])
-  const [selectUnit, setSelectUnit] = useState([])
+  const [selectedUnitName, setSelectedUnitName] = useState([
+    { UnitName: "Jigani" },
+  ]);
+  const [selectUnit, setSelectUnit] = useState([]);
   const [getName, setGetName] = useState("");
 
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
@@ -30,17 +25,15 @@ export default function On_AccountList() {
     const selectedCustomer = selected[0];
     setSelectUnit(selected); // Update selected option state
     setGetName(selectedCustomer ? selectedCustomer.UnitName : "");
-    setSelectedUnitName(selected)
+    setSelectedUnitName(selected);
   };
-
-
 
   const [unitdata, setunitData] = useState([]);
   const handleUnitName = () => {
     axios
-      .get(baseURL + '/unitReceiptList/getunitName')
+      .get(baseURL + "/unitReceiptList/getunitName")
       .then((res) => {
-        console.log("firstTable", res.data)
+        console.log("firstTable", res.data);
         setunitData(res.data);
         if (res.data.length > 0) {
           setSelectedUnitName([res.data[4]]);
@@ -55,43 +48,39 @@ export default function On_AccountList() {
     handleUnitName();
   }, []);
 
-
-console.log("sel unit",selectedUnitName[0]?.UnitName);
-
+  console.log("sel unit", selectedUnitName[0]?.UnitName);
 
   const [expandedGroup, setExpandedGroup] = useState(null);
 
   const handleRowClick = (index) => {
     setExpandedGroup(index === expandedGroup ? null : index);
   };
-  console.log(expandedGroup, 'expandedGroup')
-
+  console.log(expandedGroup, "expandedGroup");
 
   const DraftReceipts = async () => {
     try {
-      const response = await axios.get(baseURL + '/prvListdata/getOnaccountList', {
-        params: {
-          unit: selectedUnitName[0]?.UnitName // Pass selectedUnitName[0].UnitName as a query parameter
+      const response = await axios.get(
+        baseURL + "/prvListdata/getOnaccountList",
+        {
+          params: {
+            unit: selectedUnitName[0]?.UnitName, // Pass selectedUnitName[0].UnitName as a query parameter
+          },
         }
-      }); // Replace this URL with your API endpoint
+      ); // Replace this URL with your API endpoint
       setOnAccountList(response.data.Result);
       //console.log("onaccounst",response.data.Result)
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
   useEffect(() => {
     // Call the API function when the component mounts
-    if(selectedUnitName){
+    if (selectedUnitName) {
       DraftReceipts();
+    } else {
+      alert("select unit");
     }
-    else{
-      alert("select unit")
-    }
-  
   }, [selectedUnitName]); // Empty dependency array ensures it runs only once, equivalent to componentDidMount
-
-
 
   const groupedData = onAccountList.reduce((groups, item) => {
     const key = `${item.CustName}-${item.Cust_code}`;
@@ -114,7 +103,7 @@ console.log("sel unit",selectedUnitName[0]?.UnitName);
   // Convert the groupedData map into an array
   const groupedArray = Object.values(groupedData);
 
-  console.log(groupedArray, 'hjjhjkjk');
+  console.log(groupedArray, "hjjhjkjk");
   const itemsPerPage = 10; // Number of items per page
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -131,21 +120,17 @@ console.log("sel unit",selectedUnitName[0]?.UnitName);
     setCurrentPage(selected);
   };
 
-
-
-  const [selectRow, setSelectRow] = useState('');
+  const [selectRow, setSelectRow] = useState("");
   const selectedRowFun = (item, index) => {
-    let list = { ...item, index: index }
+    let list = { ...item, index: index };
     //  setSelectRow(initial)
-
 
     setSelectRow(list);
     // setState(true);
-
-  }
+  };
   function formatAmount(amount) {
     // Assuming amount is a number
-    const formattedAmount = new Intl.NumberFormat('en-IN', {
+    const formattedAmount = new Intl.NumberFormat("en-IN", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount);
@@ -161,8 +146,6 @@ console.log("sel unit",selectedUnitName[0]?.UnitName);
     }
   };
 
-  
-
   // const requestSort = (key) => {
   //   let direction = "asc";
   //   if (sortConfig.key === key && sortConfig.direction === "asc") {
@@ -171,10 +154,8 @@ console.log("sel unit",selectedUnitName[0]?.UnitName);
   //   setSortConfig({ key, direction });
   // };
 
-
   // const sortedData = () => {
-    
- 
+
   //   if (sortConfig.key) {
   //     filtered.sort((a, b) => {
   //       if (a[sortConfig.key] < b[sortConfig.key]) {
@@ -186,51 +167,32 @@ console.log("sel unit",selectedUnitName[0]?.UnitName);
   //       return 0;
   //     });
   //   }
- 
-    
-  // };
 
+  // };
 
   return (
     <>
-
-
-      <div className="col-md-12">
-        <div className="row">
-          <h4 className="title">Unit Open  Payment Receipt Vouchers</h4>
-        </div>
+      <div className="row">
+        <h4 className="title">Unit Open Payment Receipt Vouchers</h4>
       </div>
 
-
-      <label className="form-label">Magod Laser Machining Pvt Ltd</label>
-
-
-
-      <div className="row col-md-12 col-sm-12"   >
-
-
-
-        <div className="col-md-2 mt-2" style={{ whiteSpace: 'nowrap' }}>
+      <div className="row">
+        <div className="col-md-3">
+          <label className="form-label">Magod Laser Machining Pvt Ltd</label>
+        </div>
+        <div className="col-md-2">
           <label className="form-label"> On Account Details</label>
         </div>
-
-
-        <button className="button-style mt-3 group-button col-md-3"
-          style={{ width: "150px" }}
-          onClick={openVoucherButton}
-        >
-          Open Voucher
-        </button>
-
-        <div className="col-md-2" >
-          <label className="form-label">Select Unit</label>
+        <div className="d-flex col-md-2 mt-1" style={{ gap: "10px" }}>
+          <label className="form-label" style={{ whiteSpace: "nowrap" }}>
+            Select Unit
+          </label>
 
           <Typeahead
+            className="ip-select"
             id="basic-example"
             labelKey={(option) =>
-              option && option.UnitName
-                ? option.UnitName.toString()
-                : ""
+              option && option.UnitName ? option.UnitName.toString() : ""
             }
             options={unitdata}
             placeholder="Select Unit"
@@ -238,66 +200,107 @@ console.log("sel unit",selectedUnitName[0]?.UnitName);
             selected={selectedUnitName}
           />
         </div>
+        <div className="col-md-5">
+          <button
+            className="button-style group-button"
+            onClick={openVoucherButton}
+          >
+            Open Voucher
+          </button>
 
-        <button className="button-style mt-3 group-button"
-          style={{ width: "100px", marginLeft: '450px' }} onClick={e => navigate("/HOAccounts")} >
-          Close
-        </button>
-
-
+          <button
+            className="button-style group-button"
+            onClick={(e) => navigate("/HOAccounts")}
+            style={{ float: "right" }}
+          >
+            Close
+          </button>
+        </div>
       </div>
 
+      {/* <div className="row col-md-12 col-sm-12">
+        <div className="col-md-2 mt-2" style={{ whiteSpace: "nowrap" }}></div>
+
+        <button
+          className="button-style group-button"
+          onClick={openVoucherButton}
+        >
+          Open Voucher
+        </button>
+
+        <div className="d-flex col-md-2" style={{ gap: "10px" }}></div>
+
+        <button
+          className="button-style group-button"
+          onClick={(e) => navigate("/HOAccounts")}
+        >
+          Close
+        </button>
+      </div> */}
 
       {/* <PaymentTable/> */}
-      <hr className="horizontal-line mt-1" />
 
-      <div className='col-md-12' style={{ overflowY: 'scroll', overflowX: 'scroll', height: '350px', }}>
+      <div
+        className="mt-2"
+        style={{ overflowY: "scroll", overflowX: "scroll", height: "300px" }}
+      >
         <Table striped className="table-data border">
           <thead className="tableHeaderBGColor">
             <tr>
               <th></th>
               <th>Cust Code</th>
               <th>Customer</th>
-              <th style={{textAlign:'right'}}>OnAccount Amount</th>
+              <th style={{ textAlign: "right" }}>OnAccount Amount</th>
               <th></th>
-
             </tr>
           </thead>
 
-          <tbody className='tablebody'>
+          <tbody className="tablebody">
             {currentPageData.map((group, index) => (
               <React.Fragment key={index}>
                 <tr>
-                  <td style={{ cursor: "pointer" }} onClick={() => handleRowClick(index)}>+</td>
+                  <td
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleRowClick(index)}
+                  >
+                    +
+                  </td>
                   <td>{group.custCode}</td>
                   <td>{group.custName}</td>
-                  <td style={{textAlign:'right'}}>{formatAmount(group.totalOnAccount)}</td>
+                  <td style={{ textAlign: "right" }}>
+                    {formatAmount(group.totalOnAccount)}
+                  </td>
                   <td></td>
                 </tr>
                 {expandedGroup === index && (
                   <React.Fragment>
-                    <tr style={{ backgroundColor: 'AliceBlue' }}>
+                    <tr style={{ backgroundColor: "AliceBlue" }}>
                       <th></th>
                       <th></th>
                       <th>RV No</th>
-                      <th style={{textAlign:'right'}}>Amount</th>
-                      <th style={{textAlign:'right'}}>OnAccount</th>
+                      <th style={{ textAlign: "right" }}>Amount</th>
+                      <th style={{ textAlign: "right" }}>OnAccount</th>
                       {/* Add more header columns as needed */}
                     </tr>
                     {group.items.map((item, key) => (
                       <tr
                         // key={itemIndex}
-                        style={{ whiteSpace: 'nowrap' }}
-
-                        className={key === selectRow?.index ? 'selcted-row-clr' : ''} key={item.RecdPVID}
+                        style={{ whiteSpace: "nowrap" }}
+                        className={
+                          key === selectRow?.index ? "selcted-row-clr" : ""
+                        }
+                        key={item.RecdPVID}
                         onClick={() => selectedRowFun(item, key)}
                       >
                         <td></td>
                         <td></td>
                         <td>{item.Recd_PVNo}</td>
-                        <td style={{textAlign:'right'}}>{formatAmount(item.Amount)}</td>
-                        <td style={{textAlign:'right'}}>{formatAmount(item.On_account)}</td>
-
+                        <td style={{ textAlign: "right" }}>
+                          {formatAmount(item.Amount)}
+                        </td>
+                        <td style={{ textAlign: "right" }}>
+                          {formatAmount(item.On_account)}
+                        </td>
                       </tr>
                     ))}
                   </React.Fragment>
@@ -306,22 +309,19 @@ console.log("sel unit",selectedUnitName[0]?.UnitName);
             ))}
           </tbody>
         </Table>
-
-      </div >
+      </div>
       <ReactPaginate
-        previousLabel={'previous'}
-        nextLabel={'next'}
-        breakLabel={'...'}
+        previousLabel={"previous"}
+        nextLabel={"next"}
+        breakLabel={"..."}
         pageCount={Math.ceil(groupedArray.length / itemsPerPage)}
         marginPagesDisplayed={2}
         pageRangeDisplayed={5}
         onPageChange={handlePageChange}
-        containerClassName={'pagination'}
-        subContainerClassName={'pages pagination'}
-        activeClassName={'active'}
+        containerClassName={"pagination"}
+        subContainerClassName={"pages pagination"}
+        activeClassName={"active"}
       />
-
-
     </>
-  )
+  );
 }

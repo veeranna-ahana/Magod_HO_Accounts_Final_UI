@@ -23,7 +23,7 @@ function SharedLayout() {
               <div
                 style={{
                   position: "relative",
-                  top: "-16px",
+                  top: "-6px",
                   backgroundColor: "white",
                 }}
               >

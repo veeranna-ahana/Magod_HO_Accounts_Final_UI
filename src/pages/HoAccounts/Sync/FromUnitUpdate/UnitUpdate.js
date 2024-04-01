@@ -2,11 +2,13 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { baseURL } from "../../../../api/baseUrl";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function UnitUpdate() {
   const fileInputRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [report, setReport] = useState([]);
+  const navigate = useNavigate();
 
   const handleButtonClick = () => {
     fileInputRef.current.click();
@@ -137,28 +139,38 @@ export default function UnitUpdate() {
 
   return (
     <>
-      <div className="col-md-12">
-        <div className="row">
-          <h4 className="title">From Unit Update</h4>
-        </div>
+      <div className="row">
+        <h4 className="title">From Unit Update</h4>
       </div>
-      <div className="col-md-12">
-        <button
-          className={`button-style mt-2 group-button ${
-            isLoading ? "loading" : ""
-          }`}
-          onClick={handleButtonClick}
-          disabled={isLoading}
-        >
-          {isLoading ? "Loading..." : "From Unit Update"}
-        </button>
-        <input
-          type="file"
-          accept=".xml"
-          ref={fileInputRef}
-          style={{ display: "none" }}
-          onChange={handleFileSelect}
-        />
+
+      <div className="row">
+        <div className="col-md-6">
+          <button
+            className={`button-style mt-2 group-button ${
+              isLoading ? "loading" : ""
+            }`}
+            onClick={handleButtonClick}
+            disabled={isLoading}
+          >
+            {isLoading ? "Loading..." : "From Unit Update"}
+          </button>
+          <input
+            type="file"
+            accept=".xml"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileSelect}
+          />
+        </div>
+        <div className="col-md-6">
+          <button
+            className="button-style group-button"
+            onClick={(e) => navigate("/HOAccounts")}
+            style={{ float: "right" }}
+          >
+            Close
+          </button>
+        </div>
       </div>
     </>
   );

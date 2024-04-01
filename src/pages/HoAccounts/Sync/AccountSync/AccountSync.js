@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { xml2js, js2xml } from "xml-js";
 import axios from "axios";
 import SendMail from "../../../SendMail/SendMail";
+import { useNavigate } from "react-router-dom";
 
 export default function AccountSync() {
   const [getPaymentRvRegister, setGetPaymentRvRegister] = useState([]);
@@ -34,6 +35,8 @@ export default function AccountSync() {
   const handleSelectChange = (event) => {
     setSelectedValue(event.target.value);
   };
+
+  const navigate = useNavigate();
 
   const handleApi = () => {
     axios
@@ -443,14 +446,15 @@ export default function AccountSync() {
 
   return (
     <>
-      <div className="col-md-12">
-        <div className="row">
-          <h4 className="title">Account Sync</h4>
-        </div>
+      <div className="row">
+        <h4 className="title">Account Sync</h4>
       </div>
-      <div className="col-md-12 mb-3 row">
-        <div className="col-md-3">
-          <label className="form-label">Select Unit</label>
+
+      <div className="mb-3 row">
+        <div className="d-flex col-md-3 mt-3" style={{ gap: "10px" }}>
+          <label className="form-label" style={{ whiteSpace: "nowrap" }}>
+            Select Unit
+          </label>
           <select
             className="ip-select"
             value={selectedValue}
@@ -464,7 +468,7 @@ export default function AccountSync() {
             ))}
           </select>
         </div>
-        <div className="col-md-4 mt-2">
+        <div className="col-md-6 mt-2">
           <button
             className="button-style mt-2 group-button"
             onClick={handleDownload}
@@ -472,7 +476,15 @@ export default function AccountSync() {
             Create Sync
           </button>
         </div>
-        {/* <SendMail/> */}
+        <div className="col-md-3 mt-1">
+          <button
+            className="button-style group-button"
+            onClick={(e) => navigate("/HOAccounts")}
+            style={{ float: "right" }}
+          >
+            Close
+          </button>
+        </div>
       </div>
     </>
   );

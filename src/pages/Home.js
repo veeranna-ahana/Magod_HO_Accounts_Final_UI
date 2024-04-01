@@ -7,20 +7,21 @@ import { MdOutlineRequestQuote } from "react-icons/md";
 import { AiTwotoneContainer } from "react-icons/ai";
 import { AiFillCreditCard } from "react-icons/ai";
 
-
 function Home() {
   return (
     <>
       <Header user={false} />
       <div className="card-container">
-        
-        
-        
-        <Link to="/HOAccounts" style={{ textDecoration: "none", color: "black" }}>
+        <Link
+          to="/HOAccounts"
+          style={{ textDecoration: "none", color: "black" }}
+        >
           <div className="dashboard-card">
             <div className="card-item">
               <AiFillCreditCard size={60} color="#283E81" />
-              <span className="dashboard-link" style={{textAlign:"center"}}>HO Accounts</span>
+              <span className="dashboard-link" style={{ textAlign: "center" }}>
+                HO Accounts
+              </span>
             </div>
           </div>
         </Link>
