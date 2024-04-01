@@ -5,6 +5,7 @@ import Spinner from "../Spinner";
 //import { baseURL } from "../../../../api/baseUrl";
 import { xml2js, js2xml } from "xml-js";
 import { baseURL } from "../../../../api/baseUrl";
+import { useNavigate } from "react-router-dom";
 
 export default function SyncUnit() {
   const fileInputRef = useRef(null);
@@ -19,6 +20,8 @@ export default function SyncUnit() {
   const [receiptDeInsertedData, setReceiptDeInsertedData] = useState([]);
   const [cancelledInvInsertedData, setcancelledInvInsertedData] = useState([]);
   const [fileName, setFileName] = useState("");
+
+  const navigate = useNavigate();
 
   const handleButtonClick = () => {
     fileInputRef.current.click();
@@ -426,32 +429,61 @@ export default function SyncUnit() {
           <h4 className="title">From Unit Sync</h4>
         </div>
       </div>
-      <div className="col-md-12">
-        <button
-          className={`button-style mt-2 group-button ${
-            isLoading ? "loading" : ""
-          }`}
-          onClick={handleButtonClick}
-          disabled={isLoading}
-        >
-          {isLoading ? "Loading..." : "From Unit Sync"}
-        </button>
-        <input
-          type="file"
-          accept=".xml"
-          ref={fileInputRef}
-          style={{ display: "none" }}
-          onChange={handleFileSelect}
-        />
+      <div className="row">
+        <div className="col-md-6">
+          <button
+            className={`button-style mt-2 group-button ${
+              isLoading ? "loading" : ""
+            }`}
+            onClick={handleButtonClick}
+            disabled={isLoading}
+          >
+            {isLoading ? "Loading..." : "From Unit Sync"}
+          </button>
+          <input
+            type="file"
+            accept=".xml"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileSelect}
+          />
+
+          <button
+            className="button-style group-button mt-2"
+            onClick={handleDownload}
+          >
+            download
+          </button>
+        </div>
+        <div className="col-md-6">
+          <button
+            className="button-style group-button"
+            onClick={(e) => navigate("/HOAccounts")}
+            style={{ float: "right" }}
+          >
+            Close
+          </button>
+        </div>
       </div>
-      <div>
+
+      {/* <div>
         <button
           className="button-style group-button mt-2"
           onClick={handleDownload}
         >
           download
         </button>
-      </div>
+      </div> */}
+
+      {/* <div> 
+        <button
+          className="button-style group-button"
+          onClick={(e) => navigate("/HOAccounts")}
+          style={{ float: "right" }}
+        >
+          Close
+        </button>
+      </div> */}
       {isLoading && <Spinner />}
     </>
   );

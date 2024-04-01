@@ -24,7 +24,7 @@
 //           <th>Recd_PV_Date</th>
 //           <th style={{whiteSpace:"nowrap"}}>Receipt Status</th>
 //           <th>Cust_code</th>
-         
+
 //           <th>Adjusted</th>
 //           <th style={{whiteSpace:"nowrap"}}>Docu No</th>
 //           <th>Description</th>
@@ -32,7 +32,7 @@
 //           <th style={{whiteSpace:"nowrap"}}>HO PrvId</th>
 //           <th>Tally_UId</th>
 //           <th>Updated</th>
-          
+
 //         </tr>
 //       </thead>
 //     <tbody className='tablebody'>
@@ -69,14 +69,13 @@
 //           )
 //         })
 //       }
-  
+
 //     </tbody>
-    
+
 // </Table>
 //     </div>
 //   )
 // }
-
 
 import React, { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
@@ -114,9 +113,6 @@ export default function OpenReceipt({ data }) {
         setSelectedItems((prevSelectedItems) => [...prevSelectedItems, itemId]);
       }
     }
-
-   
-
   };
 
   // Get the selected data based on selectedItems
@@ -153,79 +149,79 @@ export default function OpenReceipt({ data }) {
   const requestSort = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
-        direction = "desc";
+      direction = "desc";
     }
     setSortConfig({ key, direction });
-};
+  };
 
-
-
-
-const sortedData = () => {
+  const sortedData = () => {
     const dataCopy = [...currentPageData];
 
     if (sortConfig.key) {
-        dataCopy.sort((a, b) => {
-            let valueA = a[sortConfig.key];
-            let valueB = b[sortConfig.key];
+      dataCopy.sort((a, b) => {
+        let valueA = a[sortConfig.key];
+        let valueB = b[sortConfig.key];
 
+        if (
+          sortConfig.key === "On_account" ||
+          sortConfig.key === "Amount" ||
+          sortConfig.key === "Id" ||
+          sortConfig.key === "Sync_HOId" ||
+          sortConfig.key === "Unit_UId" ||
+          sortConfig.key === "Cust_code" ||
+          sortConfig.key === "HOPrvId"
+        ) {
+          valueA = parseFloat(valueA);
+          valueB = parseFloat(valueB);
+        }
 
-            if (sortConfig.key === "On_account" || sortConfig.key === "Amount"
-            || sortConfig.key === "Id"
-            || sortConfig.key === "Sync_HOId" 
-            || sortConfig.key === "Unit_UId"
-            || sortConfig.key === "Cust_code"
-            || sortConfig.key === "HOPrvId") {
-              valueA = parseFloat(valueA);
-              valueB = parseFloat(valueB);
-            }
-
-            if (valueA < valueB) {
-                return sortConfig.direction === "asc" ? -1 : 1;
-            }
-            if (valueA > valueB) {
-                return sortConfig.direction === "asc" ? 1 : -1;
-            }
-            return 0;
-        });
+        if (valueA < valueB) {
+          return sortConfig.direction === "asc" ? -1 : 1;
+        }
+        if (valueA > valueB) {
+          return sortConfig.direction === "asc" ? 1 : -1;
+        }
+        return 0;
+      });
     }
     return dataCopy;
-};
+  };
 
   return (
     <div>
       <div
         className="mt-4"
-        style={{ height: "300px", overflowY: "scroll", overflowX: "scroll" }}
+        style={{ height: "280px", overflowY: "scroll", overflowX: "scroll" }}
       >
         <Table striped className="table-data border">
           <thead className="tableHeaderBGColor">
-            <tr style={{whiteSpace:'nowrap'}}>
-              <th onClick={() => requestSort("TxnType")}  >Type</th>
-              <th onClick={() => requestSort("Recd_PVNo")}  >RV No</th>
-              <th onClick={() => requestSort("Recd_PV_Date")}  >Recd_PV Date</th>
-              <th onClick={() => requestSort("Amount")}  >Amount</th>
-              <th onClick={() => requestSort("On_account")}  >On Account</th>
-              <th onClick={() => requestSort("CustName")}  >Customer</th>
-              <th onClick={() => requestSort("Id")}  >Id</th>
-              <th onClick={() => requestSort("UnitName")}  >Unit Name</th>
-              <th onClick={() => requestSort("RecdPVID")}  >Recd PVID</th>
-              <th onClick={() => requestSort("Sync_HOId")}  >Sync_HOId</th>
-              <th onClick={() => requestSort("Unit_UId")}  >Unit_UId</th>
-              <th onClick={() => requestSort("Recd_PVNo")}  >Recd_PVNo</th>
+            <tr style={{ whiteSpace: "nowrap" }}>
+              <th onClick={() => requestSort("TxnType")}>Type</th>
+              <th onClick={() => requestSort("Recd_PVNo")}>RV No</th>
+              <th onClick={() => requestSort("Recd_PV_Date")}>Recd_PV Date</th>
+              <th onClick={() => requestSort("Amount")}>Amount</th>
+              <th onClick={() => requestSort("On_account")}>On Account</th>
+              <th onClick={() => requestSort("CustName")}>Customer</th>
+              <th onClick={() => requestSort("Id")}>Id</th>
+              <th onClick={() => requestSort("UnitName")}>Unit Name</th>
+              <th onClick={() => requestSort("RecdPVID")}>Recd PVID</th>
+              <th onClick={() => requestSort("Sync_HOId")}>Sync_HOId</th>
+              <th onClick={() => requestSort("Unit_UId")}>Unit_UId</th>
+              <th onClick={() => requestSort("Recd_PVNo")}>Recd_PVNo</th>
               {/* <th onClick={() => requestSort("TaxName")}  >Recd_PV_Date</th> */}
-              <th onClick={() => requestSort("ReceiptStatus")}  >Receipt Status</th>
-              <th onClick={() => requestSort("Cust_code")}  >Cust_code</th>
+              <th onClick={() => requestSort("ReceiptStatus")}>
+                Receipt Status
+              </th>
+              <th onClick={() => requestSort("Cust_code")}>Cust_code</th>
               {/* <th onClick={() => requestSort("TaxName")}  >Cust Name</th> */}
-              <th onClick={() => requestSort("Amount")}  >Amount</th>
-              <th   >Adjusted</th>
-              <th onClick={() => requestSort("DocuNo")}  >Document No</th>
-              <th onClick={() => requestSort("Description")}  >Description</th>
-              <th onClick={() => requestSort("HORef")}  >HO Ref</th>
-              <th onClick={() => requestSort("HOPrvId")}  >HO PrvId</th>
-              <th onClick={() => requestSort("TallyUpdate")}  >Tally_UId</th>
-              <th  >Updated</th>
-              
+              <th onClick={() => requestSort("Amount")}>Amount</th>
+              <th>Adjusted</th>
+              <th onClick={() => requestSort("DocuNo")}>Document No</th>
+              <th onClick={() => requestSort("Description")}>Description</th>
+              <th onClick={() => requestSort("HORef")}>HO Ref</th>
+              <th onClick={() => requestSort("HOPrvId")}>HO PrvId</th>
+              <th onClick={() => requestSort("TallyUpdate")}>Tally_UId</th>
+              <th>Updated</th>
             </tr>
           </thead>
           <tbody className="tablebody">
@@ -242,8 +238,10 @@ const sortedData = () => {
                     {/* Render table cells with corresponding data */}
                     <td>{item.TxnType}</td>
                     <td>{item.Recd_PVNo}</td>
-                    
-                    <td>{new Date(item.Recd_PV_Date).toLocaleDateString('en-GB')}</td>
+
+                    <td>
+                      {new Date(item.Recd_PV_Date).toLocaleDateString("en-GB")}
+                    </td>
                     <td style={{ textAlign: "right" }}>
                       {formatAmount(item.Amount)}
                     </td>
@@ -277,7 +275,7 @@ const sortedData = () => {
                         onChange={() => handleCheckboxChange(item.RecdPVID)}
                       />
                     </td>
-                  
+
                     {/* Add the remaining cells based on your data structure */}
                   </tr>
                 ))

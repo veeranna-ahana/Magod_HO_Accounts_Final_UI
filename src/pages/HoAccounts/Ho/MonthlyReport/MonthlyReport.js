@@ -225,75 +225,89 @@ export default function MonthlyReport() {
 
   return (
     <div>
-      <div className="col-md-12">
-        <div className="row">
-          <h4 className="title">HO Accounts Monthly Report</h4>
-        </div>
+      <div className="row">
+        <h4 className="title">HO Accounts Monthly Report</h4>
       </div>
-      {/* <div className=" row col-md-12">
-        <div className=" row col-md-12"> 
-          <label
-            className="form-label mt-2 col-md-4"
-            style={{ whiteSpace: "nowrap" }}
-          >
+
+      <div className="row mb-2">
+        <div className="col-md-3">
+          <label className="form-label">
             Unit Monthly Report {getName} for {wordMonth} {year}
           </label>
-          <div className="col-md-2">
-            <label className="form-label">Select List</label>
-            <Typeahead
-              id="basic-example"
-              labelKey={(option) => (option && option.UnitName ? option.UnitName.toString() : '')}
-              options={getCustNames}
-              placeholder="Select Customer"
-              onChange={handleNames}
-              selected={selectedOption} 
-            />
-          </div>
-          <div className="col-md-1">
-            <label className="form-label">Month</label>
-            <input
-              onChange={(e) => handleMonth(e)}
-              className="col-md-8"
-              type="number"
-              id="quantity"
-              name="quantity"
-              min="1"
-              max="12"
-            />
-          </div>
+        </div>
 
-          <div className="col-md-1 ">
-            <label className="form-label">Year</label>
-            <input
-              className="col-md-9"
-              onChange={(e) => handleYear(e)}
-              type="number"
-              id="quantity"
-              name="quantity"
-              min="2000"
-              max="9999"
-            />
-          </div>
-
-          <div className="col-md-2 ">
-            <button 
-            className="button-style  group-button"
-            onClick={handleGetData}
-            >Load Data</button>
-          </div>
-          <div className="col-md-2">
-            <button
-              className="button-style mt-2 group-button"
-              type="button"
-              onClick={(e) => navigate("/home")}
-            >
-              Close
-            </button>
+        <div className="col-md-3 col-sm-6 mt-1">
+          <div className="d-flex">
+            <div className="col-4">
+              <label className="form-label" style={{ whiteSpace: "nowrap" }}>
+                Select List
+              </label>
+            </div>
+            <div className="col-8 mt-2">
+              <Typeahead
+                // className="ip-select"
+                id="basic-example"
+                labelKey={(option) =>
+                  option && option.UnitName ? option.UnitName.toString() : ""
+                }
+                options={getCustNames}
+                placeholder="Select Unit"
+                onChange={handleNames}
+                selected={selectedOption}
+              />
+            </div>
           </div>
         </div>
-      </div> */}
 
-      <div className=" row col-md-12">
+        <div className="d-flex col-md-4 mt-2" style={{ gap: "20px" }}>
+          <div className="d-flex" style={{ gap: "10px" }}>
+            <label className="form-label">Month</label>
+            <select
+              className="ip-select"
+              onChange={(e) => handleMonth(e)}
+              placeholder="MM"
+            >
+              <option value="">Select Month</option>
+              {monthNumbers.map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.value}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="d-flex" style={{ gap: "10px" }}>
+            <label className="form-label">Year</label>
+            <input
+              onChange={(e) => handleYear(e)}
+              className="in-field"
+              type="number"
+              value={year}
+              max={getCurrentYear()}
+            />
+          </div>
+        </div>
+        <div className="col-md-2">
+          <button
+            className="button-style  group-button"
+            onClick={handleGetData}
+          >
+            Load Data
+          </button>
+
+          <button
+            className="button-style mt-2 group-button"
+            type="button"
+            onClick={(e) => navigate("/home")}
+            style={{ float: "right" }}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+
+      {/* ------------------------------------------- */}
+
+      {/* <div className=" row col-md-12">
         <div className=" row col-md-12">
           <div className="col-md-4">
             <label
@@ -330,16 +344,6 @@ export default function MonthlyReport() {
                 <label className="form-label" style={{ marginBottom: "10px" }}>
                   Month
                 </label>
-                {/* <input
-                  className="no-spinner"
-                  onChange={(e) => handleMonth(e)}
-                  type="text"
-                  id="quantity"
-                  name="quantity"
-                  min="1"
-                  max="12"
-                /> */}
-
                 <select
                   className="defdrop"
                   onChange={(e) => handleMonth(e)}
@@ -352,14 +356,6 @@ export default function MonthlyReport() {
                     </option>
                   ))}
                 </select>
-
-                {/* <select value={selectedMonth} onChange={handleMonthChange}>
-                  {monthOptions.map((month) => (
-                    <option key={month} value={month}>
-                      {month}
-                    </option>
-                  ))}
-                </select> */}
               </div>
 
               <div className="col-md-5 ms-3">
@@ -395,14 +391,8 @@ export default function MonthlyReport() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      <hr
-        style={{
-          backgroundColor: "black",
-          height: "3px",
-        }}
-      />
       <div>
         <Tabs style={{ display: "flex", fontSize: "10.7px" }}>
           <Tab eventKey="invoiceSummary" title="Invoice Summary">
@@ -430,12 +420,12 @@ export default function MonthlyReport() {
               getAllOutStandingValues={getAllOutStandingValues}
             />
           </Tab>
-          <Tab eventKey="machineUtilisation" title="Machine Utilisation">
+          {/* <Tab eventKey="machineUtilisation" title="Machine Utilisation">
             <MachineUtilisation />
           </Tab>
           <Tab eventKey="MaterialSalesSummary" title="Material Sales Summary">
             <MaterialSalesSummary />
-          </Tab>
+          </Tab> */}
         </Tabs>
       </div>
     </div>
