@@ -281,7 +281,7 @@ export default function SyncUnit() {
         .replace(/\s+/g, "_"); // Replace spaces with underscores
       const strUnitName = fileName;
       // const strUnitName = data[0]?.UnitName || "DefaultUnit"; // Replace "DefaultUnit" with a default value if UnitName is not available
-      a.download = `${strUnitName}-updated`;
+      a.download = `${strUnitName}-updated.xml`;
       // const fileXml = `${strUnitName}-updated`;
       // a.download = `${strUnitName}_to_HO_AcctsSync_${formattedDate}.xml`;
       document.body.appendChild(a);
@@ -338,10 +338,6 @@ export default function SyncUnit() {
     };
     const xmlData = {
       AccountsDS: {
-        MagodUnits: {
-          UnitName: "Jigani",
-          CashInHand: 0,
-        },
         unit_invoices_SyncInfo: invSyncInfo.map((inv, index) => ({
           Sync_HOId: inv.Sync_HOId,
           Unit_UId: inv.Unit_UId,
