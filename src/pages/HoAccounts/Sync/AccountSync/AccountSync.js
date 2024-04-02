@@ -6,6 +6,10 @@ import axios from "axios";
 import SendMail from "../../../SendMail/SendMail";
 import { useNavigate } from "react-router-dom";
 
+import Modal from 'react-bootstrap/Modal';
+import { Button } from 'react-bootstrap';
+import MailModal from "../../MailModal";
+
 export default function AccountSync() {
   const [getPaymentRvRegister, setGetPaymentRvRegister] = useState([]);
   const [getPaymentRvDetails, setGetPaymentRvDetails] = useState([]);
@@ -19,6 +23,9 @@ export default function AccountSync() {
   const [getCanceledVouchersList, setGetCanceledVouchersList] = useState([]);
   const [getUnitNames, setGetUnitNames] = useState([]);
   const [selectedValue, setSelectedValue] = useState("");
+
+  const [mailAlert,setMailAlert]=useState(false)
+  const [mailModal, setMailModal] = useState(false)
 
   const handleUnitnames = () => {
     axios
@@ -432,6 +439,7 @@ export default function AccountSync() {
     } catch (error) {
       console.error("Error saving file:", error);
     }
+    await setTimeout(callMailModal, 10000);
   };
 
   console.log("hoPaymentRvRegister", getPaymentRvRegister.length);
@@ -444,8 +452,46 @@ export default function AccountSync() {
   console.log("CanceledVouchersList", getCanceledVouchersList);
   // console.log("unitNames", selectedValue);
 
+
+  const callMailModal=()=>{
+    setMailAlert(true)
+  }
+
+  const handleClose = () => {
+    // setMailModal(false);
+     setMailAlert(false)
+  }
+
+  const yesmailSubmit=()=>{
+    setMailAlert(false);
+    setMailModal(true);
+  }
   return (
     <>
+    <Modal 
+ show={mailAlert} 
+ onHide={handleClose}
+>
+        <Modal.Header closeButton>
+          <Modal.Title  style={{fontSize:'12px'}}>magod_machine</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body  style={{fontSize:'12px'}}> Accounts Sync Report Saved as (path filename.xml) Do you wish to mail it? 
+           
+
+         </Modal.Body> 
+
+        <Modal.Footer>
+        <Button variant="primary" onClick={yesmailSubmit} style={{fontSize:'12px'}}
+          >
+            Yes
+          </Button>
+          <Button variant="secondary" onClick={handleClose} style={{fontSize:'12px'}}>
+            No
+          </Button>
+         
+        </Modal.Footer>
+      </Modal>
       <div className="row">
         <h4 className="title">Account Sync</h4>
       </div>
@@ -485,6 +531,9 @@ export default function AccountSync() {
             Close
           </button>
         </div>
+        {mailModal &&
+          <MailModal mailModal={mailModal} setMailModal={setMailModal} />
+        }
       </div>
     </>
   );

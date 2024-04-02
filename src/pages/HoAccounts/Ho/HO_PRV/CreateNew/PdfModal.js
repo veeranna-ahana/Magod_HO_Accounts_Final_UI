@@ -68,7 +68,7 @@ export default function PdfModal(
     <>
       <Modal show={pdfVoucher} fullscreen>
         <Modal.Header closeButton onClick={handleClose} >
-          <Modal.Title>Magod HO Accounts</Modal.Title>
+          <Modal.Title style={{fontSize:'12px'}}>Magod HO Accounts</Modal.Title>
         </Modal.Header>
         <Modal.Body>   
            <Fragment>

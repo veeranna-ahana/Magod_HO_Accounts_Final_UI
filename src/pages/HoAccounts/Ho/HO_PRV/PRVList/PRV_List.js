@@ -53,7 +53,10 @@ export default function PRV_List() {
   const openVoucherButton = () => {
     if (selectRow !== "") {
       navigate("/HOAccounts/HO/HOPRV/CreateNew", {
-        state: selectRow.HOPrvId,
+        state: {
+          HOPrvId: selectRow.HOPrvId,
+          unitname: selectRow.Unitname // assuming you have unitname variable defined
+        },
       });
     } else {
       toast.error("Select Row");

@@ -64,19 +64,19 @@ export default function DeleteButtonModal({ setDeleteModal, deleteModal, selectR
     <div>
       <Modal show={deleteModal} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>magod_machine</Modal.Title>
+          <Modal.Title style={{fontSize:'12px'}}>magod_machine</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body> Do you wish to delete {selectRow.UnitID} ?
+        <Modal.Body style={{fontSize:'12px'}}> Do you wish to delete {selectRow.UnitID} ?
 
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="primary" onClick={e => deleteUnitData(selectRow.UnitID)}
+          <Button variant="primary" onClick={e => deleteUnitData(selectRow.UnitID)} style={{fontSize:'12px'}}
           >
             Yes
           </Button>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={handleClose } style={{fontSize:'12px'}}>
             No
           </Button>
         </Modal.Footer>

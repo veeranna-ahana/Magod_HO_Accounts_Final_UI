@@ -14,7 +14,7 @@ export default function CancelModal({ cancelPopup, setCancelPopup }) {
         <div>
         <Modal size="lg" show={cancelPopup} onHide={handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Magod Laser: Invoice Cancellation Form</Modal.Title>
+            <Modal.Title style={{fontSize:'12px'}}>Magod Laser: Invoice Cancellation Form</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div className="col-md-12">
@@ -47,12 +47,12 @@ export default function CancelModal({ cancelPopup, setCancelPopup }) {
                    
   
                     <div className="mt-2">
-                      <input className=""  disabled />
+                      <input   className="in-field"  disabled />
                     </div>
   
                     <div className="mt-2">
                       <input
-                        className=""
+                        className="in-field"
                         
                         disabled
                       />
@@ -60,7 +60,7 @@ export default function CancelModal({ cancelPopup, setCancelPopup }) {
   
                     <div className="mt-2">
                       <input
-                        className=""
+                         className="in-field"
                         
                         disabled
                       />

@@ -13,314 +13,341 @@ export default function PaymentReceiptFormTable({
   setExportTally,
   selectedUnitName,
 }) {
-  const [paymentReceiptDetails, setPaymentReceiptDetails] = useState([]);
-  const [payment, setPayment] = useState([]);
+  const [paymentReceiptDetails, setPaymentReceiptDetails] = useState([])
+    const [payment, setPayment] = useState([]);
 
-  useEffect(() => {
-    setExportTally(false);
-    if (selectedDate && selectedUnitName) {
-      PaymentReceiptSubmit();
+
+    useEffect(() => {
+        setExportTally(false);
+        if (selectedDate && selectedUnitName) {
+            PaymentReceiptSubmit();
+        }
+
+    }, [selectedDate, exportTally,selectedUnitName])
+
+    const PaymentReceiptSubmit = () => {
+     
+        axios.get(baseURL + '/tallyExport/getPaymentReceipntData',
+            {
+                params: {
+                    date: selectedDate,
+                    selectedUnitName:selectedUnitName
+                }
+            }  // Pass selectedDate as a query parameter
+        )
+            .then((res) => {
+                console.log("Paymnet Receipnt", res.data.Result[0]);
+                setPaymentReceiptDetails(res.data.Result)
+            })
+            .catch((err) => {
+                console.log("err", err);
+            })
     }
-  }, [selectedDate, exportTally, selectedUnitName]);
 
-  const PaymentReceiptSubmit = () => {
-    axios
-      .get(
-        baseURL + "/tallyExport/getPaymentReceipntData",
-        {
-          params: {
-            date: selectedDate,
-            selectedUnitName: selectedUnitName,
-          },
-        } // Pass selectedDate as a query parameter
-      )
-      .then((res) => {
-        console.log("Paymnet Receipnt", res.data.Result[0]);
-        setPaymentReceiptDetails(res.data.Result);
-      })
-      .catch((err) => {
-        console.log("err", err);
-      });
-  };
-
-  const paymentReceipt = (Recd_PVNo) => {
-    axios
-      .get(baseURL + "/tallyExport/getPayment", {
-        params: {
-          Recd_PVNo: Recd_PVNo,
-          selectedUnitName: selectedUnitName,
-        },
-      })
-      .then((res) => {
-        console.log("tax ", res.data.Result);
-        setPayment(res.data.Result);
-      })
-      .catch((err) => {
-        console.log("err", err);
-      });
-  };
-
-  const [selectRow, setSelectRow] = useState("");
-  const selectedRowFun = (item, index) => {
-    let list = { ...item, index: index };
-
-    setSelectRow(list);
-
-    paymentReceipt(item.Recd_PVNo);
-  };
-
-  useEffect(() => {
-    if (paymentReceiptDetails.length > 0 && flag) {
-      selectedRowFun(paymentReceiptDetails[0], 0);
+    const paymentReceipt = (Recd_PVNo) => {
+        axios.get(baseURL + '/tallyExport/getPayment',
+            {
+                params: {
+                    Recd_PVNo: Recd_PVNo,
+                    selectedUnitName:selectedUnitName
+                }
+            }
+        )
+            .then((res) => {
+                console.log("tax ", res.data.Result);
+                setPayment(res.data.Result)
+            })
+            .catch((err) => {
+                console.log("err", err);
+            })
     }
-  }, [paymentReceiptDetails, flag]);
 
-  const tableToXml = () => {
-    /* Your payment receipt details array */
+    const [selectRow, setSelectRow] = useState('');
+    const selectedRowFun = (item, index) => {
+        let list = { ...item, index: index }
 
-    const xmlData = {
-      ENVELOPE: {
-        HEADER: {
-          TALLYREQUEST: { _text: "Import Data" },
-        },
-        BODY: {
-          IMPORTDATA: {
-            REQUESTDESC: {
-              REPORTNAME: { _text: "Vouchers" },
-              STATICVARIABLES: {
-                SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
-              },
-            },
-            TALLYMESSAGE: paymentReceiptDetails.map((voucher) => {
-              // const billAllocationsList = payment
-              //     .filter((item) => item.Recd_PVNo === voucher.Recd_PVNo)
-              //     .map((item) => {
-              //         return {
-              //             NAME: `${item.PreFix} / ${item.RefNo}`,
-              //             BILLTYPE: 'Agst Ref',
-              //             AMOUNT: item.Receive_Now,
-              //         };
-              //     });
+        setSelectRow(list);
 
-              const taxData = payment.length > 0;
-              const billAllocationsList = taxData
-                ? payment.map((item) => ({
-                    NAME: `${item.PreFix} / ${item.RefNo}`,
-                    BILLTYPE: "Agst Ref",
-                    AMOUNT: item.Receive_Now, // Replace with the actual property from taxInvoiceData
-                    // Other properties for tax entry
-                  }))
-                : [];
+        paymentReceipt(item.Recd_PVNo)
+    }
 
-              return {
-                _attributes: { "xmlns:UDF": "TallyUDF" },
-                VOUCHER: {
-                  _attributes: {
-                    REMOTEID: `RV${voucher.RecdPVID}`,
-                    VCHTYPE: "PAYMENT RECEIPT",
-                    ACTION: "Create",
-                  },
-                  DATE: voucher.Recd_PV_Date.replace(/-/g, ""),
-                  GUID: voucher.RecdPVID,
-                  NARRATION: voucher.Description,
-                  VOUCHERTYPENAME: "PAYMENT RECEIPT",
-                  VOUCHERNUMBER: voucher.Recd_PVNo,
-                  PARTYLEDGERNAME: voucher.CustName,
-                  CSTFORMISSUETYPE: "",
-                  CSTFORMRECVTYPE: "",
-                  FBTPAYMENTTYPE: "Default",
-                  DIFFACTUALQTY: "No",
-                  AUDITED: "No",
-                  FORJOBCOSTING: "No",
-                  ISOPTIONAL: "No",
-                  EFFECTIVEDATE: voucher.Recd_PV_Date.replace(/-/g, ""),
-                  USEFORINTEREST: "No",
-                  USEFORGAINLOSS: "No",
-                  USEFORGODOWNTRANSFER: "No",
-                  USEFORCOMPOUND: "No",
-                  ALTERID: voucher.RecdPVID,
-                  EXCISEOPENING: "No",
-                  ISCANCELLED: "No",
-                  HASCASHFLOW: "No",
-                  ISPOSTDATED: "No",
-                  USETRACKINGNUMBER: "No",
-                  ISINVOICE: "No",
-                  MFGJOURNAL: "No",
-                  HASDISCOUNTS: "No",
-                  ASPAYSLIP: "No",
-                  ISDELETED: "No",
-                  ASORIGINAL: "No",
 
-                  ALLLEDGERENTRIES_LIST: [
-                    {
-                      LEDGERNAME: voucher.CustName,
-                      GSTCLASS: "",
-                      ISDEEMEDPOSITIVE: "Yes",
-                      LEDGERFROMITEM: "No",
-                      REMOVEZEROENTRIES: "No",
-                      ISPARTYLEDGER: "Yes",
-                      AMOUNT: voucher.Amount,
-                      BILLALLOCATIONS_LIST: billAllocationsList,
-                    },
-                    {
-                      LEDGERNAME: voucher.TxnType, // Assuming Bank is the ledger name
-                      GSTCLASS: "",
-                      ISDEEMEDPOSITIVE: "Yes",
-                      LEDGERFROMITEM: "No",
-                      REMOVEZEROENTRIES: "No",
-                      ISPARTYLEDGER: "Yes",
-                      AMOUNT: -voucher.Amount, // Assuming opposite amount for Bank
-                    },
-                  ],
+
+
+    
+
+
+
+    useEffect(() => {
+        if (paymentReceiptDetails.length > 0 && flag) {
+            selectedRowFun(paymentReceiptDetails[0], 0)
+        }
+
+        else{
+            setSelectRow({...selectRow ,Recd_PVNo:" ", TxnType:'', Amount:'', CustName:'', Description:''})
+            setPayment([])
+        }
+
+    }, [paymentReceiptDetails, flag]);
+
+
+
+
+
+
+    const tableToXml = () => {
+        /* Your payment receipt details array */
+
+        const xmlData = {
+            ENVELOPE: {
+                HEADER: {
+                    TALLYREQUEST: { _text: 'Import Data' }
                 },
-              };
-            }),
-          },
-        },
-      },
+                BODY: {
+                    IMPORTDATA: {
+                        REQUESTDESC: {
+                            REPORTNAME: { _text: 'Vouchers' },
+                            STATICVARIABLES: {
+                                SVCURRENTCOMPANY: { _text: 'MLMPL_Jigani_2023_24' }
+                            }
+                        },
+                        TALLYMESSAGE: paymentReceiptDetails.map((voucher) => {
+
+                            // const billAllocationsList = payment
+                            //     .filter((item) => item.Recd_PVNo === voucher.Recd_PVNo)
+                            //     .map((item) => {
+                            //         return {
+                            //             NAME: `${item.PreFix} / ${item.RefNo}`,
+                            //             BILLTYPE: 'Agst Ref',
+                            //             AMOUNT: item.Receive_Now,
+                            //         };
+                            //     });
+
+
+                                const taxData = payment.length > 0;
+                                const billAllocationsList = taxData ? payment.map((item) => ({
+                                    NAME: `${item.PreFix} / ${item.RefNo}`,
+                                    BILLTYPE: 'Agst Ref',
+                                    AMOUNT: item.Receive_Now, // Replace with the actual property from taxInvoiceData
+                                    // Other properties for tax entry
+                                })) : []
+
+
+
+
+                            return {
+                                _attributes: { 'xmlns:UDF':'TallyUDF' },
+                                VOUCHER: {
+                                    _attributes: {
+                                        REMOTEID: `RV${voucher.RecdPVID}`,
+                                        VCHTYPE: 'PAYMENT RECEIPT',
+                                        ACTION: 'Create',
+                                    },
+                                    DATE: voucher.Recd_PV_Date.replace(/-/g, ''),
+                                    GUID: voucher.RecdPVID,
+                                    NARRATION: voucher.Description,
+                                    VOUCHERTYPENAME: 'PAYMENT RECEIPT',
+                                    VOUCHERNUMBER: voucher.Recd_PVNo,
+                                    PARTYLEDGERNAME: voucher.CustName,
+                                    CSTFORMISSUETYPE: '',
+                                    CSTFORMRECVTYPE: '',
+                                    FBTPAYMENTTYPE: 'Default',
+                                    DIFFACTUALQTY: 'No',
+                                    AUDITED: 'No',
+                                    FORJOBCOSTING: 'No',
+                                    ISOPTIONAL: 'No',
+                                    EFFECTIVEDATE: voucher.Recd_PV_Date.replace(/-/g, ''),
+                                    USEFORINTEREST: 'No',
+                                    USEFORGAINLOSS: 'No',
+                                    USEFORGODOWNTRANSFER: 'No',
+                                    USEFORCOMPOUND: 'No',
+                                    ALTERID: voucher.RecdPVID,
+                                    EXCISEOPENING: 'No',
+                                    ISCANCELLED: 'No',
+                                    HASCASHFLOW: 'No',
+                                    ISPOSTDATED: 'No',
+                                    USETRACKINGNUMBER: 'No',
+                                    ISINVOICE: 'No',
+                                    MFGJOURNAL: 'No',
+                                    HASDISCOUNTS: 'No',
+                                    ASPAYSLIP: 'No',
+                                    ISDELETED: 'No',
+                                    ASORIGINAL: 'No',
+
+                                    ALLLEDGERENTRIES_LIST: [
+                                        {
+                                            LEDGERNAME: voucher.CustName,
+                                            GSTCLASS: '',
+                                            ISDEEMEDPOSITIVE: 'Yes',
+                                            LEDGERFROMITEM: 'No',
+                                            REMOVEZEROENTRIES: 'No',
+                                            ISPARTYLEDGER: 'Yes',
+                                            AMOUNT: voucher.Amount,
+                                            BILLALLOCATIONS_LIST: billAllocationsList,
+                                        },
+                                        {
+                                            LEDGERNAME: voucher.TxnType, // Assuming Bank is the ledger name
+                                            GSTCLASS: '',
+                                            ISDEEMEDPOSITIVE: 'Yes',
+                                            LEDGERFROMITEM: 'No',
+                                            REMOVEZEROENTRIES: 'No',
+                                            ISPARTYLEDGER: 'Yes',
+                                            AMOUNT: -voucher.Amount, // Assuming opposite amount for Bank
+                                        },
+                                    ],
+                                },
+                            };
+                        }),
+                    },
+                },
+            },
+        };
+
+        const xml = xmljs.js2xml(xmlData, { compact: true, spaces: 2 });
+        return xml;
     };
 
-    const xml = xmljs.js2xml(xmlData, { compact: true, spaces: 2 });
-    return xml;
-  };
 
-  const handleExportPayment = async () => {
-    const xml = tableToXml();
 
-    const currentDate = new Date();
-    const day = currentDate.getDate().toString().padStart(2, "0");
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
-    const year = currentDate.getFullYear();
 
-    const formattedDate = `${day}_${month}_${year}`;
 
-    const blob = new Blob([xml], { type: "application/xml" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Jigani_Receipt_Vouchers_${formattedDate}.xml`;
-    a.click();
-    window.URL.revokeObjectURL(url);
 
-    const formData = new FormData();
-    formData.append(
-      "xmlFile",
-      blob,
-      `Jigani_Receipt_Vouchers_${formattedDate}.xml`
-    );
+
+    const handleExportPayment = async () => {
+        const xml = tableToXml();
+
+        const currentDate = new Date();
+        const day = currentDate.getDate().toString().padStart(2, '0');
+        const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+        const year = currentDate.getFullYear();
+    
+        const formattedDate = `${day}_${month}_${year}`;
+
+        const blob = new Blob([xml], { type: 'application/xml' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Jigani_Receipt_Vouchers_${formattedDate}.xml`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+        const formData = new FormData();
+    formData.append('xmlFile', blob, `Jigani_Receipt_Vouchers_${formattedDate}.xml`);
 
     await exportPaymentReceipts(formData);
 
+
     //    await   exportPaymentReceipts(xml);
-  };
 
-  // const [response, setResponse] = useState(null);
-  // const exportPaymentReceipts = async (formData) => {
-  //     try {
-  //         console.log("form data xml", formData);
-  //         // const backendResponse = await fetch(baseURL + '/tallyExport/exporttally', {
-  //         //     method: 'POST',
-  //         // body: formData,
-  //         // });
-  //         if (formData.has('xmlFile') && formData.get('xmlFile').type === 'application/xml') {
-  //             const backendResponse = await fetch(baseURL + '/tallyExport/exporttally', {
-  //                 method: 'POST',
-  //                 body: formData,
-  //             });
+    };
 
-  //         const result = await backendResponse.text(); // Read response as text
-  //         setResponse(result);
-  //         }
-  //         else{
-  //             console.log("not xml");
-  //         }
-  //     } catch (error) {
-  //         console.error('Error sending XML data to Tally:', error);
-  //         // Handle error
-  //     }
-  // };
+    // const [response, setResponse] = useState(null);
+    // const exportPaymentReceipts = async (formData) => {
+    //     try {
+    //         console.log("form data xml", formData);
+    //         // const backendResponse = await fetch(baseURL + '/tallyExport/exporttally', {
+    //         //     method: 'POST',
+    //         // body: formData,
+    //         // });
+    //         if (formData.has('xmlFile') && formData.get('xmlFile').type === 'application/xml') {
+    //             const backendResponse = await fetch(baseURL + '/tallyExport/exporttally', {
+    //                 method: 'POST',
+    //                 body: formData,
+    //             });
+    
+    //         const result = await backendResponse.text(); // Read response as text
+    //         setResponse(result);
+    //         }
+    //         else{
+    //             console.log("not xml");
+    //         }
+    //     } catch (error) {
+    //         console.error('Error sending XML data to Tally:', error);
+    //         // Handle error
+    //     }
+    // };
+    
 
-  const [response, setResponse] = useState(null);
 
-  const exportPaymentReceipts = async (formData) => {
+    const [response, setResponse] = useState(null);
+
+const exportPaymentReceipts = async (formData) => {
     try {
-      if (
-        formData.has("xmlFile") &&
-        formData.get("xmlFile").type === "application/xml"
-      ) {
-        console.log("Sending XML data to Tally...");
+        if (formData.has('xmlFile') && formData.get('xmlFile').type === 'application/xml') {
+            console.log("Sending XML data to Tally...");
 
-        const backendResponse = await fetch(
-          baseURL + "/tallyExport/exporttally",
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
+            const backendResponse = await fetch(baseURL + '/tallyExport/exporttally', {
+                method: 'POST',
+                body: formData,
+            });
 
-        const result = await backendResponse.text(); // Read response as text
-        setResponse(result);
+            const result = await backendResponse.text(); // Read response as text
+            setResponse(result);
 
-        console.log("Tally server response:", result);
-      } else {
-        console.log("File is not XML or missing.");
-        // Handle this case, e.g., show a user-friendly message
-      }
+            console.log("Tally server response:", result);
+        } else {
+            console.log("File is not XML or missing.");
+            // Handle this case, e.g., show a user-friendly message
+        }
     } catch (error) {
-      console.error("Error sending XML data to Tally:", error);
-      // Handle error, e.g., show an error message to the user
+        console.error('Error sending XML data to Tally:', error);
+        // Handle error, e.g., show an error message to the user
     }
-  };
+};
 
-  if (exportTally) {
-    handleExportPayment();
-  }
 
-  const [taxTable, setTaxTable] = useState();
-  const tableRowSelect = (item, index) => {
-    let list = { ...item, index: index };
-    setTaxTable(list);
-  };
-
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
-  const requestSort = (key) => {
-    let direction = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
+    if (exportTally) {
+       // handleExportPayment();
     }
-    setSortConfig({ key, direction });
-  };
 
-  const sortedData = () => {
-    const dataCopy = [...paymentReceiptDetails];
+    const [taxTable, setTaxTable] = useState()
+    const tableRowSelect = (item, index) => {
+        let list = { ...item, index: index }
+        setTaxTable(list)
 
-    if (sortConfig.key) {
-      dataCopy.sort((a, b) => {
-        let valueA = a[sortConfig.key];
-        let valueB = b[sortConfig.key];
-
-        if (sortConfig.key === "Amount" || sortConfig.key === "On_account") {
-          valueA = parseFloat(valueA);
-          valueB = parseFloat(valueB);
-        }
-
-        if (valueA < valueB) {
-          return sortConfig.direction === "asc" ? -1 : 1;
-        }
-        if (valueA > valueB) {
-          return sortConfig.direction === "asc" ? 1 : -1;
-        }
-        return 0;
-      });
     }
-    return dataCopy;
-  };
 
-  //sorting function for second table
-  const [sortConfigTax, setsortConfigTax] = useState({
-    key: null,
-    direction: null,
-  });
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+    const requestSort = (key) => {
+      let direction = "asc";
+      if (sortConfig.key === key && sortConfig.direction === "asc") {
+        direction = "desc";
+      }
+      setSortConfig({ key, direction });
+    };
+  
+  
+  
+  
+    const sortedData = () => {
+      const dataCopy = [...paymentReceiptDetails];
+  
+      if (sortConfig.key) {
+        dataCopy.sort((a, b) => {
+          let valueA = a[sortConfig.key];
+          let valueB = b[sortConfig.key];
+  
+  
+          if (sortConfig.key === "Amount" || sortConfig.key === "On_account" ) {
+            valueA = parseFloat(valueA);
+            valueB = parseFloat(valueB);
+          }
+  
+          if (valueA < valueB) {
+            return sortConfig.direction === "asc" ? -1 : 1;
+          }
+          if (valueA > valueB) {
+            return sortConfig.direction === "asc" ? 1 : -1;
+          }
+          return 0;
+        });
+      }
+      return dataCopy;
+    };
+
+
+//sorting function for second table
+    const [sortConfigTax, setsortConfigTax] = useState({ key: null, direction: null });
   const requestSortTax = (key) => {
     let direction = "asc";
     if (sortConfigTax.key === key && sortConfigTax.direction === "asc") {
@@ -329,26 +356,28 @@ export default function PaymentReceiptFormTable({
     setsortConfigTax({ key, direction });
   };
 
+
+
+
   const sortedDataTax = () => {
     const dataCopyTax = [...payment];
 
     if (sortConfigTax.key) {
-      dataCopyTax.sort((a, b) => {
+        dataCopyTax.sort((a, b) => {
         let valueA = a[sortConfigTax.key];
         let valueB = b[sortConfigTax.key];
 
-        if (
-          sortConfigTax.key === "Receive_Now" ||
-          sortConfigTax.key === "Inv_Amount" ||
-          sortConfigTax.key === "Id" ||
-          sortConfigTax.key === "PvrId" ||
-          sortConfigTax.key === "RecdPVID" ||
-          sortConfigTax.key === "Unit_UId" ||
-          sortConfigTax.key === "HOPrvId" ||
-          sortConfigTax.key === "RecdPvSrl" ||
-          sortConfigTax.key === "Dc_inv_no" ||
-          sortConfigTax.key === "Amt_received"
-        ) {
+
+        if (sortConfigTax.key === "Receive_Now" 
+        || sortConfigTax.key === "Inv_Amount"
+        || sortConfigTax.key === "Id" 
+        || sortConfigTax.key === "PvrId"
+        || sortConfigTax.key === "RecdPVID"
+        || sortConfigTax.key === "Unit_UId"
+        || sortConfigTax.key === "HOPrvId"
+        || sortConfigTax.key === "RecdPvSrl"
+        || sortConfigTax.key === "Dc_inv_no"
+        || sortConfigTax.key === "Amt_received") {
           valueA = parseFloat(valueA);
           valueB = parseFloat(valueB);
         }
@@ -364,6 +393,9 @@ export default function PaymentReceiptFormTable({
     }
     return dataCopyTax;
   };
+
+
+
   return (
     <div>
       <div className="d-flex col-md-12">
