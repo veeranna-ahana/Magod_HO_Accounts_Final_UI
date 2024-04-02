@@ -620,7 +620,7 @@ export default function ShowSyncStatus() {
           <label className="form-label">Syncronise Account Details </label>
         </div>
         <div className="d-flex col-md-4" style={{ gap: "10px" }}>
-          <div className="mt-2">
+          <div className="col-md-5 mt-2">
             <select className="ip-select" onChange={(e) => handleUnitSelect(e)}>
               {unitdata.map((item) => (
                 <option key={item.id} value={item.value}>
@@ -629,22 +629,20 @@ export default function ShowSyncStatus() {
               ))}
             </select>
           </div>
-          <div>
-            <button
-              className="button-style  group-button"
-              onClick={handleButtonClick}
-            >
-              Load Data
-            </button>
-            <input
-              className="in-field"
-              type="file"
-              accept=".xml"
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              onChange={handleFileSelect}
-            />
-          </div>
+          <button
+            className="button-style  group-button"
+            onClick={handleButtonClick}
+          >
+            Load Data
+          </button>
+          <input
+            className="in-field"
+            type="file"
+            accept=".xml"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileSelect}
+          />
         </div>
         <div className="col-md-3">
           <button
