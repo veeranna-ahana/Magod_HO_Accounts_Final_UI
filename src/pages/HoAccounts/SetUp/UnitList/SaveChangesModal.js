@@ -47,7 +47,7 @@ export default function SaveChangesModal(
         }
         else if (res.data.status === 'query') {
           if(t>0){
-          toast.error('Unit_Name  and UnitIntial must be Unique');
+          toast.error('Unit_Name  and UnitIntial must be Unique  ');
           }
         }
         else if (res.data.status === 'success') {
@@ -299,19 +299,19 @@ export default function SaveChangesModal(
 
       <Modal show={saveChangeModal} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>magod_machine</Modal.Title>
+          <Modal.Title style={{fontSize:'12px'}}>magod_machine</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body>
+        <Modal.Body style={{fontSize:'12px'}}>
           Do you wish to save the setting ?
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="primary" onClick={unitlistSubmit}
+          <Button variant="primary" onClick={unitlistSubmit} style={{fontSize:'12px'}}
           >
             Yes
           </Button>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={handleClose} style={{fontSize:'12px'}}>
             No
           </Button>
         </Modal.Footer>

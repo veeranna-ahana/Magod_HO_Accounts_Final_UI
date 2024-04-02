@@ -6,6 +6,10 @@ import { xml2js, js2xml } from "xml-js";
 import axios from "axios";
 import { baseURL } from "../../../../api/baseUrl";
 import { Tab, Table, Tabs } from "react-bootstrap";
+import Modal from 'react-bootstrap/Modal';
+import { Button } from 'react-bootstrap';
+import MailModal from "../../MailModal";
+
 
 export default function ShowSyncStatus() {
   const navigate = useNavigate();
@@ -28,6 +32,9 @@ export default function ShowSyncStatus() {
   const [selectRow, setSelectRow] = useState([]);
   const [selectedRowColor, setSelectedRowColor] = useState("");
   const [selectRowHO, setSelectRowHO] = useState([]);
+
+  const [mailAlert, setMailAlert] = useState(false)
+  const [mailModal, setMailModal] = useState(false)
 
   const handleButtonClick = (e) => {
     if (getName) {
@@ -184,6 +191,7 @@ export default function ShowSyncStatus() {
     } catch (error) {
       console.error("Error saving file:", error);
     }
+    await setTimeout(callMailModal, 10000);
   };
 
   const handleFileSelect = (e) => {
@@ -295,8 +303,8 @@ export default function ShowSyncStatus() {
     await axios
       .get(
         baseURL +
-          `/showSyncStatus/getUnitOpenInvAndReceiptsForExport/` +
-          getName
+        `/showSyncStatus/getUnitOpenInvAndReceiptsForExport/` +
+        getName
       )
       .then((res) => {
         setGetUnitInvoiceForExport(res.data);
@@ -545,8 +553,61 @@ export default function ShowSyncStatus() {
     return dataCopy;
   };
 
+
+  const [showMatchedFirst, setShowMatchedFirst] = useState(true); // State to track whether matched data should be shown first
+
+  // Function to handle the filter button click
+  const handleUnitInfoFilter = () => {
+    setShowMatchedFirst(!showMatchedFirst); // Toggle between showing matched data first and unmatched data first
+  };
+
+
+  // for HO table 
+  const [showMatchedFirstForHO, setShowMatchedFirstForHO] = useState(true);
+  const forHO=()=>{
+    setShowMatchedFirstForHO(!showMatchedFirstForHO);
+  }
+
+
+  const handleClose = () => {
+    setMailModal(false);
+    setMailAlert(false)
+  }
+  const yesmailSubmit = () => {
+    setMailAlert(false);
+    setMailModal(true);
+  }
+
+  const callMailModal = () => {
+    setMailAlert(true)
+  }
+
   return (
     <div style={{ height: "85vh", padding: "10px", overflowY: "scroll" }}>
+      <Modal
+        show={mailAlert}
+        onHide={handleClose}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title  style={{fontSize:'12px'}}>magod_machine</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body  style={{fontSize:'12px'}}> Accounts Sync Report Saved as (path filename.xml) Do you wish to mail it?
+
+
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button variant="primary" onClick={yesmailSubmit}  style={{fontSize:'12px'}}
+          >
+            Yes
+          </Button>
+          <Button variant="secondary" onClick={handleClose}  style={{fontSize:'12px'}}>
+            No
+          </Button>
+
+        </Modal.Footer>
+      </Modal>
       <div className="row">
         <h4 className="title">HO Unit Sync Review</h4>
       </div>
@@ -704,6 +765,7 @@ export default function ShowSyncStatus() {
                     <button
                       className="button-style mt-2 group-button"
                       style={{ width: "80px" }}
+                      onClick={handleUnitInfoFilter}
                     >
                       Filter
                     </button>
@@ -719,6 +781,7 @@ export default function ShowSyncStatus() {
                     <button
                       className="button-style mt-2 group-button"
                       style={{ width: "80px" }}
+                      onClick={forHO}
                     >
                       Filter
                     </button>
@@ -738,7 +801,7 @@ export default function ShowSyncStatus() {
                     <thead className="tableHeaderBGColor">
                       <tr style={{ whiteSpace: "nowrap" }}>
                         <th onClick={() => requestSort("DC_InvType")}>
-                          Invv Type
+                          Inv Type
                         </th>
                         <th onClick={() => requestSort("Inv_No")}>Inv No</th>
                         <th onClick={() => requestSort("Dc_inv_Date")}>Date</th>
@@ -758,7 +821,7 @@ export default function ShowSyncStatus() {
                     </thead>
 
                     <tbody className="tablebody">
-                      {/* Render rows for matchedInvoices */}
+                    
                       {sortedData()?.map((item, key) => {
                         return (
                           <tr
@@ -872,7 +935,7 @@ export default function ShowSyncStatus() {
                   <Table striped className="table-data border mt-1">
                     <thead className="tableHeaderBGColor">
                       <tr>
-                        <th style={{ whiteSpace: "nowrap" }}>Inv TType</th>
+                        <th style={{ whiteSpace: "nowrap" }}>Inv Type</th>
                         <th style={{ whiteSpace: "nowrap" }}>Inv No</th>
                         <th>Date</th>
                         <th style={{ whiteSpace: "nowrap" }}>Inv Total</th>
@@ -1025,6 +1088,9 @@ export default function ShowSyncStatus() {
             <Tab eventKey="HOR" title=" HO Payment Receipnts"></Tab>
           </Tabs>
         </div>
+        {
+          <MailModal   mailModal={mailModal} setMailModal={setMailModal}/>
+        }
       </div>
     </div>
   );

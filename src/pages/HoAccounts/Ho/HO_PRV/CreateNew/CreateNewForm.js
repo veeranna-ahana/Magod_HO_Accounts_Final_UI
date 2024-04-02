@@ -1,3 +1,5 @@
+
+
 import axios from "axios";
 import React, { useEffect, useState, useCallback } from "react";
 import { Table } from "react-bootstrap";
@@ -16,11 +18,14 @@ export default function CreateNewForm() {
   const { adjustmentRows, adj_unit } = location.state ? location.state : "";
   let onAccountValue1 = adjustmentRows ? parseInt(adjustmentRows.On_account) : 0
   console.log("adj unit", adjustmentRows);
-  const adj_unitname=adj_unit;
+  const adj_unitname = adj_unit;
+
+  let fixedOnaccount = adjustmentRows ? parseInt(adjustmentRows.fixedOnaccount) : "zero"
+
 
   let sum = 0;
 
-
+  console.log("fixed onaccountttttttttttttt", fixedOnaccount);
 
 
   const [sumofReceive, setSumofReceive] = useState()
@@ -40,7 +45,12 @@ export default function CreateNewForm() {
 
   const [pdfVoucher, setPdfVoucher] = useState(false);
 
-const [alertCancel, setAlertCancel]=useState(false)
+  const [alertCancel, setAlertCancel] = useState(false)
+
+
+
+  let onAccountValue = onAccountValue1
+  const [onAccountValue22, setOnAccountValue] = useState(onAccountValue1);
 
 
   const [rvData, setRvData] = useState({
@@ -110,7 +120,8 @@ const [alertCancel, setAlertCancel]=useState(false)
   }, [])
 
 
-  console.log("insert to form", adjustmentRows);
+  
+
 
   const insertToForm = async () => {
 
@@ -152,7 +163,9 @@ const [alertCancel, setAlertCancel]=useState(false)
 
 
   const getleftandRightTabledata = async (cust_code, hoprvID) => {
-    console.log("CUST CODE AND HOPRVID", cust_code, hoprvID);
+  
+   
+   
     try {
       const resp = await axios.post(
         baseURL + '/createnew/getleftTable', {
@@ -166,7 +179,7 @@ const [alertCancel, setAlertCancel]=useState(false)
 
       try {
         const response = await axios.get(
-          baseURL + `/createnew/ho_openInvoices?customercode=${cust_code}`
+          baseURL + `/createnew/ho_openInvoicesADJUST?customercode=${cust_code}`
         );
         //console.log("open inv ", response);
 
@@ -311,13 +324,14 @@ const [alertCancel, setAlertCancel]=useState(false)
 
 
   const handleSave = async () => {
+    let val = (onAccountValue1 === 0 || onAccountValue22===0 || onAccountValue1!==fixedOnaccount) ? fixedOnaccount : onAccountValue1
     let stopExecution = false;
 
     try {
 
 
 
-    
+
 
 
       if (rvData.data.receipt_details) {
@@ -342,7 +356,7 @@ const [alertCancel, setAlertCancel]=useState(false)
           }
 
 
-          else if (formattedValue > onAccountValue1) {
+          else if (formattedValue > (val)) {
             toast.error("Cannot Receive More than On_account Amount");
             stopExecution = true;
             return;
@@ -370,6 +384,17 @@ const [alertCancel, setAlertCancel]=useState(false)
         return;
       }
 
+
+      const sumofRecv = rvData.data.receipt_details.reduce(
+        (sum, obj) => sum + parseFloat(obj.Receive_Now),
+        0
+      );
+
+      if (sumofRecv > val) {
+        toast.error("Cannot Receive More than On_account Amount22");
+        stopExecution = true;
+        return;
+      }
 
 
       // If HO_PrvId is not present, it's an insert operation
@@ -412,7 +437,7 @@ const [alertCancel, setAlertCancel]=useState(false)
 
         console.log("Amount  else:", rvData.postData.Cust_code);
 
-      //  const unitToStore = getUnit === ' ' ? rvData.postData.UnitName : getUnit;
+        //  const unitToStore = getUnit === ' ' ? rvData.postData.UnitName : getUnit;
         const custCodetostore = getCustCode === '' ? rvData.postData.Cust_code : getCustCode
         const custnametostore = getCustomer === '' ? rvData.postData.CustName : getCustCode
         const updateResponse = await axios.post(
@@ -528,12 +553,13 @@ const [alertCancel, setAlertCancel]=useState(false)
 
   console.log("SecondTableArray", rvData.secondTableArray);
 
-  const nav = useNavigate();
 
 
 
 
-  const deleteLeftTable = () => {
+
+  const deleteWholeForm = () => {
+    let val = (onAccountValue1 === 0 || onAccountValue22===0 || onAccountValue1!==fixedOnaccount) ? fixedOnaccount : onAccountValue1
     let sumOfReceive_Now = 0
     let sum = 0
     let stopExecution = false;
@@ -542,10 +568,11 @@ const [alertCancel, setAlertCancel]=useState(false)
     if (rvData.data.receipt_details && rvData.data.receipt_details.length > 0) {
 
       rvData.data.receipt_details.forEach((selectedRow) => {
-        if (stopExecution) return
+
         // Your code logic for each item goes here
         if (parseFloat(selectedRow.Receive_Now) < 0) {
           toast.error("Incorrect Value");
+          stopExecution = true;
           return;
         }
 
@@ -563,18 +590,24 @@ const [alertCancel, setAlertCancel]=useState(false)
         }
 
 
-        else if (formattedValue > onAccountValue1) {
+        else if (formattedValue > val) {
           toast.error("Cannot Receive More than On_account Amount");
           stopExecution = true;
           return;
         }
 
 
-       
+        else if (sumOfReceive_Now > val) {
+          toast.error("Cannot Receive More than On_account Amount22");
+          stopExecution = true;
+          return;
+        }
+  
+
 
       });
 
-
+      if (stopExecution) return;
       sum = sumOfReceive_Now + onAccountValue22
 
       console.log("onaccount value aftr delete", sumOfReceive_Now, sum, onAccountValue22, onAccountValue1);
@@ -582,7 +615,12 @@ const [alertCancel, setAlertCancel]=useState(false)
       axios.delete(
         baseURL + "/createnew/deleteleft",
 
-        { data: { hoid: rvData.postData.HO_PrvId, id: id, onacc: sumOfReceive_Now } }
+        {
+          data: {
+            hoid: rvData.postData.HO_PrvId, id: id,
+            onacc: sumOfReceive_Now, receipt_details: rvData.data.receipt_details
+          }
+        }
 
       ).then(resp => {
         console.log("Response data:", resp.data);
@@ -605,13 +643,14 @@ const [alertCancel, setAlertCancel]=useState(false)
 
           }));
 
-          nav("/HOAccounts/HO/RvAdjustment")
+          navigate("/HOAccounts/HO/RvAdjustment")
+
         }
       })
         .catch(error => {
           console.error("Error:", error);
         });
-      
+
     }
 
 
@@ -619,10 +658,16 @@ const [alertCancel, setAlertCancel]=useState(false)
 
     else {
 
+
       axios.delete(
         baseURL + "/createnew/deleteleft",
 
-        { data: { hoid: rvData.postData.HO_PrvId, id: id, onacc: 0 } }
+        {
+          data: {
+            hoid: rvData.postData.HO_PrvId, id: id, onacc: adjustmentRows.fixedOnaccount,
+            receipt_details: rvData.data.receipt_details
+          }
+        }
 
       ).then(resp => {
         console.log("Response data:", resp.data);
@@ -645,7 +690,7 @@ const [alertCancel, setAlertCancel]=useState(false)
 
           }));
 
-          nav("/HOAccounts/HO/RvAdjustment")
+          navigate("/HOAccounts/HO/RvAdjustment")
         }
       })
         .catch(error => {
@@ -656,7 +701,7 @@ const [alertCancel, setAlertCancel]=useState(false)
 
 
 
-    if (stopExecution) return;
+
 
     // axios.delete(
     //   baseURL + "/createnew/deleteleft",
@@ -694,14 +739,13 @@ const [alertCancel, setAlertCancel]=useState(false)
   }
 
 
-  let onAccountValue = onAccountValue1
-  const [onAccountValue22, setOnAccountValue] = useState(onAccountValue1);
+
 
 
 
   const addInvoice = async () => {
-    console.log("noeie", onAccountValue22);
-    console.log("intial onaccount value", onAccountValue);
+    console.log("updated on account value", onAccountValue22);
+    console.log("intial onaccount value", onAccountValue1);
     onAccountValue = onAccountValue22;
     try {
       const selectedRows = rvData.secondTableArray;
@@ -721,7 +765,7 @@ const [alertCancel, setAlertCancel]=useState(false)
 
 
 
-
+      let stopExecution = false;
 
       for (const row of selectedRows) {
 
@@ -739,12 +783,14 @@ const [alertCancel, setAlertCancel]=useState(false)
           console.log("difference", diff);
 
           if (onAccountValue <= 0) {
-
+            console.log("onacc1111111111111111", onAccountValue);
             toast.error("Don't have sufficient Amount to Adjust");
-            return;
+             stopExecution = true;
+             return;
           }
           else if (onAccountValue < diff) {
-            console.log("onacc", onAccountValue);
+            console.log("onacc222222222222", onAccountValue);
+
             // If onAccountValue is less than the difference, set Receive to onAccountValue
             rowsToAdd.push({ ...row, Receive: onAccountValue });
             onAccountValue = (onAccountValue - (diff >= onAccountValue ? onAccountValue : diff));
@@ -754,25 +800,23 @@ const [alertCancel, setAlertCancel]=useState(false)
             onAccountValue = (onAccountValue - (diff >= onAccountValue ? onAccountValue : diff));
           }
 
-          // Subtract the corresponding amount from onAccountValue
-          // onAccountValue -= Math.min(diff, onAccountValue);
-          // onAccountValue= ( onAccountValue-(diff>=onAccountValue ?onAccountValue: diff ));
-          // setonAccountValue(onAccountValue)
+
           console.log("onmaccount123", onAccountValue);
           setOnAccountValue(onAccountValue)
           // Moved here to log updated value
         }
 
-        // console.log("fniofjqiofionfiowrfniow", onAccountValue22);
+
       }
 
-      // console.log("rowsToAdd:", rowsToAdd);
+
 
       if (rowsToAdd.length === 0) {
         toast.error("Invoice already exists");
         return;
       }
 
+      console.log("reow data adjustment", rowsToAdd);
       const response = await axios.post(baseURL + "/hoCreateNew/addInvoice", {
         selectedRows: rowsToAdd,
         HO_PrvId: rvData.postData.HO_PrvId,
@@ -851,6 +895,17 @@ const [alertCancel, setAlertCancel]=useState(false)
           Amount: updateAmount.data.updatedAmount[0]?.Amount,
         },
       }));
+
+      const updateOnaccount = await axios.put(
+
+        baseURL + "/createnew/updateOnaccountValue",
+        {
+          on_account: onAccountValue,
+          id: id
+        }
+      );
+
+      console.log("update onaccount value in addinvoice", updateOnaccount);
       return response.data;
     } catch (error) {
       console.error("Error adding rows to voucher:", error);
@@ -862,7 +917,7 @@ const [alertCancel, setAlertCancel]=useState(false)
 
 
 
-
+  console.log("fixed onaaaaaaaa", fixedOnaccount);
   const handleInputChange = async (e, rowData, dif) => {
     const { name, value } = e.target;
     const receiveNowValue = value !== '' ? parseFloat(value) : null;
@@ -875,14 +930,23 @@ const [alertCancel, setAlertCancel]=useState(false)
           : parseInt(item.Receive_Now, 10) || 0),
       0
     );
+    let a = parseInt(rvData.postData.Amount) > 0 ? parseInt(rvData.postData.Amount) : 0
+    let w = parseInt(onAccountValue1) + a;
 
-    console.log("valueeee", totalReceiveNow);
+
+
     rvData.data.receipt_details.forEach(item => {
+      console.log("dc inv no", item.Dc_inv_no);
+      console.log("onaccount value", onAccountValue1);
       if (item.Dc_inv_no === rowData.Dc_inv_no) {
 
-
-        setOnAccountValue(onAccountValue1 - totalReceiveNow)
+        // setOnAccountValue(onAccountValue1 - totalReceiveNow)
+        setOnAccountValue(fixedOnaccount - totalReceiveNow)
       }
+      else {
+        setOnAccountValue(w - totalReceiveNow)
+      }
+
     });
 
 
@@ -951,46 +1015,46 @@ const [alertCancel, setAlertCancel]=useState(false)
 
 
 
-  const getReceipts = async (cust_code, postdata) => {
-    //setRvData((prevRvData) => ({ ...prevRvData, postData: postdata }));
-
-    try {
-      const resp = await axios.get(
-        baseURL + `/createnew/getleftTable?receipt_id=${hoprvid}`
-      );
-
-
-
-      try {
-        const response = await axios.get(
-          baseURL + `/createnew/ho_openInvoices?customercode=${cust_code}`
-        );
-        console.log("open inv ", resp);
-
-        setRvData((prevRvData) => ({
-          ...prevRvData,
-          data: {
-            ...prevRvData.data,
-            inv_data: response.data.Result,
-            receipt_details: resp.data.Result,
-            //  receipt_id: rowData,
-          },
-        }));
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+//   const getReceipts = async (cust_code, postdata) => {
+//     //setRvData((prevRvData) => ({ ...prevRvData, postData: postdata }));
+// alert("22")
+//     try {
+//       const resp = await axios.get(
+//         baseURL + `/createnew/getleftTable?receipt_id=${hoprvid}`
+//       );
 
 
 
-  const alertformClose=()=>{
+//       try {
+//         const response = await axios.get(
+//           baseURL + `/createnew/ho_openInvoices?customercode=${cust_code}`
+//         );
+//         console.log("open inv ", resp);
+
+//         setRvData((prevRvData) => ({
+//           ...prevRvData,
+//           data: {
+//             ...prevRvData.data,
+//             inv_data: response.data.Result,
+//             receipt_details: resp.data.Result,
+//             //  receipt_id: rowData,
+//           },
+//         }));
+//       } catch (error) {
+//         console.error("Error fetching data:", error);
+//       }
+//     } catch (error) {
+//       console.error("Error fetching data:", error);
+//     }
+//   };
+
+
+
+  const alertformClose = () => {
     setAlertCancel(false)
   }
 
-  const forCancelFormOpen=()=>{
+  const forCancelFormOpen = () => {
     setAlertCancel(false)
     setCancelPopup(true);
   }
@@ -998,7 +1062,7 @@ const [alertCancel, setAlertCancel]=useState(false)
   const [cancelPopup, setCancelPopup] = useState(false)
 
   const canacleButton = () => {
-
+    let val = (onAccountValue1 === 0 || onAccountValue22===0 || onAccountValue1!==fixedOnaccount) ? fixedOnaccount : onAccountValue1
     let stopExecution = false;
 
 
@@ -1024,7 +1088,7 @@ const [alertCancel, setAlertCancel]=useState(false)
         }
 
 
-        else if (formattedValue > onAccountValue1) {
+        else if (formattedValue > val) {
           toast.error("Cannot Receive More than On_account Amount");
           stopExecution = true;
           return;
@@ -1038,13 +1102,13 @@ const [alertCancel, setAlertCancel]=useState(false)
     if (stopExecution) return;
 
     else {
-     
-     setAlertCancel(true);
+
+      setAlertCancel(true);
     }
   }
 
 
-  
+
 
   const handleCancelClose = () => {
     setCancelPopup(false)
@@ -1103,15 +1167,42 @@ const [alertCancel, setAlertCancel]=useState(false)
 
   }
 
+  useEffect(() => {
 
+    const sumofRecv = rvData.data.receipt_details.reduce(
+      (sum, obj) => sum + parseFloat(obj.Receive_Now),
+      0
+    );
+
+    if(sumofRecv<=onAccountValue1){
+
+    const updateOnaccount = axios.put(
+
+      baseURL + "/createnew/updateOnaccountValue",
+      {
+        on_account: onAccountValue22,
+        id: id
+      }
+
+    );
+
+    }
+  }, [rvData.receipt_details, rvData.firstTableArray])
 
   let totalamnt = 0;
 
+  console.log("outside  ....onaccot22", onAccountValue22, "onacount1111", onAccountValue1);
 
   const removeInvoice = async () => {
 
-    console.log("remove error", rvData.firstTableArray);
+   
+    // let val=onAccountValue22===0 || onAccountValue1==0 ? fixedOnaccount  : onAccountValue1
+    let val = (onAccountValue1 === 0 || onAccountValue22===0 || onAccountValue1!==fixedOnaccount) ? fixedOnaccount : onAccountValue1
+    let stopExecution = false;
 
+
+
+    console.log("onaccot22", onAccountValue22, "onacount1111", onAccountValue1, "Val", val);
     try {
       const isAnyEmptyReceiveNow = rvData.firstTableArray.some(
         (row) => row.Receive_Now === ""
@@ -1120,11 +1211,13 @@ const [alertCancel, setAlertCancel]=useState(false)
 
       if (isAnyEmptyReceiveNow) {
         toast.error("Receive Now cannot be empty");
+        stopExecution = true;
         return;
       }
 
       if (rvData.firstTableArray.length === 0) {
         toast.error("No rows selected for removal of voucher.");
+        stopExecution = true;
         return;
       }
 
@@ -1133,6 +1226,7 @@ const [alertCancel, setAlertCancel]=useState(false)
 
       if (parseFloat(selectedRow.Receive_Now) < 0) {
         toast.error("Incorrect Value");
+        stopExecution = true;
         return;
       }
 
@@ -1141,13 +1235,32 @@ const [alertCancel, setAlertCancel]=useState(false)
       const amountReceived = parseFloat(selectedRow.Amt_received || 0);
 
       if (formattedValue > invoiceAmount - amountReceived) {
+
         toast.error("Cannot Receive More than Invoice Amount");
+        stopExecution = true;
         return;
       }
-      if (formattedValue > onAccountValue1) {
+
+      if (formattedValue > (val)) {
+       
         toast.error("Cannot Receive More than On_account Amount");
+        stopExecution = true;
         return;
       }
+
+      // if (formattedValue > (val)) {
+
+      //   toast.error("Cannot Receive More than On_account Amount");
+      //   stopExecution = true;
+      //   return;
+      // }
+
+      const sumofRecv = rvData.data.receipt_details.reduce(
+        (sum, obj) => sum + parseFloat(obj.Receive_Now),
+        0
+      );
+   
+      
 
       const RecdPvSrl = selectedRow.RecdPvSrl;
       const receiveNowValue = parseFloat(selectedRow.Receive_Now || 0);
@@ -1176,7 +1289,13 @@ const [alertCancel, setAlertCancel]=useState(false)
         (sum, obj) => sum + parseFloat(obj.Receive_Now),
         0
       );
-      console.log("amount valueeeeee", totalReceiveNow);
+
+
+      if (sumofRecv > val) {
+        toast.error("Cannot Receive More than On_account Amount22");
+        stopExecution = true;
+        return;
+      }
 
       // setAmnt(totalReceiveNow)
       const response = await axios.post(
@@ -1227,23 +1346,26 @@ const [alertCancel, setAlertCancel]=useState(false)
       //  amnt=amnt+formattedValue;
 
 
-      if (totalReceiveNow === invamount) {
-        console.log(" 1111", totalReceiveNow);
+      // if (totalReceiveNow === invamount) {
+      //   console.log(" 1111", totalReceiveNow);
 
-      }
-      else {
-        console.log("2222", invamount);
-      }
+      // }
+      // else {
+      //   console.log("2222", invamount);
+      // }
 
 
-      if (totalReceiveNow <= onAccountValue1) {
+      if (totalReceiveNow <= (val)) {
         if (totalReceiveNow === invamount) {
           let totalamnt = totalReceiveNow + onAccountValue22
+
           setOnAccountValue(totalamnt)
         }
 
         else if (totalReceiveNow < invamount && invamount !== onAccountValue1) {
-          setOnAccountValue(onAccountValue1)
+
+
+          setOnAccountValue(receiveNowValue + onAccountValue22)
         }
         else if (totalReceiveNow < invamount) {
 
@@ -1251,15 +1373,78 @@ const [alertCancel, setAlertCancel]=useState(false)
           setOnAccountValue(totalamnt)
         }
         else {
+
           let totalamnt = (invamount) + onAccountValue22
           setOnAccountValue(totalamnt)
         }
 
       }
+
+
+
+      // if (totalReceiveNow <= val) {
+      //   if (totalReceiveNow === invamount) {
+      //     let totalamnt = totalReceiveNow + onAccountValue22
+
+      //     setOnAccountValue(totalamnt)
+      //   }
+
+      //   else if (totalReceiveNow < invamount && invamount !== val) {
+
+          
+      //     setOnAccountValue(receiveNowValue + onAccountValue22)
+      //   }
+      //   else if (totalReceiveNow < invamount) {
+
+      //     let totalamnt = (totalReceiveNow) + onAccountValue22
+      //     setOnAccountValue(totalamnt)
+      //   }
+      //   else {
+
+      //     let totalamnt = (invamount) + onAccountValue22
+      //     setOnAccountValue(totalamnt)
+      //   }
+
+      // }
+
+
+
+      // if (totalReceiveNow <= fixedOnaccount) {
+      //   if (totalReceiveNow === invamount) {
+      //     let totalamnt = totalReceiveNow + onAccountValue22
+
+      //     setOnAccountValue(totalamnt)
+      //   }
+
+      //   else if (totalReceiveNow < invamount && invamount !== fixedOnaccount) {
+
+      //     console.log("recenowwwwwwwwwwwwwwwwwwwwwwww", receiveNowValue, val);
+      //     setOnAccountValue(receiveNowValue + onAccountValue22)
+      //   }
+      //   else if (totalReceiveNow < invamount) {
+
+      //     let totalamnt = (totalReceiveNow) + onAccountValue22
+      //     setOnAccountValue(totalamnt)
+      //   }
+      //   else {
+
+      //     let totalamnt = (invamount) + onAccountValue22
+      //     setOnAccountValue(totalamnt)
+      //   }
+
+      // }
       console.log("total onaccount inside method", onAccountValue22);
       // set(amnttt)
 
 
+      const updateOnaccount = await axios.put(
+
+        baseURL + "/createnew/updateOnaccountValue",
+        {
+          on_account: onAccountValue22,
+          id: id
+        }
+      );
 
 
     } catch (error) {
@@ -1308,9 +1493,21 @@ const [alertCancel, setAlertCancel]=useState(false)
       return;
     }
 
+    let val = (onAccountValue1 === 0 || onAccountValue22===0 || onAccountValue1!==fixedOnaccount) ? fixedOnaccount : onAccountValue1
 
     let stopExecution = false;
 
+
+    const sumofRecv = rvData.data.receipt_details.reduce(
+      (sum, obj) => sum + parseFloat(obj.Receive_Now),
+      0
+    );
+
+    
+    
+  
+    
+   
 
     if (rvData.data.receipt_details) {
 
@@ -1337,11 +1534,19 @@ const [alertCancel, setAlertCancel]=useState(false)
         }
 
 
-        else if (formattedValue > onAccountValue1) {
+        else if (formattedValue > val) {
           toast.error("Cannot Receive More than On_account Amount");
           stopExecution = true;
           return;
         }
+
+      else  if (sumofRecv > val) {
+          toast.error("Cannot Receive More than On_account Amount22");
+          stopExecution = true;
+          return;
+        }
+
+
       });
     }
 
@@ -1359,10 +1564,10 @@ const [alertCancel, setAlertCancel]=useState(false)
 
 
   console.log("rectttttttttt", rvData.data.receipt_details);
-  
+
 
   const handlePostYes = async () => {
-
+    let val = (onAccountValue1 === 0 || onAccountValue22===0 || onAccountValue1!==fixedOnaccount) ? fixedOnaccount : onAccountValue1
     console.log("rece now sum post yes", sumofReceive);
 
     setShowPostModal(false);
@@ -1393,7 +1598,7 @@ const [alertCancel, setAlertCancel]=useState(false)
           }
 
 
-          else if (formattedValue > onAccountValue1) {
+          else if (formattedValue > val) {
             toast.error("Cannot Receive More than On_account Amount");
             stopExecution = true;
             return;
@@ -1437,6 +1642,9 @@ const [alertCancel, setAlertCancel]=useState(false)
           Amount: response.data[0].Amount,
           CustName: response.data[0].CustName,
           HO_PrvId: response.data[0].HOPrvId,
+          Description:response.data[0].Description,
+          TxnType:response.data[0].TxnType,
+          On_account:response.data[0].On_account
         },
 
         firstTableArray: [],
@@ -1540,7 +1748,7 @@ const [alertCancel, setAlertCancel]=useState(false)
 
           <label className="form-label ">HO Ref No</label>
           <input
-            class=""
+             className="in-field"
             name="HORefNo"
             placeholder=""
             disabled
@@ -1551,7 +1759,7 @@ const [alertCancel, setAlertCancel]=useState(false)
 
         <div className="col-md-3">
           <label className="form-label">Date</label>
-          <input className="" value={inputValue} />
+          <input className="in-field" value={inputValue} />
         </div>
 
        
@@ -1585,7 +1793,7 @@ const [alertCancel, setAlertCancel]=useState(false)
 
         <div className="col-md-4 ">
           <label className="form-label">Receive Form</label>
-          <input className="" value={rvData.postData.CustName}
+          <input className="in-field" value={rvData.postData.CustName}
             disabled={
               rvData.postData.Status != "Draft"
                 ? rvData.postData.Status
@@ -1601,6 +1809,7 @@ const [alertCancel, setAlertCancel]=useState(false)
         <div className="col-md-2">
           <label className="form-label">Amount</label>
           <input
+            className="in-field"
             name="Amount"
             onChange={PaymentReceipts}
             disabled
@@ -1614,7 +1823,7 @@ const [alertCancel, setAlertCancel]=useState(false)
           <input
             name="HORefNo"
             onChange={PaymentReceipts}
-
+            className="in-field"
             value={rvData.postData.HORefNo}
           />
 
@@ -1623,6 +1832,7 @@ const [alertCancel, setAlertCancel]=useState(false)
         <div className="col-md-2">
           <label className="form-label">Status</label>
           <input
+            className="in-field"
             name="Status"
             onChange={PaymentReceipts}
             disabled={
@@ -1636,7 +1846,7 @@ const [alertCancel, setAlertCancel]=useState(false)
 
         <div className="col-md-5">
           <label className="form-label">Reason</label>
-          <input name="reason" disabled value={reason} />
+          <input name="reason"   className="in-field" disabled value={reason} />
         </div>
       </div>
 
@@ -1691,7 +1901,7 @@ const [alertCancel, setAlertCancel]=useState(false)
               }
               style={{ width: "90px" }}
               //  onClick={deleteLeftTable}
-              onClick={deleteLeftTable}
+              onClick={deleteWholeForm}
               disabled={
                 rvData && rvData.postData.Status !== "Draft"
                   ? rvData.postData.Status
@@ -1970,10 +2180,10 @@ const [alertCancel, setAlertCancel]=useState(false)
 
       <Modal show={showPostModal} onHide={handlePostModalClose} size="md">
         <Modal.Header closeButton>
-          <Modal.Title>HO Accounts</Modal.Title>
+          <Modal.Title style={{fontSize:'12px'}}>HO Accounts</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body>
+        <Modal.Body style={{fontSize:'12px'}}>
           Do You wish to create a HO voucher now?. Details cannot be changed
           once created
         </Modal.Body>
@@ -1981,15 +2191,16 @@ const [alertCancel, setAlertCancel]=useState(false)
         <Modal.Footer>
           <button
             className="button-style"
-            style={{ width: "50px" }}
+           // style={{ width: "50px" }}
             onClick={handlePostYes}
+            style={{fontSize:'12px'}}
           >
             Yes
           </button>
 
           <button
             className="button-style"
-            style={{ width: "50px", backgroundColor: "rgb(173, 173, 173)" }}
+            style={{ fontSize:'12px', backgroundColor: "rgb(173, 173, 173)" }}
             onClick={handlePostModalClose}
           >
             No
@@ -2000,10 +2211,10 @@ const [alertCancel, setAlertCancel]=useState(false)
 
       <Modal show={alertCancel} onHide={handlePostModalClose} size="md">
         <Modal.Header closeButton>
-          <Modal.Title>HO Accounts</Modal.Title>
+          <Modal.Title style={{fontSize:'12px'}}>HO Accounts</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body>
+        <Modal.Body style={{fontSize:'12px'}}>
           Do You wish to open cancel form
           
         </Modal.Body>
@@ -2011,7 +2222,8 @@ const [alertCancel, setAlertCancel]=useState(false)
         <Modal.Footer>
           <button
             className="button-style"
-            style={{ width: "50px" }}
+          //  style={{ width: "50px" }}
+          style={{fontSize:'12px'}}
             onClick={forCancelFormOpen}
           >
             Yes
@@ -2019,7 +2231,8 @@ const [alertCancel, setAlertCancel]=useState(false)
 
           <button
             className="button-style"
-            style={{ width: "50px", backgroundColor: "rgb(173, 173, 173)" }}
+            style={{  fontSize:'12px',
+             backgroundColor: "rgb(173, 173, 173)" }}
             onClick={alertformClose}
           >
             No
@@ -2030,7 +2243,7 @@ const [alertCancel, setAlertCancel]=useState(false)
 
       <Modal size="lg" show={cancelPopup} onHide={handleCancelClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Magod Laser: Invoice Cancellation Form</Modal.Title>
+          <Modal.Title style={{fontSize:'12px'}}>Magod Laser: Invoice Cancellation Form</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="col-md-12">
@@ -2063,12 +2276,12 @@ const [alertCancel, setAlertCancel]=useState(false)
 
 
                   <div className="mt-2">
-                    <input className="" disabled name="HORefNo" value={rvData.postData.HORefNo} />
+                    <input  className="in-field" disabled name="HORefNo" value={rvData.postData.HORefNo} />
                   </div>
 
                   <div className="mt-2">
                     <input
-                      className=""
+                     className="in-field"
                       name='Customer'
                       value={rvData.postData.CustName}
                       disabled
@@ -2077,7 +2290,7 @@ const [alertCancel, setAlertCancel]=useState(false)
 
                   <div className="mt-2">
                     <input
-                      className=""
+                     className="in-field"
                       value={rvData.postData.Amount}
                       disabled
                     />
@@ -2097,7 +2310,7 @@ const [alertCancel, setAlertCancel]=useState(false)
 
               <div className="col-md-4 mt-2 mb-3 ms-2">
                 <Button variant="primary" type="submit"
-                  onClick={cancelYes}
+                  onClick={cancelYes} style={{fontSize:'12px'}}
                 >
                   Cancel
                 </Button>
