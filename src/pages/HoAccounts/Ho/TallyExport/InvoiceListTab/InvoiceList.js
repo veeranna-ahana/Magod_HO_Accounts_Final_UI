@@ -494,7 +494,7 @@ console.log("xml fileeeeeeeeeee", xml);
       a.click();
       window.URL.revokeObjectURL(url);
 
-     exportInvoices(xml);
+    // exportInvoices(xml);
   };
 
   //create  xml file for each row of invoicelistdata
@@ -511,11 +511,11 @@ const filteredInvoices = invoiceListData.filter(voucher => voucher.DC_InvType ==
 
 const xmlResults = filteredInvoices.map(voucher => {
 
-  const xmlres=createXml([voucher])
+ // const xmlres=createXml([voucher])
  
-  const concatenatedXml = xmlres.join('');
-  console.log("xmlllllllllllllllllll", concatenatedXml);
-  exportInvoices(concatenatedXml);
+ // const concatenatedXml = xmlres.join('');
+ // console.log("xmlllllllllllllllllll", concatenatedXml);
+ // exportInvoices(concatenatedXml);
 
   return createXml([voucher]); // Assuming createXml function accepts an array
 });
@@ -523,6 +523,20 @@ const xmlResults = filteredInvoices.map(voucher => {
 
 
 
+// filtered service
+const filteredInvoicesService = invoiceListData.filter(voucher => voucher.DC_InvType === 'Service');
+
+
+const xmlResultsService = filteredInvoicesService.map(voucher => {
+
+  const xmlres=createXml([voucher])
+ 
+  const concatenatedXml = xmlres.join('');
+  console.log("xmlllllllllllllllllll service ", concatenatedXml);
+  exportInvoices(concatenatedXml);
+
+  return createXml([voucher]); // Assuming createXml function accepts an array
+});
 
   }
 
@@ -856,19 +870,22 @@ const createXml = (filteredInvoices) => {
           //     'Content-Type': 'application/xml',
           //   },})
 
-          const company = await axios.post(
+          const response = await axios.post(
             baseURL + '/tallyExport/exporttally',
             {
               xml: xml
             }
         );
 
-          if (response.ok) {
-              console.log('XML data successfully sent to Tally.');
-              // Handle success
+        console.log("response from tally",response);
+          if (response.data.message==='Exception') {
+            console.error('Failed to send XML data to Tally.');
+         
+              
+             
           } else {
-              console.error('Failed to send XML data to Tally.');
-              // Handle failure
+            console.log('XML data successfully sent to Tally.');
+              
           }
       } catch (error) {
           console.error('Error sending XML data to Tally:', error);
