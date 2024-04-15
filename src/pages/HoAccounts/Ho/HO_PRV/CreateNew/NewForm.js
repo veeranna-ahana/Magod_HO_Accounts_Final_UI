@@ -520,7 +520,7 @@ export default function NewForm() {
         }
 
         else {
-          toast.success("Saved Successfully")
+         //  toast.success("Saved Successfully")
           let receipt_id = "";
 
           if (response.data.result.id) {
@@ -584,6 +584,14 @@ export default function NewForm() {
               receipt_details: rvData.data.receipt_details
             }
           );
+
+          console.log("update receibve now ",updateReceive_Now);
+          if(updateReceive_Now.data.Status==='Success'){
+             toast.success("Saved Successfully")
+          }
+          else{
+            toast.error("Not Saved ")
+          }
 
           // if (res.data.status === "fail") {
           //   toast.error(
@@ -1230,6 +1238,8 @@ export default function NewForm() {
           Amount: response.data[0].Amount,
           CustName: response.data[0].CustName,
           HO_PrvId: response.data[0].HOPrvId,
+          Description: response.data[0].Description,
+          TxnType: response.data[0].TxnType,
         },
 
         firstTableArray: [],
@@ -1796,7 +1806,7 @@ export default function NewForm() {
             onClick={canacleButton}
             disabled={
               (rvData && rvData.postData.Status !== "Pending") ||
-              rvData.postData.Status === "Cancelled"
+              rvData.postData.Status === "Cancelled"  || reason !==''
             }
           >
             Cancel

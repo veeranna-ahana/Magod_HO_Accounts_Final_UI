@@ -89,7 +89,7 @@ export default function UnitDetails() {
         } else if (res.data.status === "query") {
           console.log("22");
 
-          toast.error("Unit Initial Should be Unique");
+          toast.error("Unit Initial length should be less than 3 ");
         } else if (res.data.status === "success") {
           console.log("qwertyuio");
           toast.success(" Jigani Unit added Successfully");

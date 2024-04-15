@@ -249,7 +249,7 @@ export default function ShowSyncStatus() {
       .then((res) => {
         console.log("firstTable", res.data[0].UnitName);
         setunitData(res.data);
-        setGetName(res.data[0].UnitName);
+       // setGetName(res.data[0].UnitName);
       })
       .catch((err) => {
         console.log("err in table", err);
@@ -466,7 +466,7 @@ export default function ShowSyncStatus() {
         })
         .then((res) => {
           console.log("HO Data updated sucessfully", res.data);
-          toast.success("HO data updated successfuly");
+          //toast.success("HO data updated successfuly");
         })
         .catch((err) => {
           console.log("err in table", err);
@@ -622,10 +622,13 @@ export default function ShowSyncStatus() {
         <div className="d-flex col-md-4" style={{ gap: "10px" }}>
           <div className="col-md-5 mt-2">
             <select className="ip-select" onChange={(e) => handleUnitSelect(e)}>
+            <option value=""> Select Unit</option> {/* Empty space */}
               {unitdata.map((item) => (
+                <>
                 <option key={item.id} value={item.value}>
                   {item.UnitName}
                 </option>
+                </>
               ))}
             </select>
           </div>
@@ -781,7 +784,7 @@ export default function ShowSyncStatus() {
                       style={{ width: "80px" }}
                       onClick={forHO}
                     >
-                      Filter
+                      Filterr
                     </button>
                   </div>
                 </div>

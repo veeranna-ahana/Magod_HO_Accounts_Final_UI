@@ -70,7 +70,7 @@ export default function TabData() {
         console.log("get customers", res.data.Result);
         setCustomersData(res.data.Result);
       })
-      .catch((err) => {});
+      .catch((err) => { });
   };
 
   const [distictDCType, setDistinctDCType] = useState([]);
@@ -155,6 +155,38 @@ export default function TabData() {
 
   console.log("Distinct PO_NOs:", distinctPO_NOs);
   console.log("Sum of Balances for each PO_NO:", poSumMap);
+
+
+  const [selectedUnitName, setSelectedUnitName] = useState("");
+  const [selectUnit, setSelectUnit] = useState([]);
+  const handleUnitSelect = (selected) => {
+    const selectedCustomer = selected[0];
+    setSelectUnit(selected); // Update selected option state
+    // setGetName(selectedCustomer ? selectedCustomer.UnitName : "");
+    setSelectedUnitName(selected);
+  };
+
+  console.log("selected unit", selectUnit[0]?.UnitName);
+
+  const [unitdata, setunitData] = useState([]);
+  const handleUnitName = () => {
+    axios
+      .get(baseURL + "/unitReceiptList/getunitName")
+      .then((res) => {
+        console.log("firstTable", res.data);
+        setunitData(res.data);
+        //   if (res.data.length > 0) {
+        //     setSelectedUnitName(res.data[4]);
+        //   }
+      })
+      .catch((err) => {
+        console.log("err in table", err);
+      });
+  };
+
+  useEffect(() => {
+    handleUnitName();
+  }, []);
 
   return (
     <>
@@ -252,6 +284,58 @@ export default function TabData() {
       </div>
 
       <div className="row">
+
+        {/* <div className="d-flex col-md-4">
+          <div className="col-md-2">
+          <label className="form-label" >Select Unit</label>
+          </div>
+         
+           <div className="col-md-4">
+           <Typeahead
+              // className="ip-select col-md-5"
+              className="input-disabled mt-1 "
+              id="ip-select"
+              labelKey={(option) =>
+                option && option.UnitName ? option.UnitName.toString() : ""
+              }
+              options={unitdata}
+              placeholder="Select Unit"
+              onChange={handleUnitSelect}
+              selected={selectedUnitName}
+            //   selected={selectedUnitName ? [selectedUnitName] : []}
+            />
+           </div>
+           
+          
+
+
+        </div> */}
+        <div className="d-flex col-md-4">
+          <div className="col-md-4">
+            <label className="form-label" style={{ whiteSpace: "nowrap" }}>
+              Select Unit
+            </label>
+          </div>
+          <div className="col-8 mt-2">
+           
+
+            <Typeahead
+              // className="ip-select col-md-5"
+              className="input-disabled mt-1 "
+              id="ip-select"
+              labelKey={(option) =>
+                option && option.UnitName ? option.UnitName.toString() : ""
+              }
+              options={unitdata}
+              placeholder="Select Unit"
+              onChange={handleUnitSelect}
+              selected={selectedUnitName}
+            //   selected={selectedUnitName ? [selectedUnitName] : []}
+            />
+          </div>
+        </div>
+
+
         <div className="d-flex col-md-6">
           <div className="mt-1 p-1">
             <div className="form-check">
@@ -578,7 +662,7 @@ export default function TabData() {
           className="mt-3 tab_font"
         >
           <Tab eventKey="unit_O" title="Unit Outstanding">
-            <UnitOutStanding />
+            <UnitOutStanding  unitname={selectUnit[0]?.UnitName}/>
           </Tab>
 
           <Tab eventKey="customer_O" title="Customer Outstanding">
@@ -593,6 +677,8 @@ export default function TabData() {
               selectedDCType={selectedDCType}
               setFilterData={setFilterData}
               filterData={filterData}
+
+              unitname={selectUnit[0]?.UnitName}
             />
           </Tab>
         </Tabs>

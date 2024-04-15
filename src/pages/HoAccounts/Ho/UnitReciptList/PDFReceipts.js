@@ -264,12 +264,18 @@ export default function PDFReceipts({ data, selectRow }) {
     // Function to get and format the current date
     const getCurrentDate = () => {
       
-      const now = new Date();
-    const options = { day: '2-digit', month: '2-digit', year: '2-digit' };
+    //   const now = new Date();
+    // const options = { day: '2-digit', month: '2-digit', year: '2-digit' };
+    // const formattedDate = now.toLocaleDateString('en-US', options);
+    // const parts = formattedDate.split('/');
+    // const formattedDateInDDMMYY = `${parts[1]}-${parts[0]}-${parts[2]}`;
+    // setCurrentDate(formattedDateInDDMMYY);
+    const now = new Date();
+    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
     const formattedDate = now.toLocaleDateString('en-US', options);
     const parts = formattedDate.split('/');
-    const formattedDateInDDMMYY = `${parts[1]}-${parts[0]}-${parts[2]}`;
-    setCurrentDate(formattedDateInDDMMYY);
+    const formattedDateInDDMMYYYY = `${parts[1]}-${parts[0]}-${parts[2]}`;
+    setCurrentDate(formattedDateInDDMMYYYY);
     };
 
 
@@ -353,7 +359,7 @@ export default function PDFReceipts({ data, selectRow }) {
                 </Text>
                 <Text style={{ marginLeft: '130px' }}>
 
-                  <Text style={{ fontFamily: "Helvetica-Bold" }}>Vibe : </Text> {selectRow.Description}
+                  <Text style={{ fontFamily: "Helvetica-Bold" }}>Vide : </Text> {selectRow.Description}
                 </Text>
               </View>
 
@@ -496,7 +502,7 @@ export default function PDFReceipts({ data, selectRow }) {
         <View style={{marginBottom:'20px'}}>
           <Text style={{ marginLeft: '100px', width: '300px' }}>
 
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Vibe : </Text>
+            <Text style={{ fontFamily: "Helvetica-Bold" }}>Vide : </Text>
             {selectRow.Description}
           </Text>
         </View>

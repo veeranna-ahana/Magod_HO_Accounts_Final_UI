@@ -15,6 +15,9 @@ export default function OpenVoucher() {
   const [searchInput, setSearchInput] = useState("");
   const [filteredData, setFilteredData] = useState([]);
 
+  const [selectUnit, setSelectUnit] = useState([]);
+  const [getName, setGetName] = useState("");
+
   const itemsPerPage = 100; // Number of items per page
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -33,10 +36,10 @@ export default function OpenVoucher() {
 
   useEffect(() => {
     customers();
-    if (selectedCustCode) {
+    if (selectedCustCode && selectUnit) {
       basedOnCustomer();
     }
-  }, [selectedCustCode]);
+  }, [selectedCustCode, selectUnit]);
 
   useEffect(() => {
     if (selectRow) {
@@ -87,7 +90,7 @@ export default function OpenVoucher() {
       .get(baseURL + "/unitReceiptList/receiptBasedOnCustomer", {
         params: {
           selectedCustCode: selectedCustCode,
-          selectedUnitName: selectedUnitName,
+          selectedUnitName: selectedUnitName[0]?.UnitName,
         },
       })
       .then((res) => {
@@ -144,8 +147,7 @@ export default function OpenVoucher() {
     }
   };
 
-  const [selectUnit, setSelectUnit] = useState([]);
-  const [getName, setGetName] = useState("");
+ 
 
   const handleUnitSelect = (selected) => {
     const selectedCustomer = selected[0];
@@ -161,9 +163,9 @@ export default function OpenVoucher() {
       .then((res) => {
         console.log("firstTable", res.data);
         setunitData(res.data);
-        if (res.data.length > 0) {
-          setSelectedUnitName([res.data[4]]);
-        }
+        // if (res.data.length > 0) {
+        //   setSelectedUnitName([res.data[4]]);
+        // }
       })
       .catch((err) => {
         console.log("err in table", err);
