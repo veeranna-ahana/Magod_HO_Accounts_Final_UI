@@ -36,20 +36,24 @@ export default function TaxDeleteModal({deleteID, setDeleteID, selectRow}) {
     <div>
        <Modal show={deleteID} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>WARNING</Modal.Title>
+          <Modal.Title style={{fontSize:'14px'}}
+          >WARNING</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body> 
+        <Modal.Body style={{fontSize:'12px'}}> 
         WARNING - You are about to Delete {selectRow.TaxName} FROM Database, Are You Sure?
 
         </Modal.Body>
 
         <Modal.Footer>
           <Button variant="primary" onClick={e => deleteTaxID(selectRow.TaxID)}
+          style={{fontSize:'12px'}}
           >
             Yes
           </Button>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={handleClose}
+          style={{fontSize:'12px'}}
+          >
             No
           </Button>
         </Modal.Footer>

@@ -2,18 +2,30 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { Table } from 'react-bootstrap'
 import { baseURL } from '../../../../../api/baseUrl';
+import { toast } from "react-toastify";
 
-export default function UnitOutStanding() {
+export default function UnitOutStanding({unitname}) {
+
+    console.log("unitnaem", unitname);
 
     const [unitOutstandingData, setUnitOutstandingData] = useState([])
 
     useEffect(() => {
+        if(unitname){
         getDataSubmit();
-    }, []);
+        }
+        else{
+            // toast.error("Select Unit")
+        }
+    }, [unitname]);
 
     const getDataSubmit = () => {
 
-        axios.get(baseURL + '/customerOutstanding/unitOutstandingData',
+        axios.get(baseURL + '/customerOutstanding/unitOutstandingData',{
+            params: {
+                unitname: unitname,
+              },
+        }
 
         )
             .then((res) => {

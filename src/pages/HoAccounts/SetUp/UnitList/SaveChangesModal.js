@@ -191,10 +191,12 @@ export default function SaveChangesModal(
   
     if (selectRow.UnitName === '') {
       if (test > 0) {
+        setSaveChangesModal(false)
         toast.error("Add UnitName")
       }
     } else if (selectRow.UnitIntial.length > 3) {
       if (test > 0) {
+        setSaveChangesModal(false)
         toast.error('Unit_Intial Length must be less than 3');
       }
     } else if (
@@ -222,6 +224,7 @@ export default function SaveChangesModal(
           if (!validatePIN(unitdata[key])) {
             flag++;
             if (test > 0) {
+              setSaveChangesModal(false)
               toast.error("Invalid PIN")
             }
             break;
@@ -231,6 +234,7 @@ export default function SaveChangesModal(
           if (!validateGstNumber(unitdata[key])) {
             flag++;
             if (test > 0) {
+              setSaveChangesModal(false)
               toast.error("Invalid GST")
             }
             break;
@@ -240,6 +244,7 @@ export default function SaveChangesModal(
           if (!validateGmail(unitdata[key])) {
             flag++;
             if (test > 0) {
+              setSaveChangesModal(false)
               toast.error('Invalid Gmail')
             }
             break;

@@ -928,7 +928,7 @@ export default function PdfAdjustment({ data }) {
 
 
 
-  //console.log(">>>>>>>pdf", data.receipt_details[0].Unitname, data.receipt_data.TxnType);
+  console.log(">>>>>>>pdf",  data.receipt_data.TxnType);
 
   const [currentDate, setCurrentDate] = useState('');
   // const [totalReceiveNow, setTotalReceiveNow] = useState(0);
@@ -946,12 +946,14 @@ export default function PdfAdjustment({ data }) {
     // Function to get and format the current date
     const getCurrentDate = () => {
       
-      const now = new Date();
-    const options = { day: '2-digit', month: '2-digit', year: '2-digit' };
+    
+
+    const now = new Date();
+    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
     const formattedDate = now.toLocaleDateString('en-US', options);
     const parts = formattedDate.split('/');
-    const formattedDateInDDMMYY = `${parts[1]}-${parts[0]}-${parts[2]}`;
-    setCurrentDate(formattedDateInDDMMYY);
+    const formattedDateInDDMMYYYY = `${parts[1]}-${parts[0]}-${parts[2]}`;
+    setCurrentDate(formattedDateInDDMMYYYY);
     };
 
 
@@ -1029,7 +1031,7 @@ export default function PdfAdjustment({ data }) {
           </Text>
           <Text style={{ marginLeft: '130px' }}>
 
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Vibe : </Text> {data.receipt_data.Description}  </Text>
+            <Text style={{ fontFamily: "Helvetica-Bold" }}>Vide : </Text> {data.receipt_data.Description}  </Text>
         </View>
 
         <View style={styles.mrgnbttm}>
@@ -1173,7 +1175,7 @@ export default function PdfAdjustment({ data }) {
         <View style={{marginBottom:'20px'}}>
           <Text style={{ marginLeft: '100px', width: '300px' }}>
 
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Vibe : </Text>
+            <Text style={{ fontFamily: "Helvetica-Bold" }}>Vide : </Text>
             {data.receipt_data.Description}
           </Text>
         </View>

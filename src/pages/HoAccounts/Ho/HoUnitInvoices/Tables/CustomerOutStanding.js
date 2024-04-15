@@ -15,7 +15,7 @@ import ReactPaginate from "react-paginate";
 export default function CustomerOutStanding({
     selectedCustCode, searchQuery,
     setFlag,
-    selectedDCType, setSelectedDCType, flag, filterData, setFilterData
+    selectedDCType, setSelectedDCType, flag, filterData, setFilterData, unitname
 }) {
 
     const [dataBasedOnCust, setDataBasedOnCust] = useState([]);
@@ -36,90 +36,24 @@ export default function CustomerOutStanding({
         const fetchData = async () => {
             try {
                 // Call your asynchronous function here
+                
                 await basedOnCustomer();
+                
+                
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
 
         fetchData();
-    }, [selectedDCType, flag, selectedCustCode]);
+    }, [selectedDCType, flag, selectedCustCode, unitname]);
 
 
 
 
 
 
-    // const basedOnCustomer = async () => {
-
-
-    //     if (selectedDCType === '' && flag !== '') {
-
-
-    //             toast.error("Select DC Invoice Type")
-    //         }
-
-
-
-    //     else {
-
-    //         console.log("dc type ", selectedDCType, flag);
-    //         try {
-    //             await axios.get(baseURL + '/customerOutstanding/getDataBasedOnCustomer',
-    //                 {
-    //                     params: {
-    //                         selectedCustCode: selectedCustCode, selectedDCType: selectedDCType, flag: flag
-    //                     },
-    //                 }
-    //             )
-    //                 .then((res) => {
-    //                     console.log("resjjjjj",res.data.Result);
-
-    //                     if (res.data.Result==='customer err') {
-    //                         toast.error("Select Suitable Customer")
-    //                     }
-
-    //                     else if (res.data.Result.length === 0) {
-    //                         setDataBasedOnCust([])
-
-    //                             // toast.error("Select Suitable Process for Invoice Type ")
-    //                             toast.error("Select Suitable DC Invoice Type ")
-
-    //                     }
-    //                     else {
-    //                         setDataBasedOnCust(res.data.Result);
-    //                     }
-    //                     console.log("salessssss123", res.data.Result);
-    //                 }).catch((err) => {
-    //                     console.log("errin cust cosde", err);
-    //                 })
-
-    //         }
-    //         catch (error) {
-
-    //         }
-    //     }
-
-    // }
-
-
-    // const allTypes=()=>{
-    //     axios.get(baseURL + '/customerOutstanding/getDataBasedOnCustomer',
-    //             {
-    //                 params: {
-    //                     selectedCustCode: selectedCustCode, selectedDCType:selectedDCType, flag:flag
-    //                 },
-    //             }
-    //         )
-    //             .then((res) => {
-
-    //                 setDataBasedOnCust(res.data.Result);
-
-    //                 // console.log("sales", salesType);
-    //             }).catch((err) => {
-    //                 console.log("errin cust cosde", err);
-    //             })
-    // }
+   
 
     const basedOnCustomer = async () => {
 
@@ -134,18 +68,28 @@ export default function CustomerOutStanding({
             updatedFlag = '';
         }
 
+
+
         if (selectedCustCode === '' && (selectedDCType !== '' || flag !== '')) {
-            console.log("cust codeeeeee", selectedCustCode);
+           
             toast.error("Select Customer")
         }
+        else if(!unitname  &&(   flag !== '' && selectedCustCode !== '') ){
+            toast.error("Select Unitss")
+        }
 
+       
         else if (selectedDCType === '' && flag !== '') {
 
 
-            toast.error("Select DC Invoice Type")
+            toast.error("Select DC Invoice Typpe")
 
 
         }
+
+        // else if(!unitname  &&( selectedDCType !== '' &&  flag !== '' && selectedCustCode !== '') ){
+        //     toast.error("Select Unit")
+        // }
 
 
 
@@ -156,7 +100,7 @@ export default function CustomerOutStanding({
                 await axios.get(baseURL + '/customerOutstanding/getDataBasedOnCustomer',
                     {
                         params: {
-                            selectedCustCode: selectedCustCode, selectedDCType: selectedDCType, flag: updatedFlag
+                            selectedCustCode: selectedCustCode, selectedDCType: selectedDCType, flag: updatedFlag, unitname:unitname
                         },
                     }
                 )
@@ -167,6 +111,9 @@ export default function CustomerOutStanding({
                             setDataBasedOnCust([])
                             toast.error("Select  Customer")
                         }
+                        else if(res.data.Result === 'selectUnit'){
+                            toast.error("Select  Unitt")
+                        }
                         else if (res.data.Result === "error in invoice for") {
                             console.log("customer", res.data.Result);
                             setDataBasedOnCust([])
@@ -174,12 +121,13 @@ export default function CustomerOutStanding({
                         }
                         else if (res.data.Result === "select dc type") {
                             setDataBasedOnCust([])
-                            toast.error("Select Suitable DC Inv Type")
+                           // toast.error("Select Suitableee DC Inv Type")
                         }
 
                         else if (res.data.Result === "cust dont have dc") {
                             toast.error("Customer dont have  DC Inv Type")
                         }
+
 
 
                         else {

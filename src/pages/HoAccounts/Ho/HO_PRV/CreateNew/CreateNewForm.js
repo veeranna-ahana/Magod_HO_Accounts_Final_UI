@@ -1979,7 +1979,8 @@ export default function CreateNewForm() {
                 className="in-field"
                 name="reason"
                 disabled
-                value={adjustmentRows ? adjustmentRows.On_account : ""}
+               // value={adjustmentRows ? adjustmentRows.On_account : ""}
+               value={adjustmentRows ? adjustmentRows.fixedOnaccount : ""}
               />
             </div>
           </div>
