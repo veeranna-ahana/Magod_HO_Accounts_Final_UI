@@ -211,26 +211,28 @@ export default function TabData() {
       </div>
 
       <div className="row">
-        <div className="col-md-4 col-sm-6">
+        
+         <div className="col-md-4 col-sm-6">
           <div className="d-flex ">
             <div className="col-4">
-              <label className="form-label" style={{ whiteSpace: "nowrap" }}>
-                Select Customer
-              </label>
+            <label className="form-label" style={{ whiteSpace: "nowrap" }}>
+              Select Unit
+            </label>
             </div>
             <div className="col-8 mt-2">
-              <Typeahead
-                // className="ip-select"
-                id="basic-example "
-                labelKey={(option) =>
-                  option && option.Cust_name ? option.Cust_name.toString() : ""
-                }
-                valueKey="Cust_Code"
-                options={customersData}
-                placeholder="Select Customer"
-                onChange={handleTypeaheadChange}
-                selected={selectedOption}
-              />
+            <Typeahead
+              // className="ip-select col-md-5"
+              className="input-disabled  "
+              id="ip-select"
+              labelKey={(option) =>
+                option && option.UnitName ? option.UnitName.toString() : ""
+              }
+              options={unitdata}
+              placeholder="Select Unit"
+              onChange={handleUnitSelect}
+              selected={selectedUnitName}
+            //   selected={selectedUnitName ? [selectedUnitName] : []}
+            />
             </div>
           </div>
         </div>
@@ -285,53 +287,30 @@ export default function TabData() {
 
       <div className="row">
 
-        {/* <div className="d-flex col-md-4">
-          <div className="col-md-2">
-          <label className="form-label" >Select Unit</label>
-          </div>
-         
-           <div className="col-md-4">
-           <Typeahead
-              // className="ip-select col-md-5"
-              className="input-disabled mt-1 "
-              id="ip-select"
-              labelKey={(option) =>
-                option && option.UnitName ? option.UnitName.toString() : ""
-              }
-              options={unitdata}
-              placeholder="Select Unit"
-              onChange={handleUnitSelect}
-              selected={selectedUnitName}
-            //   selected={selectedUnitName ? [selectedUnitName] : []}
-            />
-           </div>
-           
-          
+        
+        
 
-
-        </div> */}
-        <div className="d-flex col-md-4">
+         <div className="d-flex col-md-4">
           <div className="col-md-4">
-            <label className="form-label" style={{ whiteSpace: "nowrap" }}>
-              Select Unit
-            </label>
+          <label className="form-label" style={{ whiteSpace: "nowrap" }}>
+                Select Customer
+              </label>
           </div>
           <div className="col-8 mt-2">
            
 
-            <Typeahead
-              // className="ip-select col-md-5"
-              className="input-disabled mt-1 "
-              id="ip-select"
-              labelKey={(option) =>
-                option && option.UnitName ? option.UnitName.toString() : ""
-              }
-              options={unitdata}
-              placeholder="Select Unit"
-              onChange={handleUnitSelect}
-              selected={selectedUnitName}
-            //   selected={selectedUnitName ? [selectedUnitName] : []}
-            />
+          <Typeahead
+                // className="ip-select"
+                id="basic-example "
+                labelKey={(option) =>
+                  option && option.Cust_name ? option.Cust_name.toString() : ""
+                }
+                valueKey="Cust_Code"
+                options={customersData}
+                placeholder="Select Customer"
+                onChange={handleTypeaheadChange}
+                selected={selectedOption}
+              />
           </div>
         </div>
 
@@ -447,213 +426,7 @@ export default function TabData() {
         <div className="col-md-6"></div>
       </div>
 
-      {/* <div className="row">
-        <div className="col-md-3 mt-3">
-          <label className="form-label">Select Customer</label>
-
-          <Typeahead
-            id="basic-example "
-            labelKey={(option) =>
-              option && option.Cust_name ? option.Cust_name.toString() : ""
-            }
-            valueKey="Cust_Code"
-            options={customersData}
-            placeholder="Select Customer"
-            onChange={handleTypeaheadChange}
-            selected={selectedOption}
-          />
-        </div>
-
-        <div className="col-md-2" style={{ marginTop: "20px" }}>
-          <label className="form-label">Search Inv No</label>
-          <input
-            className=""
-            type="search"
-            placeholder="Search Invoice Number"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ marginTop: "-5px" }}
-          ></input>
-        </div>
-
-        <div className="col-md-2" style={{ marginTop: "20px" }}>
-          <label className="form-label">DC Inv Type</label>
-          <select
-            style={{ height: "18px" }}
-            className="ip-select mt-1"
-            value={selectedDCType}
-            onChange={handleSelectChange}
-          >
-            <option value="">Select inv Type</option>
-            <option value="Sales & Jobwork">Sales & Jobwork</option>
-            {distictDCType.map((i) => (
-              <option key={i.DC_InvType} value={i.DC_InvType}>
-                {i.DC_InvType}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="d-flex col-md-3" style={{ gap: "20px" }}>
-          <div style={{}}>
-            <div className="mt-1 p-1">
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="Profile"
-                  name="flexRadioDefaultA1"
-                  value="Profile"
-                  onChange={handleRadioChange}
-                  disabled={selectedDCType == "ALL"}
-                  checked={
-                    selectedDCType === "ALL" ? false : flag === "Profile"
-                  }
-                />
-                <label
-                  className="form-check-label checkBoxStyle"
-                  htmlFor="flexCheckDefault"
-                >
-                  <b>Profile</b>
-                </label>
-              </div>
-            </div>
-
-            <div className="  p-1">
-              <div className="form-check ">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="flexRadioDefaultA4"
-                  name="flexRadioDefaultA1"
-                  value="Fabrication"
-                  onChange={handleRadioChange}
-                  disabled={selectedDCType == "ALL"}
-                  checked={
-                    selectedDCType === "ALL" ? false : flag === "Fabrication"
-                  }
-                />
-                <label
-                  className="form-check-label checkBoxStyle"
-                  htmlFor="flexCheckDefault"
-                >
-                  <b> Fabrication</b>
-                </label>
-              </div>
-            </div>
-
-            <div className=" p-1">
-              <div className="form-check ">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="flexRadioDefaultA5"
-                  name="flexRadioDefaultA1"
-                  value="Service"
-                  onChange={handleRadioChange}
-                  disabled={selectedDCType == "ALL"}
-                  checked={
-                    selectedDCType === "ALL" ? false : flag === "Service"
-                  }
-                />
-                <label
-                  className="form-check-label checkBoxStyle"
-                  htmlFor="flexCheckDefault"
-                >
-                  <b>Service</b>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div className="mt-1 p-1">
-              <div className="form-check ">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="flexRadioDefaultA5"
-                  name="flexRadioDefaultA1"
-                  value="Misc"
-                  onChange={handleRadioChange}
-                  disabled={selectedDCType == "ALL"}
-                  checked={selectedDCType === "ALL" ? false : flag === "Misc"}
-                />
-                <label
-                  className="form-check-label checkBoxStyle"
-                  htmlFor="flexCheckDefault"
-                >
-                  <b>Misc</b>
-                </label>
-              </div>
-            </div>
-
-            <div className="p-1">
-              <div className="form-check ">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="flexRadioDefaultA5"
-                  name="flexRadioDefaultA1"
-                  value="Scrap"
-                  onChange={handleRadioChange}
-                  disabled={selectedDCType == "ALL"}
-                  checked={selectedDCType === "ALL" ? false : flag === "Scrap"}
-                />
-                <label
-                  className="form-check-label checkBoxStyle"
-                  htmlFor="flexCheckDefault"
-                >
-                  <b>Scrap</b>
-                </label>
-              </div>
-            </div>
-            <div className="p-1">
-              <div className="form-check ">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  id="flexRadioDefaultA5"
-                  name="flexRadioDefaultA1"
-                  value="ALL"
-                  onChange={handleRadioChange}
-                  //  defaultChecked ={selectedDCType === 'ALL'}
-                  checked={selectedDCType === 'ALL'}
-                  disabled={selectedDCType === 'ALL'}
-
-
-                />
-                <label
-                  className="form-check-label checkBoxStyle"
-                  htmlFor="flexCheckDefault"
-                >
-                  <b>ALL</b>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-2">
-          <button
-            className="button-style mt-2 group-button"
-            onClick={pdfSubmit}
-            style={{ width: "80px" }}
-          >
-            Print
-          </button>
-          
-          <button
-            className="button-style mt-2 group-button"
-            type="button"
-            onClick={(e) => navigate("/HOAccounts")}
-            style={{ width: "80px" }}
-          >
-            Close
-          </button>
-        </div>
-      </div> */}
-
+      
       <div>
         <Tabs
           id="controlled-tab-example "

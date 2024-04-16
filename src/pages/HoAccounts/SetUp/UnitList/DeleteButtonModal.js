@@ -33,7 +33,7 @@ export default function DeleteButtonModal({ setDeleteModal, deleteModal, selectR
       setLastToastTimestamp(now);
 
     }
-    console.log(UnitID,"uuuuuuu");
+    
     axios.delete(baseURL+'/unitlist/deleteUnit/' + ID)
       .then((res) => {
         console.log(res);
