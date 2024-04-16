@@ -216,6 +216,12 @@ export default function NewForm() {
 
     if (selected.length > 0) {
       try {
+      
+
+        const invoicesResponse = await axios.get(
+          baseURL + `/createnew/ho_openInvoices?customercode=${cust}&unitname=${getUnit}`
+        );
+
         // const invoicesResponse = await axios.post(
         //   baseURL + "/hoCreateNew/getInvoices",
         //   {
@@ -223,22 +229,20 @@ export default function NewForm() {
         //     custCode: selectedCustomer.Cust_Code,
         //   }
         // );
+        console.log("inv",invoicesResponse.data );
 
-        const invoicesResponse = await axios.get(
-          baseURL + `/createnew/ho_openInvoices?customercode=${cust}&unitname=${getUnit}`
-        );
-
-        console.log("inv",invoicesResponse );
-
+      
+   
         setRvData((prevRvData) => ({
           ...prevRvData,
           data: {
             ...prevRvData.data,
-            inv_data: invoicesResponse.data.Result,
+            inv_data: invoicesResponse.data
 
           },
 
         }));
+      
 
         const hoprvIdResponse = await axios.post(
           baseURL + "/hoCreateNew/getHOPrvId",
@@ -440,13 +444,13 @@ export default function NewForm() {
           baseURL + `/createnew/ho_openInvoices?customercode=${cust_code}&unitname=${unitFromDraft}`
         );
       
-        console.log("rightttttttttt with row data table data ", response);
+        console.log("rightttttttttt with row data table data ", response.data);
 
         setRvData((prevRvData) => ({
           ...prevRvData,
           data: {
             ...prevRvData.data,
-            inv_data: response.data.Result,
+            inv_data: response.data,
             receipt_details: resp.data.Result,
             receipt_data: prevRvData.postData,
             receipt_id: rowData,
@@ -459,6 +463,9 @@ export default function NewForm() {
       console.error("Error fetching data:", error);
     }
   };
+
+
+  console.log("rv dataaaaaaaaaaaaaaaaaaaaaaaaa", rvData.data.inv_data);
 
   useEffect(() => {
     if (rvData.postData) {
@@ -593,15 +600,7 @@ export default function NewForm() {
             toast.error("Not Saved ")
           }
 
-          // if (res.data.status === "fail") {
-          //   toast.error(
-          //     "Threading Error: Column Unit_Name is constrained to be Unique value unit_Name is already present"
-          //   );
-          // } else if (res.data.status === "query") {
-          //   toast.error("SQL error");
-          // } else {
-          //  handleDataReturn(res.data.result, "fetch");
-          // }
+          
 
 
         } catch (err) {
@@ -611,40 +610,13 @@ export default function NewForm() {
 
 
 
-      // setRvData((prevRvData) => ({
-      //   ...prevRvData,
-      //   secondTableArray: [],
-      // }));
+      
     }
 
 
   };
 
 
-
-  // const handleDataReturn = async (receipt_details, type) => {
-  //   if (type === "fetch") {
-  //     try {
-  //       const response = await axios.get(
-  //         baseURL +
-  //         `/createnew/getreceipt?receipt_id=${rvData.data.receipt_id}`
-  //       );
-  //       setRvData((prevRvData) => ({
-  //         ...prevRvData,
-  //         postData: { ...prevRvData.postData, ...response.data.Result[0] },
-  //       }));
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   } 
-
-  //   else {
-  //     setRvData((prevRvData) => ({
-  //       ...prevRvData,
-  //       data: { ...prevRvData.data, receipt_details: receipt_details },
-  //     }));
-  //   }
-  // };
 
 
   const handleTxnTYpeChange = (event) => {
@@ -659,7 +631,7 @@ export default function NewForm() {
     const isChecked = event.target.checked;
 
     setRvData((prevRvData) => {
-      const updatedInvData = prevRvData.data.inv_data.map((row) => {
+      const updatedInvData = prevRvData.data.inv_data?.map((row) => {
         if (row === rowData) {
           return { ...row, isSelected: isChecked };
         }
@@ -682,28 +654,6 @@ export default function NewForm() {
       };
     });
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   //this is for rowData 
@@ -1014,6 +964,7 @@ export default function NewForm() {
     }
   }
 
+  
 
   //update the Receive_now value when onchange
   useEffect(() => {
@@ -1534,6 +1485,9 @@ export default function NewForm() {
   }
 
 
+
+  console.log("result invvvvvvvvvvvvvvv",  rvData.data.inv_data);
+
   return (
     <>
       {pdfVoucher && (
@@ -1974,7 +1928,8 @@ export default function NewForm() {
               </thead>
 
               <tbody className="tablebody">
-                {rvData.data.inv_data?.map((row, index) => (
+                {/* {rvData.data.inv_data?.map((row, index) => (
+                  
                   <tr
                     key={index}
                     style={{
@@ -2003,7 +1958,43 @@ export default function NewForm() {
                     <td>{row.GrandTotal}</td>
                     <td>{row.PymtAmtRecd}</td>
                   </tr>
-                ))}
+                ))} */}
+               
+                {
+  rvData.data.inv_data ? (
+    rvData.data.inv_data.map((row, index) => (
+      <tr
+        key={index}
+        style={{
+          backgroundColor: row.isSelected ? "#3498db" : "inherit",
+          whiteSpace: "nowrap",
+        }}
+      >
+        <td>
+          <input
+            type="checkbox"
+            className="mt-1"
+            id={`checkbox_${index}`}
+            onChange={(e) => handleCheckboxChangeSecondTable(e, row)}
+            checked={row.isSelected}
+          />
+        </td>
+        <td>{row.DC_InvType}</td>
+        <td>{row.Inv_No}</td>
+        <td>
+          {new Date(row.Inv_Date)
+            .toLocaleDateString("en-GB")
+            .replace(/\//g, "-")}
+        </td>
+        <td>{row.GrandTotal}</td>
+        <td>{row.PymtAmtRecd}</td>
+      </tr>
+    ))
+
+
+  ) : []
+}
+
               </tbody>
             </Table>
           </div>
