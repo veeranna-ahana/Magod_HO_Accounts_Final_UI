@@ -29,26 +29,22 @@ export default function SaveChangesModal(
 
   const insertData = () => {
 
-    let t=0;
+  
      const now = Date.now();
   
 
-    if (now - lastToastTimestamp >= coolDownDuration) {
-     t++;
-      setLastToastTimestamp(now);
-
-    }
-    Axios.put(baseURL+'/unitlist/updateData/' + selectRow.UnitID, selectRow)
+   
+    Axios.put(baseURL+'/unitlist/updateData/' + selectRow.ID, selectRow)
       .then((res) => {
         if (res.data.status === 'fail') {
-          if(t>0){
+          
           toast.error('Unit_Name must be Unique');
-          }
+        
         }
         else if (res.data.status === 'query') {
-          if(t>0){
+         
           toast.error('Unit_Name  and UnitIntial must be Unique  ');
-          }
+          
         }
         else if (res.data.status === 'success') {
           console.log('res in frontend', res.data);
@@ -71,193 +67,86 @@ export default function SaveChangesModal(
       })
   }
 
-  console.log("sel1111", selectRow.PIN, selectRow.Unit_GSTNo, selectRow.Mail_Id);
+  console.log("sel1111", selectRow.PIN_Code, selectRow.GST_No, selectRow.Gm_Mail_Id);
   console.log("selctrowwwww", selectRow);
 
-  // const unitlistSubmit = () => {
-  //   const now = Date.now();
   
-
-  //   if (now - lastToastTimestamp >= coolDownDuration) {
-  //     test++;
-  //     setLastToastTimestamp(now);
-
-  //   }
-  //   if (selectRow.UnitName === '') {
-  //     if(test>0){
-  //     toast.error("Add UnitName")
-  //     }
-  //   }
-  //   else if (selectRow.UnitIntial.length > 3 ) {
-  //     if(test>0){
-  //     toast.error('Unit_Intial Length must be less than 3');
-  //     }
-  //   }
-
-  //   else if (selectRow.PIN === null  && selectRow.Unit_GSTNo === null && selectRow.Mail_Id===null) {
-
-  //     insertData();
-  //   }
-
-  //   else if (selectRow.PIN === '' && selectRow.Unit_GSTNo === '' && selectRow.Mail_Id==='') {
-
-  //     insertData();
-  //   }
-
- 
-   
-  //   else {
-
-
-    
   
-    
-  //     let flag = 0;
-  //     const unitdata = {};
-
-  //     if (parseInt(selectRow.PIN) !== ''  ) {
-        
-  //       unitdata.PIN = parseInt(selectRow.PIN);
-  //     }
-  //     if (selectRow.Unit_GSTNo !== '') {
-  //       unitdata.Unit_GSTNo = selectRow.Unit_GSTNo;
-  //     }
-  //     if (selectRow.Mail_Id !== '') {
-  //       unitdata.Mail_Id = selectRow.Mail_Id;
-  //     }
-  //     console.log("unitdata", unitdata);
-
-  //     for (const key in unitdata) {
-
-  //       if (key == 'PIN') {
-          
-  //         if (!validatePIN(unitdata[key])) {
-  //           flag++;
-  //           if(test>0){
-             
-  //           toast.error("Invalid PIN")
-  //           }
-  //           break;
-  //         }
-  //       }
-
-  //       if (key == 'Unit_GSTNo') {
-         
-  //         if (!validateGstNumber(unitdata[key])) {
-  //           flag++;
-  //           if(test>0){
-  //           toast.error("Invalid GST")
-  //           }
-  //           break;
-  //         }
-  //       }
-
-  //       if (key == 'Mail_Id') {
-         
-  //         if (!validateGmail(unitdata[key])) {
-  //           flag++;
-  //           if(test>0){
-  //           toast.error('Invalid Gmail')
-  //           }
-  //           break;
-  //         }
-  //       }
-
-
-  //     }
-
-  //    if(flag==0){
-  //     insertData();
-
-  //    }
-
-  
-
-
-
-  //   }
-
-  
-   
-  // }
 
   const unitlistSubmit = () => {
     const now = Date.now();
   
-    if (now - lastToastTimestamp >= coolDownDuration) {
-      test++;
-      setLastToastTimestamp(now);
-    }
+   
   
     if (selectRow.UnitName === '') {
-      if (test > 0) {
-        setSaveChangesModal(false)
+      setSaveChangesModal(false)
         toast.error("Add UnitName")
-      }
+      
     } else if (selectRow.UnitIntial.length > 3) {
-      if (test > 0) {
+      
         setSaveChangesModal(false)
         toast.error('Unit_Intial Length must be less than 3');
-      }
+      
     } else if (
-      (selectRow.PIN === null || selectRow.PIN === '') &&
-      (selectRow.Unit_GSTNo === null || selectRow.Unit_GSTNo === '') &&
-      (selectRow.Mail_Id === null || selectRow.Mail_Id === '')
+      (selectRow.PIN_Code === null || selectRow.PIN_Code === '') &&
+      ( selectRow.GST_No === null || selectRow.GST_No === '') &&
+      (selectRow.Gm_Mail_Id === null || selectRow.Gm_Mail_Id === '')
     ) {
+      // All fields are empty, so you can directly insert data
       insertData();
     } else {
       let flag = 0;
       const unitdata = {};
   
-      if (selectRow.PIN !== '') {
-        unitdata.PIN = parseInt(selectRow.PIN);
+      if (selectRow.PIN_Code !== '') {
+        unitdata.PIN_Code = parseInt(selectRow.PIN_Code);
       }
-      if (selectRow.Unit_GSTNo !== '') {
-        unitdata.Unit_GSTNo = selectRow.Unit_GSTNo;
+      if ( selectRow.GST_No !== '') {
+        unitdata.GST_No =  selectRow.GST_No;
       }
-      if (selectRow.Mail_Id !== '') {
-        unitdata.Mail_Id = selectRow.Mail_Id;
+      if (selectRow.Gm_Mail_Id !== '') {
+        unitdata.Gm_Mail_Id = selectRow.Gm_Mail_Id;
       }
   
+      
+      
       for (const key in unitdata) {
-        if (key === 'PIN' && unitdata[key] !== null) {
+        if (key === 'PIN_Code' && unitdata[key] !== null) {
           if (!validatePIN(unitdata[key])) {
             flag++;
-            if (test > 0) {
-              setSaveChangesModal(false)
+           setSaveChangesModal(false)
               toast.error("Invalid PIN")
-            }
+            
             break;
           }
         }
-        if (key === 'Unit_GSTNo'&& unitdata[key] !== null) {
+        if (key === 'GST_No'&& unitdata[key] !== null) {
           if (!validateGstNumber(unitdata[key])) {
             flag++;
-            if (test > 0) {
-              setSaveChangesModal(false)
+            setSaveChangesModal(false)
               toast.error("Invalid GST")
-            }
+          
             break;
           }
         }
-        if (key === 'Mail_Id' && unitdata[key] !== null) {
+        if (key === 'Gm_Mail_Id' && unitdata[key] !== null) {
           if (!validateGmail(unitdata[key])) {
             flag++;
-            if (test > 0) {
-              setSaveChangesModal(false)
+            setSaveChangesModal(false)
               toast.error('Invalid Gmail')
-            }
+            
             break;
           }
         }
       }
   
       if (flag === 0) {
+        // No validation errors, so insert data
         insertData();
       }
     }
-  }
-  
+}
+
 
   const [errors, setErrors] = useState({});
 
