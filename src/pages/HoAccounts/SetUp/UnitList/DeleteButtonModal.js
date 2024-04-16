@@ -23,7 +23,7 @@ export default function DeleteButtonModal({ setDeleteModal, deleteModal, selectR
 
   const [deleteUnit, setDeleteUnit] = useState('');
  // console.log("sel del", selectRow);
-  const deleteUnitData = (UnitID) => {
+  const deleteUnitData = (ID) => {
 
     const now = Date.now();
   
@@ -34,7 +34,7 @@ export default function DeleteButtonModal({ setDeleteModal, deleteModal, selectR
 
     }
     console.log(UnitID,"uuuuuuu");
-    axios.delete(baseURL+'/unitlist/deleteUnit/' + UnitID)
+    axios.delete(baseURL+'/unitlist/deleteUnit/' + ID)
       .then((res) => {
         console.log(res);
         if (res.data.Status === 'Success') {
@@ -72,7 +72,7 @@ export default function DeleteButtonModal({ setDeleteModal, deleteModal, selectR
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="primary" onClick={e => deleteUnitData(selectRow.UnitID)} style={{fontSize:'12px'}}
+          <Button variant="primary" onClick={e => deleteUnitData(selectRow.ID)} style={{fontSize:'12px'}}
           >
             Yes
           </Button>

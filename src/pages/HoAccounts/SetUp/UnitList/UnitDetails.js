@@ -18,15 +18,15 @@ const initial = {
   UnitID: "",
   UnitName: "",
   Unit_Address: "",
-  Place: "",
-  PIN: "",
+  City: "",
+  PIN_Code: "",
   Country: "",
   State: "",
   Unit_contactDetails: "",
-  Unit_GSTNo: "",
+  GST_No: "",
   Tally_account_Name: "",
   Cash_in_Hand: "",
-  Mail_Id: "",
+  Gm_Mail_Id: "",
   UnitIntial: "",
   Current: 0,
 };
@@ -117,7 +117,8 @@ export default function UnitDetails() {
         if (test > 0) {
           toast.error("Please add UnitId and UnitName");
         }
-      } else if (postData.UnitIntial.length > 3) {
+      } 
+      else if (postData.UnitIntial.length > 3) {
         console.log(postData.UnitIntial.length, "pos");
 
         if (test > 0) {
@@ -126,28 +127,28 @@ export default function UnitDetails() {
           );
         }
       } else if (
-        postData.PIN === "" &&
-        postData.Unit_GSTNo === "" &&
-        postData.Mail_Id == ""
+        postData.PIN_Code === "" &&
+        postData.GST_No === "" &&
+        postData.Gm_Mail_Id == ""
       ) {
         insertData(e, test);
       } else {
         let flag = 0;
         const unitdata = {};
 
-        if (postData.PIN !== "") {
-          unitdata.PIN = postData.PIN;
+        if (postData.PIN_Code !== "") {
+          unitdata.PIN_Code = postData.PIN_Code;
         }
-        if (postData.Unit_GSTNo !== "") {
-          unitdata.Unit_GSTNo = postData.Unit_GSTNo;
+        if (postData.GST_No !== "") {
+          unitdata.GST_No = postData.GST_No;
         }
-        if (postData.Mail_Id !== "") {
-          unitdata.Mail_Id = postData.Mail_Id;
+        if (postData.Gm_Mail_Id !== "") {
+          unitdata.Gm_Mail_Id= postData.Gm_Mail_Id;
         }
         console.log("unitdata", unitdata);
 
         for (const key in unitdata) {
-          if (key == "PIN") {
+          if (key == "PIN_Code") {
             if (!validatePIN(unitdata[key])) {
               flag++;
               if (test > 0) {
@@ -157,7 +158,7 @@ export default function UnitDetails() {
             }
           }
 
-          if (key == "Unit_GSTNo") {
+          if (key == "GST_No") {
             if (!validateGstNumber(unitdata[key])) {
               flag++;
               if (test > 0) {
@@ -167,7 +168,7 @@ export default function UnitDetails() {
             }
           }
 
-          if (key == "Mail_Id") {
+          if (key == "Gm_Mail_Id") {
             if (!validateGmail(unitdata[key])) {
               flag++;
               if (test > 0) {
@@ -187,6 +188,9 @@ export default function UnitDetails() {
       console.error("Error in frontend", err);
     }
   };
+
+
+console.log("post dataaaaaaaaa", postData.Place);
 
   const saveChangeSubmit = () => {
     // console.log("save else", postData);
@@ -263,10 +267,10 @@ export default function UnitDetails() {
     if (!state) {
       setPostData({
         ...postData,
-        PIN: value,
+        PIN_Code: value,
       });
     } else {
-      setSelectRow({ ...selectRow, PIN: value });
+      setSelectRow({ ...selectRow, PIN_Code: value });
     }
   };
 
@@ -431,48 +435,7 @@ export default function UnitDetails() {
           </button>
         </div>
 
-        {/* <div className="col-md-2  col-sm-12">
-          <button
-            type="submit"
-            //onClick={handleSubmit}
-            onClick={(e) => handleSubmit(e)}
-            disabled={selectRow.UnitID !== ""}
-            className={
-              selectRow.UnitID !== ""
-                ? "disabled-button"
-                : "button-style  group-button"
-            }
-          >
-            Save Unit
-          </button>
-        </div>
-        <div className="col-md-2 col-sm-12">
-          <button className="button-style  group-button" onClick={deleteSubmit}>
-            Delete Unit
-          </button>
-        </div>
-        <div className="col-md-2  col-sm-12">
-          <button
-            className={
-              selectRow.UnitID === ""
-                ? "disabled-button"
-                : "button-style  group-button"
-            }
-            disabled={selectRow.UnitID === ""}
-            onClick={saveChangeSubmit}
-          >
-            Update Unit
-          </button>
-        </div>
-        <div className="col-md-4">
-          <button
-            className="button-style  group-button"
-            onClick={(e) => navigate("/HOAccounts")}
-            style={{ float: "right" }}
-          >
-            Close
-          </button>
-        </div> */}
+        
       </div>
 
       <div className="d-flex mt-3">
@@ -527,7 +490,7 @@ export default function UnitDetails() {
                 id="UnitID"
                 required
                 value={selectRow?.UnitID || postData.UnitID}
-                disabled={selectRow.UnitID !== ""}
+                // disabled={selectRow.UnitID !== ""}
                 onChange={unitFormChange}
               />
             </div>
@@ -543,9 +506,9 @@ export default function UnitDetails() {
                 class="in-field"
                 type="text"
                 placeholder=" "
-                name="Unit_GSTNo"
+                name="GST_No"
                 maxLength={15}
-                value={selectRow.Unit_GSTNo || postData.Unit_GSTNo}
+                value={ selectRow.GST_No || postData.GST_No}
                 onChange={unitFormChange}
               />
             </div>
@@ -592,8 +555,8 @@ export default function UnitDetails() {
                 class="in-field"
                 type="email"
                 placeholder=" "
-                name="Mail_Id"
-                value={selectRow.Mail_Id || postData.Mail_Id}
+                name="Gm_Mail_Id"
+                value={selectRow.Gm_Mail_Id|| postData.Gm_Mail_Id}
                 onChange={unitFormChange}
               />
             </div>
@@ -618,8 +581,8 @@ export default function UnitDetails() {
                 class="in-field"
                 type="text"
                 placeholder=" "
-                name="Place"
-                value={selectRow.Place || postData.Place}
+                name="City"
+                value={selectRow.City || postData.City }
                 onChange={unitFormChange}
               />
             </div>
@@ -651,9 +614,9 @@ export default function UnitDetails() {
                 class="in-field"
                 type="text"
                 placeholder=" "
-                name="PIN"
+                name="PIN_Code"
                 maxLength={6}
-                value={selectRow.PIN || postData.PIN}
+                value={selectRow.PIN_Code || postData.PIN_Code}
                 onChange={pincodehandleChange}
               />
             </div>

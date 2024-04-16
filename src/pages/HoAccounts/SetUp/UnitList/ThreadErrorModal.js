@@ -13,17 +13,18 @@ export default function ThreadErrorModal({threadModal, setThreadModal,unitDetail
     <div>
       <Modal show={threadModal} onHide={handleClose} >
         <Modal.Header closeButton>
-          <Modal.Title>magod_machine</Modal.Title>
+          <Modal.Title style={{fontSize:'14px'}}>magod_machine</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body>  Column 'UnitName'  And 'UnitID' is constrained to be unique  and
-           Unit_Intial should be unique. 
+        <Modal.Body style={{fontSize:'12px'}}>  Column 'UnitName'  And 'UnitID' is constrained to be unique  
+           
            
 
          </Modal.Body> 
 
         <Modal.Footer>
           <Button variant="primary" onClick={handleClose}
+          style={{fontSize:'12px'}}
         >
            Ok
           </Button>
