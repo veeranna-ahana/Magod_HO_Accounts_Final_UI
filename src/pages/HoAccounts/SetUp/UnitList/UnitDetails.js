@@ -117,8 +117,7 @@ export default function UnitDetails() {
         if (test > 0) {
           toast.error("Please add UnitId and UnitName");
         }
-      } 
-      else if (postData.UnitIntial.length > 3) {
+      } else if (postData.UnitIntial.length > 3) {
         console.log(postData.UnitIntial.length, "pos");
 
         if (test > 0) {
@@ -143,7 +142,7 @@ export default function UnitDetails() {
           unitdata.GST_No = postData.GST_No;
         }
         if (postData.Gm_Mail_Id !== "") {
-          unitdata.Gm_Mail_Id= postData.Gm_Mail_Id;
+          unitdata.Gm_Mail_Id = postData.Gm_Mail_Id;
         }
         console.log("unitdata", unitdata);
 
@@ -189,8 +188,7 @@ export default function UnitDetails() {
     }
   };
 
-
-console.log("post dataaaaaaaaa", postData.Place);
+  console.log("post dataaaaaaaaa", postData.Place);
 
   const saveChangeSubmit = () => {
     // console.log("save else", postData);
@@ -434,8 +432,6 @@ console.log("post dataaaaaaaaa", postData.Place);
             Close
           </button>
         </div>
-
-        
       </div>
 
       <div className="d-flex mt-3">
@@ -508,7 +504,7 @@ console.log("post dataaaaaaaaa", postData.Place);
                 placeholder=" "
                 name="GST_No"
                 maxLength={15}
-                value={ selectRow.GST_No || postData.GST_No}
+                value={selectRow.GST_No || postData.GST_No}
                 onChange={unitFormChange}
               />
             </div>
@@ -556,7 +552,7 @@ console.log("post dataaaaaaaaa", postData.Place);
                 type="email"
                 placeholder=" "
                 name="Gm_Mail_Id"
-                value={selectRow.Gm_Mail_Id|| postData.Gm_Mail_Id}
+                value={selectRow.Gm_Mail_Id || postData.Gm_Mail_Id}
                 onChange={unitFormChange}
               />
             </div>
@@ -582,7 +578,7 @@ console.log("post dataaaaaaaaa", postData.Place);
                 type="text"
                 placeholder=" "
                 name="City"
-                value={selectRow.City || postData.City }
+                value={selectRow.City || postData.City}
                 onChange={unitFormChange}
               />
             </div>
