@@ -331,7 +331,7 @@ export default function UnitReceiptListForm() {
             </thead>
 
             <tbody className="tablebody">
-              {openInvoices.map((item, index) => {
+              {/* {openInvoices.map((item, index) => {
                 return (
                   <tr>
                     <td>
@@ -347,7 +347,7 @@ export default function UnitReceiptListForm() {
                     <td>{item.Balance}</td>
                   </tr>
                 );
-              })}
+              })} */}
             </tbody>
           </Table>
         </div>
