@@ -5,26 +5,21 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { toast } from "react-toastify";
-import Modal from 'react-bootstrap/Modal';
-import { Button } from 'react-bootstrap';
+import Modal from "react-bootstrap/Modal";
+import { Button } from "react-bootstrap";
 import { baseURL } from "../../../../api/baseUrl";
 import PdfModal from "./CreateNew/PdfModal";
-
-
 
 export default function OpenNavigatorForPRV() {
   const navigate = useNavigate();
   const location = useLocation();
 
-
   // const rowData = location.state ? location.state : "";
   const { HOPrvId, unitname } = location.state ? location.state : {};
-   const rowData = HOPrvId ? HOPrvId:'' ;
-   const unitFromDraft=unitname ? unitname:''
+  const rowData = HOPrvId ? HOPrvId : "";
+  const unitFromDraft = unitname ? unitname : "";
 
-   console.log("row dataaaa",rowData,unitname );
-
-
+  console.log("row dataaaa", rowData, unitname);
 
   const [hoprvid, setHoprvid] = useState(0);
   const [getUnit, setGetUnit] = useState("");
@@ -40,10 +35,9 @@ export default function OpenNavigatorForPRV() {
   const [showPostModal, setShowPostModal] = useState(false);
 
   const [pdfVoucher, setPdfVoucher] = useState(false);
-  const [deleteOverAllData, setDeleteOverAllData] = useState(false)
-  const [sumofReceive, setSumofReceive] = useState()
+  const [deleteOverAllData, setDeleteOverAllData] = useState(false);
+  const [sumofReceive, setSumofReceive] = useState();
   let sum = 0;
-
 
   const [rvData, setRvData] = useState({
     apiData: null,
@@ -54,12 +48,11 @@ export default function OpenNavigatorForPRV() {
     secondTableArray: [],
     custData: [],
     postData: {
-
       Recd_PVNo: "Draft",
       HO_PrvId: "",
-   
+
       HORefNo: "Draft",
-   
+
       Status: "Draft",
       CustName: "",
       Cust_code: "",
@@ -84,7 +77,6 @@ export default function OpenNavigatorForPRV() {
   });
 
   const initial = {
-
     Recd_PVNo: "Draft",
     HO_PrvId: "",
     //  HoRefDate: new Date().toLocaleDateString("en-GB").split("/").join("-"),
@@ -99,40 +91,28 @@ export default function OpenNavigatorForPRV() {
     selectedCustomer: "",
   };
 
-
   const deletecall = () => {
     if (rvData.postData.CustName) {
       setDeleteOverAllData(true);
+    } else {
+      toast.error("select Customer");
     }
-    else{
-      toast.error("select Customer")
-    }
-  }
+  };
 
-  const deleteYes = () => {
-    setDeleteOverAllData(false);
-    deleteButton();
-  }
+  // const deleteYes = () => {
+  //   setDeleteOverAllData(false);
+  //   deleteButton();
+  // }
 
-  const handleDeletePopup = () => {
-    setDeleteOverAllData(false);
-  }
+  // const handleDeletePopup = () => {
+  //   setDeleteOverAllData(false);
+  // }
 
   useEffect(() => {
     if (rowData) {
-
       rowDataFetch();
     }
-  }, [])
-
-
-
-
-
-
-
-
-
+  }, []);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -141,11 +121,6 @@ export default function OpenNavigatorForPRV() {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-
-
-
-
-
 
   // Create a new Date object
   const currentDate = new Date();
@@ -197,7 +172,7 @@ export default function OpenNavigatorForPRV() {
     setGetUnit(selectedCustomer ? selectedCustomer.UnitName : ""); // Update selected name
   };
 
-  const [cust, setCust] = useState()
+  const [cust, setCust] = useState();
 
   const handleSelectCustomer = async (selected) => {
     const selectedCustomer = selected[0];
@@ -205,37 +180,36 @@ export default function OpenNavigatorForPRV() {
     setGetCustomer(selectedCustomer ? selectedCustomer.Cust_Name : ""); // Update selected Name
     setGetCustCode(selectedCustomer ? selectedCustomer.Cust_Code : ""); // Update selected Code
 
-    let cust=selectedCustomer.Cust_Code
+    let cust = selectedCustomer.Cust_Code;
 
     console.log("cust code", selectedCustomer);
 
-    setRvData(prevState => ({ ...prevState, postData: { ...prevState.postData, Unitname: getUnit,
-    CustName:selectedCustomer ? selectedCustomer.Cust_Name : "", Cust_code:selectedCustomer ? selectedCustomer.Cust_Code : ""
-    } }));
+    setRvData((prevState) => ({
+      ...prevState,
+      postData: {
+        ...prevState.postData,
+        Unitname: getUnit,
+        CustName: selectedCustomer ? selectedCustomer.Cust_Name : "",
+        Cust_code: selectedCustomer ? selectedCustomer.Cust_Code : "",
+      },
+    }));
 
     if (selected.length > 0) {
       try {
-      
-
         const invoicesResponse = await axios.get(
-          baseURL + `/createnew/ho_openInvoices?customercode=${cust}&unitname=${getUnit}`
+          baseURL +
+            `/createnew/ho_openInvoices?customercode=${cust}&unitname=${getUnit}`
         );
 
-       
-        console.log("inv",invoicesResponse.data );
+        console.log("inv", invoicesResponse.data);
 
-      
-   
         setRvData((prevRvData) => ({
           ...prevRvData,
           data: {
             ...prevRvData.data,
-            inv_data: invoicesResponse.data
-
+            inv_data: invoicesResponse.data,
           },
-
         }));
-      
 
         const hoprvIdResponse = await axios.post(
           baseURL + "/hoCreateNew/getHOPrvId",
@@ -248,59 +222,39 @@ export default function OpenNavigatorForPRV() {
         console.log("hoprvid gottt", hoprvIdResponse.data);
 
         if (hoprvIdResponse.data[0]?.HOPrvId) {
-
-          const getForm = await axios.post(
-            baseURL + "/createNew/getFormData",
-            {
-
-              receipt_id: hoprvIdResponse.data[0]?.HOPrvId,
-              custCode: selectedCustomer.Cust_Code,
-
-            }
-          );
+          const getForm = await axios.post(baseURL + "/createNew/getFormData", {
+            receipt_id: hoprvIdResponse.data[0]?.HOPrvId,
+            custCode: selectedCustomer.Cust_Code,
+          });
           // Update state based on API responses
           console.log("getform ", getForm.data.Result[0].Description);
-
-
 
           setRvData((prevRvData) => ({
             ...prevRvData,
             data: {
               ...prevRvData.data,
               inv_data: invoicesResponse.data,
-
             },
-
           }));
 
-
-          setRvData(prevState => ({
+          setRvData((prevState) => ({
             ...prevState,
             postData: {
               ...prevState.postData,
-              HO_PrvId: hoprvIdResponse.data[0]?.HOPrvId || '',
+              HO_PrvId: hoprvIdResponse.data[0]?.HOPrvId || "",
               CustName: selectedCustomer.Cust_Name,
               Cust_code: selectedCustomer.Cust_Code,
               Description: getForm.data.Result[0].Description,
               TxnType: getForm.data.Result[0].TxnType,
-              Amount: getForm.data.Result[0].Amount
-
-
-            }
+              Amount: getForm.data.Result[0].Amount,
+            },
           }));
 
-
-
           if (getForm.data.Result.length > 0) {
-            const getLeft = await axios.post(
-              baseURL + "/createNew/leftTable",
-              {
-
-                receipt_id: hoprvIdResponse.data[0]?.HOPrvId,
-                unit: getUnit,
-
-              }
-            );
+            const getLeft = await axios.post(baseURL + "/createNew/leftTable", {
+              receipt_id: hoprvIdResponse.data[0]?.HOPrvId,
+              unit: getUnit,
+            });
             console.log("lestttttttt", getLeft.data.Result);
 
             setRvData((prevRvData) => ({
@@ -312,69 +266,48 @@ export default function OpenNavigatorForPRV() {
               },
             }));
           }
-
-        }
-
-
-        else {
-
+        } else {
           //set all data for post data
-          setRvData(prevState => ({
+          setRvData((prevState) => ({
             ...prevState,
             postData: {
               ...prevState.postData,
 
               CustName: selectedCustomer.Cust_Name,
               Cust_code: selectedCustomer.Cust_Code,
-
-
-
-            }
+            },
           }));
         }
-
-
-      }
-      catch (error) {
+      } catch (error) {
         console.log("Error in API request", error);
       }
     }
   };
-
-
-
-
 
   useEffect(() => {
     handleUnitNames();
     handleCustomerNames();
   }, []);
 
-
-
   const rowDataFetch = async () => {
-    
     if (rowData !== "") {
       try {
         //fetch Form data
-
 
         const response = await axios.get(
           baseURL + `/createnew/getFormByRowData?receipt_id=${rowData}`
         );
 
-
         console.log("res", response.data.Result[0].CustName);
         if (response.data) {
-
           //set form data into rvDta.postData if we have rowData
-          setCust(response.data.Result[0].CustName)
-          setGetCustomer(response.data.Result[0].CustName)
-          setRvData(prevState => ({
+          setCust(response.data.Result[0].CustName);
+          setGetCustomer(response.data.Result[0].CustName);
+          setRvData((prevState) => ({
             ...prevState,
             postData: {
               ...prevState.postData,
-              HO_PrvId: response.data.Result[0].HOPrvId || '',
+              HO_PrvId: response.data.Result[0].HOPrvId || "",
               CustName: response.data.Result[0].CustName,
               // Cust_code:response.data.Result[0].Cust_code,
               Description: response.data.Result[0].Description,
@@ -383,29 +316,21 @@ export default function OpenNavigatorForPRV() {
               HORef: response.data.Result[0].HORef,
               Status: response.data.Result[0].Status,
               Unitname: response.data.Result[0].Unitname,
-
-            }
+            },
           }));
 
           setGetUnit(response.data.Result[0].Unitname);
 
           setSelectedOption(response.data.Result[0].Unitname);
-          setGetCustomer(response.data.Result[0].CustName)
-          setSelectedCustOption(response.data.Result[0].CustName)
-
-
-
-
-
-
+          setGetCustomer(response.data.Result[0].CustName);
+          setSelectedCustOption(response.data.Result[0].CustName);
 
           getReceipts(
             response.data.Result[0].Cust_code,
             response.data.Result[0].HOPrvId,
-            response.data.Result[0].Unitname,
+            response.data.Result[0].Unitname
           );
-        }
-        else {
+        } else {
           console.log("no datat");
         }
       } catch (error) {
@@ -414,29 +339,21 @@ export default function OpenNavigatorForPRV() {
     }
   };
 
-
   const getReceipts = async (cust_code, hoprvid, unit) => {
-    
     console.log("hoooooo", hoprvid, unit);
 
     try {
-      const resp = await axios.post(
-        baseURL + "/createNew/leftTable",
-        {
-
-          receipt_id: hoprvid,
-          unit: unit,
-
-        }
-      );
-
-
+      const resp = await axios.post(baseURL + "/createNew/leftTable", {
+        receipt_id: hoprvid,
+        unit: unit,
+      });
 
       try {
         const response = await axios.get(
-          baseURL + `/createnew/ho_openInvoices?customercode=${cust_code}&unitname=${unitFromDraft}`
+          baseURL +
+            `/createnew/ho_openInvoices?customercode=${cust_code}&unitname=${unitFromDraft}`
         );
-      
+
         console.log("rightttttttttt with row data table data ", response.data);
 
         setRvData((prevRvData) => ({
@@ -457,9 +374,6 @@ export default function OpenNavigatorForPRV() {
     }
   };
 
-
-
-
   useEffect(() => {
     if (rvData.postData) {
       setRvData((prevRvData) => ({
@@ -469,25 +383,9 @@ export default function OpenNavigatorForPRV() {
     }
   }, [rvData.postData]);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //this is for rowData 
-
+  //this is for rowData
 
   const handleRowSelect = (data) => {
-
     const selectedRow = rvData.firstTableArray.find(
       (row) => row.RecdPvSrl === data.RecdPvSrl
     );
@@ -498,34 +396,23 @@ export default function OpenNavigatorForPRV() {
     });
   };
 
-
-
-
-  //Delete Button 
-
- 
-
-  
+  //Delete Button
 
   //update the Receive_now value when onchange
   useEffect(() => {
     if (rvData.data.receipt_details.length > 0) {
-
       const updateReceive_Now = axios.put(
         baseURL + "/createnew/updateReceiveNowAmount",
         {
-          receipt_details: rvData.data.receipt_details
+          receipt_details: rvData.data.receipt_details,
         }
       );
-
     }
-  }, [rvData.data.receipt_details])
-
-
+  }, [rvData.data.receipt_details]);
 
   const handleInputChange = async (e, rowDataaa, dif) => {
     const { name, value } = e.target;
-    const receiveNowValue = value !== '' ? parseFloat(value) : null;
+    const receiveNowValue = value !== "" ? parseFloat(value) : null;
 
     const totalReceiveNow = rvData.data.receipt_details.reduce(
       (total, item) =>
@@ -536,19 +423,13 @@ export default function OpenNavigatorForPRV() {
       0
     );
 
-
-
-
-
-
-
     const updateAmount = await axios.post(
       baseURL + "/hoCreateNew/updateAmount",
       {
         Amount: totalReceiveNow,
         HO_PrvId: rvData.postData.HO_PrvId,
         // HO_PrvId: rowData,
-        receipt_details: rvData.data.receipt_details
+        receipt_details: rvData.data.receipt_details,
       }
     );
 
@@ -566,40 +447,16 @@ export default function OpenNavigatorForPRV() {
       },
     }));
 
-
     rvData.firstTableArray = [];
-
-
-  
-
-
   };
 
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
   //remove for rowData
-
-
 
   const removeRowdata = async () => {
     try {
       const isAnyEmptyReceiveNow = rvData.firstTableArray.some(
         (row) => row.Receive_Now === ""
       );
-
 
       if (isAnyEmptyReceiveNow) {
         toast.error("Receive Now cannot be empty");
@@ -610,7 +467,6 @@ export default function OpenNavigatorForPRV() {
         toast.error("No rows selected for removal of voucher.");
         return;
       }
-
 
       const selectedRow = rvData.firstTableArray[0];
 
@@ -628,12 +484,9 @@ export default function OpenNavigatorForPRV() {
         return;
       }
 
-
       const RecdPvSrl = selectedRow.RecdPvSrl;
       const receiveNowValue = parseFloat(selectedRow.Receive_Now || 0);
-      const invamount = parseFloat(rvData.firstTableArray[0].Inv_Amount || 0)
-
-
+      const invamount = parseFloat(rvData.firstTableArray[0].Inv_Amount || 0);
 
       let totalReceiveNow = rvData.firstTableArray.reduce(
         (sum, obj) => sum + parseFloat(obj.Receive_Now),
@@ -651,7 +504,6 @@ export default function OpenNavigatorForPRV() {
         }
       );
 
-
       // Convert On_account to a number, round it to 2 decimal places, then parse it back to a number
       const roundedReceiveNow = parseFloat(
         parseFloat(rvData.postData.Amount).toFixed(2)
@@ -663,7 +515,6 @@ export default function OpenNavigatorForPRV() {
         data: {
           ...prevRvData.data,
           receipt_details: response.data,
-
         },
         postData: {
           ...prevRvData.postData,
@@ -678,7 +529,6 @@ export default function OpenNavigatorForPRV() {
           Amount: rvData.postData.Amount - receiveNowValue,
           HO_PrvId: rvData.postData.HO_PrvId,
           // HO_PrvId: rowData
-
         }
       );
 
@@ -690,19 +540,11 @@ export default function OpenNavigatorForPRV() {
         },
       }));
 
-      toast.success("Removed Successfully")
-
+      toast.success("Removed Successfully");
     } catch (error) {
       console.error("Error removing voucher:", error);
     }
-
-  }
-
-
-
-
-
-
+  };
 
   function formatAmount(amount) {
     // Assuming amount is a number
@@ -715,7 +557,6 @@ export default function OpenNavigatorForPRV() {
   }
 
   const PaymentReceipts = useCallback((e) => {
-
     const { name, value } = e.target;
 
     setRvData((prevRvData) => ({
@@ -727,37 +568,20 @@ export default function OpenNavigatorForPRV() {
     }));
   }, []);
 
-
-
-
-
-
- 
-
-
   const pdfSubmit = (e) => {
-
-
     setPdfVoucher(true);
     e.preventDefault();
-
-
-
-  }
-
+  };
 
   //Cancel button functionality
-  const [cancelPopup, setCancelPopup] = useState(false)
+  const [cancelPopup, setCancelPopup] = useState(false);
 
   const canacleButton = () => {
-
     let stopExecution = false;
 
-
     if (rvData.data.receipt_details) {
-
       rvData.data.receipt_details.forEach((selectedRow) => {
-        if (stopExecution) return
+        if (stopExecution) return;
         // Your code logic for each item goes here
         if (parseFloat(selectedRow.Receive_Now) < 0) {
           toast.error("Incorrect Value");
@@ -774,32 +598,14 @@ export default function OpenNavigatorForPRV() {
 
           return;
         }
-
-
-
       });
     }
 
-
-
-
     if (stopExecution) return;
-
     else {
-      setCancelPopup(true)
+      setCancelPopup(true);
     }
-  }
-
-
-
-
- 
-
-
-
-
-
-
+  };
 
   return (
     <>
@@ -909,11 +715,9 @@ export default function OpenNavigatorForPRV() {
             id="TxnType"
             onChange={PaymentReceipts}
             value={rvData.postData.TxnType}
-             disabled
-           
+            disabled
           >
             <option value="">Select</option>
-          
           </select>
         </div>
 
@@ -1002,7 +806,6 @@ export default function OpenNavigatorForPRV() {
                 ? "disabled-button"
                 : "button-style  group-button"
             }
-          
             disabled={
               rvData && rvData.postData.Status !== "Draft"
                 ? rvData.postData.Status
@@ -1018,7 +821,6 @@ export default function OpenNavigatorForPRV() {
                 ? "disabled-button"
                 : "button-style  group-button"
             }
-           
             disabled={
               rvData && rvData.postData.Status !== "Draft"
                 ? rvData.postData.Status
@@ -1034,7 +836,6 @@ export default function OpenNavigatorForPRV() {
                 ? "disabled-button"
                 : "button-style  group-button"
             }
-            
             disabled={
               rvData && rvData.postData.Status !== "Draft"
                 ? rvData.postData.Status
@@ -1062,9 +863,6 @@ export default function OpenNavigatorForPRV() {
           >
             Cancel
           </button> */}
-
-
-          
         </div>
       </div>
 
@@ -1191,7 +989,6 @@ export default function OpenNavigatorForPRV() {
 
             <div className="col-md-3 mb-1">
               <button
-                
                 className={
                   rvData.postData.Status !== "Draft"
                     ? "disabled-button"
@@ -1228,33 +1025,24 @@ export default function OpenNavigatorForPRV() {
               </thead>
 
               <tbody className="tablebody">
-               
-               
-                {
-  rvData.data.inv_data ? (
-    rvData.data.inv_data.map((row, index) => (
-      <tr
-        key={index}
-        style={{
-          backgroundColor: row.isSelected ? "#3498db" : "inherit",
-          whiteSpace: "nowrap",
-        }}
-      >
-        
-      </tr>
-    ))
-
-
-  ) : []
-}
-
+                {rvData.data.inv_data
+                  ? rvData.data.inv_data.map((row, index) => (
+                      <tr
+                        key={index}
+                        style={{
+                          backgroundColor: row.isSelected
+                            ? "#3498db"
+                            : "inherit",
+                          whiteSpace: "nowrap",
+                        }}
+                      ></tr>
+                    ))
+                  : []}
               </tbody>
             </Table>
           </div>
         </div>
       </div>
-
-
 
       {/* <Modal show={showPostModal} onHide={handlePostModalClose} size="md">
         <Modal.Header closeButton>
