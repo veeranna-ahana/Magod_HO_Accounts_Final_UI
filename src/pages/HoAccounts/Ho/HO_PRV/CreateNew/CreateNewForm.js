@@ -5,8 +5,8 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import { useLocation, useNavigate } from "react-router-dom";
 import { baseURL } from "../../../../../api/baseUrl";
 import { toast } from "react-toastify";
-import Modal from 'react-bootstrap/Modal';
-import { Button } from 'react-bootstrap';
+import Modal from "react-bootstrap/Modal";
+import { Button } from "react-bootstrap";
 import PdfModal from "./PdfModal";
 
 export default function CreateNewForm() {
@@ -14,19 +14,21 @@ export default function CreateNewForm() {
   const location = useLocation();
 
   const { adjustmentRows, adj_unit } = location.state ? location.state : "";
-  let onAccountValue1 = adjustmentRows ? parseInt(adjustmentRows.On_account) : 0
+  let onAccountValue1 = adjustmentRows
+    ? parseInt(adjustmentRows.On_account)
+    : 0;
   console.log("adj unit", adjustmentRows);
   const adj_unitname = adj_unit;
 
-  let fixedOnaccount = adjustmentRows ? parseInt(adjustmentRows.fixedOnaccount) : "zero"
-
+  let fixedOnaccount = adjustmentRows
+    ? parseInt(adjustmentRows.fixedOnaccount)
+    : "zero";
 
   let sum = 0;
 
   console.log("fixed onaccountttttttttttttt", fixedOnaccount);
 
-
-  const [sumofReceive, setSumofReceive] = useState()
+  const [sumofReceive, setSumofReceive] = useState();
 
   const [hoprvid, setHoprvid] = useState(0);
   const [getUnit, setGetUnit] = useState("");
@@ -43,13 +45,10 @@ export default function CreateNewForm() {
 
   const [pdfVoucher, setPdfVoucher] = useState(false);
 
-  const [alertCancel, setAlertCancel] = useState(false)
+  const [alertCancel, setAlertCancel] = useState(false);
 
-
-
-  let onAccountValue = onAccountValue1
+  let onAccountValue = onAccountValue1;
   const [onAccountValue22, setOnAccountValue] = useState(onAccountValue1);
-
 
   const [rvData, setRvData] = useState({
     apiData: null,
@@ -64,7 +63,7 @@ export default function CreateNewForm() {
       Recd_PVNo: "Draft",
       HO_PrvId: "",
       HoRefDate: new Date().toLocaleDateString("en-GB").split("/").join("-"),
-    
+
       HORefNo: "Draft",
       HORef: "Draft",
       Status: "Created",
@@ -112,25 +111,26 @@ export default function CreateNewForm() {
       // id=adjustmentRows.Id
       insertToForm();
     } else {
-
     }
-  }, [])
+  }, []);
 
   const insertToForm = async () => {
-
     const response = await axios.post(
       baseURL + "/createnew/insertToparentForm",
       {
         adjustmentRows: adjustmentRows,
-        unit: adj_unit
+        unit: adj_unit,
       }
     );
 
     const insertedRecord = response.data.insertedRecord;
     // console.log("inserrecord", insertedRecord);
-    getleftandRightTabledata(insertedRecord[0].Cust_code, insertedRecord[0].HOPrvId)
+    getleftandRightTabledata(
+      insertedRecord[0].Cust_code,
+      insertedRecord[0].HOPrvId
+    );
 
-    setRvData(prevRvData => ({
+    setRvData((prevRvData) => ({
       ...prevRvData,
       postData: {
         ...prevRvData.postData,
@@ -142,20 +142,15 @@ export default function CreateNewForm() {
         Status: insertedRecord[0].Status,
         HO_PrvId: insertedRecord[0].HOPrvId,
         Cust_code: insertedRecord[0].Cust_code,
-
-      }
+      },
     }));
-
-
-  }
+  };
 
   const getleftandRightTabledata = async (cust_code, hoprvID) => {
     try {
-      const resp = await axios.post(
-        baseURL + '/createnew/getleftTable', {
-        receipt_id: hoprvID
-      }
-      );
+      const resp = await axios.post(baseURL + "/createnew/getleftTable", {
+        receipt_id: hoprvID,
+      });
       console.log("left table daat", resp);
 
       try {
@@ -180,8 +175,7 @@ export default function CreateNewForm() {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-
-  }
+  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -295,16 +289,19 @@ export default function CreateNewForm() {
     handleCustomerNames();
   }, []);
 
-
   const handleSave = async () => {
-    let val = (onAccountValue1 === 0 || onAccountValue22 === 0 || onAccountValue1 !== fixedOnaccount) ? fixedOnaccount : onAccountValue1
+    let val =
+      onAccountValue1 === 0 ||
+      onAccountValue22 === 0 ||
+      onAccountValue1 !== fixedOnaccount
+        ? fixedOnaccount
+        : onAccountValue1;
     let stopExecution = false;
 
     try {
       if (rvData.data.receipt_details) {
-
         rvData.data.receipt_details.forEach((selectedRow) => {
-          if (stopExecution) return
+          if (stopExecution) return;
           // Your code logic for each item goes here
           if (parseFloat(selectedRow.Receive_Now) < 0) {
             toast.error("Incorrect Value");
@@ -320,10 +317,7 @@ export default function CreateNewForm() {
             stopExecution = true; // Set flag to true to stop execution
 
             return;
-          }
-
-
-          else if (formattedValue > (val)) {
+          } else if (formattedValue > val) {
             toast.error("Cannot Receive More than On_account Amount");
             stopExecution = true;
             return;
@@ -348,7 +342,6 @@ export default function CreateNewForm() {
         return;
       }
 
-
       const sumofRecv = rvData.data.receipt_details.reduce(
         (sum, obj) => sum + parseFloat(obj.Receive_Now),
         0
@@ -360,13 +353,14 @@ export default function CreateNewForm() {
         return;
       }
 
-
       // If HO_PrvId is not present, it's an insert operation
       if (!rvData.postData.HO_PrvId) {
-
-        const unitToStore = getUnit === ' ' ? rvData.postData.UnitName : getUnit;
-        const custCodetostore = getCustCode === '' ? rvData.postData.Cust_code : getCustCode
-        const custnametostore = getCustomer === '' ? rvData.postData.CustName : getCustCode
+        const unitToStore =
+          getUnit === " " ? rvData.postData.UnitName : getUnit;
+        const custCodetostore =
+          getCustCode === "" ? rvData.postData.Cust_code : getCustCode;
+        const custnametostore =
+          getCustomer === "" ? rvData.postData.CustName : getCustCode;
 
         const insertResponse = await axios.post(
           baseURL + "/hoCreateNew/saveData",
@@ -395,15 +389,14 @@ export default function CreateNewForm() {
         } else {
           toast.error("Failed to insert data. Please try again.");
         }
-      }
-
-      else {
-
+      } else {
         console.log("Amount  else:", rvData.postData.Cust_code);
 
         //  const unitToStore = getUnit === ' ' ? rvData.postData.UnitName : getUnit;
-        const custCodetostore = getCustCode === '' ? rvData.postData.Cust_code : getCustCode
-        const custnametostore = getCustomer === '' ? rvData.postData.CustName : getCustCode
+        const custCodetostore =
+          getCustCode === "" ? rvData.postData.Cust_code : getCustCode;
+        const custnametostore =
+          getCustomer === "" ? rvData.postData.CustName : getCustCode;
         const updateResponse = await axios.post(
           baseURL + "/hoCreateNew/updateData",
           {
@@ -424,32 +417,26 @@ export default function CreateNewForm() {
           toast.error("Failed to update data. Please try again.");
         }
 
-
         //update the Receive_Now amount
         if (rvData.data.receipt_details.length > 0) {
-
           const updateReceive_Now = await axios.put(
             baseURL + "/createnew/updateReceiveNowAmount",
             {
-              receipt_details: rvData.data.receipt_details
+              receipt_details: rvData.data.receipt_details,
             }
           );
-
-
         }
-        //update on account value in magod_hq_mis.unit_payment_recd_voucher_register 
+        //update on account value in magod_hq_mis.unit_payment_recd_voucher_register
 
         const updateOnaccount = await axios.put(
-
           baseURL + "/createnew/updateOnaccountValue",
           {
             on_account: onAccountValue22,
-            id: id
+            id: id,
           }
         );
 
         console.log("dfghj", updateOnaccount.data);
-
       }
     } catch (error) {
       console.error("Error in save API request", error);
@@ -482,14 +469,13 @@ export default function CreateNewForm() {
         secondTableArray: selectedRow
           ? [...prevRvData.secondTableArray, selectedRow]
           : prevRvData.secondTableArray.filter(
-            (item) => item.DC_Inv_No !== rowData.DC_Inv_No
-          ),
+              (item) => item.DC_Inv_No !== rowData.DC_Inv_No
+            ),
       };
     });
   };
 
   const handleRowSelect = (data) => {
-
     const selectedRow = rvData.firstTableArray.find(
       (row) => row.RecdPvSrl === data.RecdPvSrl
     );
@@ -500,18 +486,19 @@ export default function CreateNewForm() {
     });
   };
 
-
   const deleteWholeForm = () => {
-    let val = (onAccountValue1 === 0 || onAccountValue22 === 0 || onAccountValue1 !== fixedOnaccount) ? fixedOnaccount : onAccountValue1
-    let sumOfReceive_Now = 0
-    let sum = 0
+    let val =
+      onAccountValue1 === 0 ||
+      onAccountValue22 === 0 ||
+      onAccountValue1 !== fixedOnaccount
+        ? fixedOnaccount
+        : onAccountValue1;
+    let sumOfReceive_Now = 0;
+    let sum = 0;
     let stopExecution = false;
 
-
     if (rvData.data.receipt_details && rvData.data.receipt_details.length > 0) {
-
       rvData.data.receipt_details.forEach((selectedRow) => {
-
         // Your code logic for each item goes here
         if (parseFloat(selectedRow.Receive_Now) < 0) {
           toast.error("Incorrect Value");
@@ -530,107 +517,101 @@ export default function CreateNewForm() {
           stopExecution = true; // Set flag to true to stop execution
 
           return;
-        }
-
-
-        else if (formattedValue > val) {
+        } else if (formattedValue > val) {
           toast.error("Cannot Receive More than On_account Amount");
           stopExecution = true;
           return;
-        }
-
-
-        else if (sumOfReceive_Now > val) {
+        } else if (sumOfReceive_Now > val) {
           toast.error("Cannot Receive More than On_account Amount22");
           stopExecution = true;
           return;
         }
-
-
-
       });
 
       if (stopExecution) return;
-      sum = sumOfReceive_Now + onAccountValue22
+      sum = sumOfReceive_Now + onAccountValue22;
 
-      console.log("onaccount value aftr delete", sumOfReceive_Now, sum, onAccountValue22, onAccountValue1);
+      console.log(
+        "onaccount value aftr delete",
+        sumOfReceive_Now,
+        sum,
+        onAccountValue22,
+        onAccountValue1
+      );
 
-      axios.delete(
-        baseURL + "/createnew/deleteleft",
+      axios
+        .delete(
+          baseURL + "/createnew/deleteleft",
 
-        {
-          data: {
-            hoid: rvData.postData.HO_PrvId, id: id,
-            onacc: sumOfReceive_Now, receipt_details: rvData.data.receipt_details
-          }
-        }
-
-      ).then(resp => {
-        console.log("Response data:", resp.data);
-
-        if (resp.data?.Status === 'Success') {
-          setRvData((prevData) => ({
-            ...prevData,
-
+          {
             data: {
-              receipt_details: [],
-
+              hoid: rvData.postData.HO_PrvId,
+              id: id,
+              onacc: sumOfReceive_Now,
+              receipt_details: rvData.data.receipt_details,
             },
-            //firstTableArray: [],
-            postData: {
-              Amount: 0,
+          }
+        )
+        .then((resp) => {
+          console.log("Response data:", resp.data);
 
-            },
-          }));
+          if (resp.data?.Status === "Success") {
+            setRvData((prevData) => ({
+              ...prevData,
 
-          navigate("/HOAccounts/HO/RvAdjustment")
+              data: {
+                receipt_details: [],
+              },
+              //firstTableArray: [],
+              postData: {
+                Amount: 0,
+              },
+            }));
 
-        }
-      })
-        .catch(error => {
+            navigate("/HOAccounts/HO/RvAdjustment");
+          }
+        })
+        .catch((error) => {
           console.error("Error:", error);
         });
+    } else {
+      axios
+        .delete(
+          baseURL + "/createnew/deleteleft",
 
-    }
-
-    else {
-      axios.delete(
-        baseURL + "/createnew/deleteleft",
-
-        {
-          data: {
-            hoid: rvData.postData.HO_PrvId, id: id, onacc: adjustmentRows.fixedOnaccount,
-            receipt_details: rvData.data.receipt_details
-          }
-        }
-
-      ).then(resp => {
-        console.log("Response data:", resp.data);
-
-        if (resp.data?.Status === 'Success') {
-          setRvData((prevData) => ({
-            ...prevData,
-
+          {
             data: {
-              receipt_details: [],
-
+              hoid: rvData.postData.HO_PrvId,
+              id: id,
+              onacc: adjustmentRows.fixedOnaccount,
+              receipt_details: rvData.data.receipt_details,
             },
-            //firstTableArray: [],
-            postData: {
-              Amount: 0,
+          }
+        )
+        .then((resp) => {
+          console.log("Response data:", resp.data);
 
-            },
-          }));
+          if (resp.data?.Status === "Success") {
+            setRvData((prevData) => ({
+              ...prevData,
 
-          navigate("/HOAccounts/HO/RvAdjustment")
-        }
-      })
-        .catch(error => {
+              data: {
+                receipt_details: [],
+              },
+              //firstTableArray: [],
+              postData: {
+                Amount: 0,
+              },
+            }));
+
+            navigate("/HOAccounts/HO/RvAdjustment");
+          }
+        })
+        .catch((error) => {
           console.error("Error:", error);
         });
     }
-
-  }
+  };
 
   const addInvoice = async () => {
     console.log("updated on account value", onAccountValue22);
@@ -649,7 +630,6 @@ export default function CreateNewForm() {
       let stopExecution = false;
 
       for (const row of selectedRows) {
-
         // Check if the row is not already in receipt_details
         const isRowAlreadyAdded = rvData.data.receipt_details.some(
           (existingRow) => existingRow.Dc_inv_no === row.DC_Inv_No
@@ -668,22 +648,22 @@ export default function CreateNewForm() {
             toast.error("Don't have sufficient Amount to Adjust");
             // stopExecution = true;
             // return;
-          }
-          else if (onAccountValue < diff) {
+          } else if (onAccountValue < diff) {
             console.log("onacc222222222222", onAccountValue);
 
             // If onAccountValue is less than the difference, set Receive to onAccountValue
             rowsToAdd.push({ ...row, Receive: onAccountValue });
-            onAccountValue = (onAccountValue - (diff >= onAccountValue ? onAccountValue : diff));
+            onAccountValue =
+              onAccountValue - (diff >= onAccountValue ? onAccountValue : diff);
           } else {
             // Otherwise, set Receive to the difference
             rowsToAdd.push({ ...row, Receive: diff });
-            onAccountValue = (onAccountValue - (diff >= onAccountValue ? onAccountValue : diff));
+            onAccountValue =
+              onAccountValue - (diff >= onAccountValue ? onAccountValue : diff);
           }
 
-
           console.log("onmaccount123", onAccountValue);
-          setOnAccountValue(onAccountValue)
+          setOnAccountValue(onAccountValue);
           // Moved here to log updated value
         }
       }
@@ -702,13 +682,10 @@ export default function CreateNewForm() {
 
       console.log("respnse data add", response.data);
 
-
-
       const totalReceiveNow = response.data.reduce(
         (total, item) => total + parseFloat(item.Receive_Now || 0),
         0
       );
-
 
       const newRows = response.data.filter(
         (newRow) =>
@@ -759,11 +736,10 @@ export default function CreateNewForm() {
       }));
 
       const updateOnaccount = await axios.put(
-
         baseURL + "/createnew/updateOnaccountValue",
         {
           on_account: onAccountValue,
-          id: id
+          id: id,
         }
       );
 
@@ -775,10 +751,9 @@ export default function CreateNewForm() {
     }
   };
 
- 
   const handleInputChange = async (e, rowData, dif) => {
     const { name, value } = e.target;
-    const receiveNowValue = value !== '' ? parseFloat(value) : null;
+    const receiveNowValue = value !== "" ? parseFloat(value) : null;
 
     const totalReceiveNow = rvData.data.receipt_details.reduce(
       (total, item) =>
@@ -788,23 +763,21 @@ export default function CreateNewForm() {
           : parseInt(item.Receive_Now, 10) || 0),
       0
     );
-    let a = parseInt(rvData.postData.Amount) > 0 ? parseInt(rvData.postData.Amount) : 0
+    let a =
+      parseInt(rvData.postData.Amount) > 0
+        ? parseInt(rvData.postData.Amount)
+        : 0;
     let w = parseInt(onAccountValue1) + a;
 
-
-
-    rvData.data.receipt_details.forEach(item => {
+    rvData.data.receipt_details.forEach((item) => {
       console.log("dc inv no", item.Dc_inv_no);
       console.log("onaccount value", onAccountValue1);
       if (item.Dc_inv_no === rowData.Dc_inv_no) {
-
         // setOnAccountValue(onAccountValue1 - totalReceiveNow)
-        setOnAccountValue(fixedOnaccount - totalReceiveNow)
+        setOnAccountValue(fixedOnaccount - totalReceiveNow);
+      } else {
+        setOnAccountValue(w - totalReceiveNow);
       }
-      else {
-        setOnAccountValue(w - totalReceiveNow)
-      }
-
     });
 
     const updateAmount = await axios.post(
@@ -812,7 +785,7 @@ export default function CreateNewForm() {
       {
         Amount: totalReceiveNow,
         HO_PrvId: rvData.postData.HO_PrvId,
-        receipt_details: rvData.data.receipt_details
+        receipt_details: rvData.data.receipt_details,
       }
     );
 
@@ -830,50 +803,46 @@ export default function CreateNewForm() {
       },
     }));
 
-
     rvData.firstTableArray = [];
-
   };
-
 
   console.log("handle change onccount value", onAccountValue22);
 
   //update the Receive_now value when onchange
   useEffect(() => {
     if (rvData.data.receipt_details.length > 0) {
-
       const updateReceive_Now = axios.put(
         baseURL + "/createnew/updateReceiveNowAmount",
         {
-          receipt_details: rvData.data.receipt_details
+          receipt_details: rvData.data.receipt_details,
         }
       );
-
     }
-  }, [rvData.data.receipt_details])
-
+  }, [rvData.data.receipt_details]);
 
   const alertformClose = () => {
-    setAlertCancel(false)
-  }
+    setAlertCancel(false);
+  };
 
   const forCancelFormOpen = () => {
-    setAlertCancel(false)
+    setAlertCancel(false);
     setCancelPopup(true);
-  }
+  };
 
-  const [cancelPopup, setCancelPopup] = useState(false)
+  const [cancelPopup, setCancelPopup] = useState(false);
 
   const canacleButton = () => {
-
-    let val = (onAccountValue1 === 0 || onAccountValue22 === 0 || onAccountValue1 !== fixedOnaccount) ? fixedOnaccount : onAccountValue1
+    let val =
+      onAccountValue1 === 0 ||
+      onAccountValue22 === 0 ||
+      onAccountValue1 !== fixedOnaccount
+        ? fixedOnaccount
+        : onAccountValue1;
     let stopExecution = false;
 
-
     if (rvData.data.receipt_details) {
-
       rvData.data.receipt_details.forEach((selectedRow) => {
-        if (stopExecution) return
+        if (stopExecution) return;
         // Your code logic for each item goes here
         if (parseFloat(selectedRow.Receive_Now) < 0) {
           toast.error("Incorrect Value");
@@ -889,10 +858,7 @@ export default function CreateNewForm() {
           stopExecution = true; // Set flag to true to stop execution
 
           return;
-        }
-
-
-        else if (formattedValue > val) {
+        } else if (formattedValue > val) {
           toast.error("Cannot Receive More than On_account Amount");
           stopExecution = true;
           return;
@@ -901,48 +867,41 @@ export default function CreateNewForm() {
     }
 
     if (stopExecution) return;
-
     else {
-
       setAlertCancel(true);
     }
-  }
+  };
   const handleCancelClose = () => {
-    setCancelPopup(false)
-  }
+    setCancelPopup(false);
+  };
 
   const cancelYes = () => {
-
-
     if (reason.length > 15) {
-      setCancelPopup(false)
+      setCancelPopup(false);
       cancelllationSubmit();
+    } else {
+      toast.error("Need more than 15 chracters");
     }
-    else {
-      toast.error("Need more than 15 chracters")
-    }
+  };
 
-  }
-
-  console.log("ho prv iddddddd", rvData.postData.HO_PrvId, rvData.postData.CustName);
+  console.log(
+    "ho prv iddddddd",
+    rvData.postData.HO_PrvId,
+    rvData.postData.CustName
+  );
   const hprvd = rvData.postData.HO_PrvId;
   const cu = rvData.postData.CustName;
   console.log("after cancel post ", hprvd, cu);
 
   const cancelllationSubmit = async () => {
     console.log("rece now sum cancel ()", sumofReceive);
-    const cancelData = await axios.post(
-      baseURL + "/createNew/cancelUpdate",
-      {
+    const cancelData = await axios.post(baseURL + "/createNew/cancelUpdate", {
+      HO_PrvId: rvData.postData.HO_PrvId,
 
-        HO_PrvId: rvData.postData.HO_PrvId,
-
-        custName: rvData.postData.CustName,
-        totalReceiveNow: sumofReceive,
-        id: id
-
-      }
-    );
+      custName: rvData.postData.CustName,
+      totalReceiveNow: sumofReceive,
+      id: id,
+    });
 
     console.log("data after cancel ", cancelData.data.StatusCancel);
 
@@ -954,46 +913,56 @@ export default function CreateNewForm() {
         Status: cancelData.data.StatusCancel,
       },
     }));
-
-  }
+  };
 
   useEffect(() => {
-
     const sumofRecv = rvData.data.receipt_details.reduce(
       (sum, obj) => sum + parseFloat(obj.Receive_Now),
       0
     );
 
     if (sumofRecv <= onAccountValue1) {
-
       const updateOnaccount = axios.put(
-
         baseURL + "/createnew/updateOnaccountValue",
         {
           on_account: onAccountValue22,
-          id: id
+          id: id,
         }
-
       );
-
     }
-  }, [rvData.receipt_details, rvData.firstTableArray])
+  }, [rvData.receipt_details, rvData.firstTableArray]);
 
   let totalamnt = 0;
 
-  console.log("outside  ....onaccot22", onAccountValue22, "onacount1111", onAccountValue1);
+  console.log(
+    "outside  ....onaccot22",
+    onAccountValue22,
+    "onacount1111",
+    onAccountValue1
+  );
 
   const removeInvoice = async () => {
     // let val=onAccountValue22===0 || onAccountValue1==0 ? fixedOnaccount  : onAccountValue1
-    let val = (onAccountValue1 === 0 || onAccountValue22 === 0 || onAccountValue1 !== fixedOnaccount) ? fixedOnaccount : onAccountValue1
+    let val =
+      onAccountValue1 === 0 ||
+      onAccountValue22 === 0 ||
+      onAccountValue1 !== fixedOnaccount
+        ? fixedOnaccount
+        : onAccountValue1;
     let stopExecution = false;
 
-    console.log("onaccot22", onAccountValue22, "onacount1111", onAccountValue1, "Val", val);
+    console.log(
+      "onaccot22",
+      onAccountValue22,
+      "onacount1111",
+      onAccountValue1,
+      "Val",
+      val
+    );
     try {
       const isAnyEmptyReceiveNow = rvData.firstTableArray.some(
         (row) => row.Receive_Now === ""
       );
-
 
       if (isAnyEmptyReceiveNow) {
         toast.error("Receive Now cannot be empty");
@@ -1006,7 +975,6 @@ export default function CreateNewForm() {
         stopExecution = true;
         return;
       }
-
 
       const selectedRow = rvData.firstTableArray[0];
 
@@ -1021,14 +989,12 @@ export default function CreateNewForm() {
       const amountReceived = parseFloat(selectedRow.Amt_received || 0);
 
       if (formattedValue > invoiceAmount - amountReceived) {
-
         toast.error("Cannot Receive More than Invoice Amount");
         stopExecution = true;
         return;
       }
 
-      if (formattedValue > (val)) {
-
+      if (formattedValue > val) {
         toast.error("Cannot Receive More than On_account Amount");
         stopExecution = true;
         return;
@@ -1041,14 +1007,12 @@ export default function CreateNewForm() {
 
       const RecdPvSrl = selectedRow.RecdPvSrl;
       const receiveNowValue = parseFloat(selectedRow.Receive_Now || 0);
-      const invamount = parseFloat(rvData.firstTableArray[0].Inv_Amount || 0)
+      const invamount = parseFloat(rvData.firstTableArray[0].Inv_Amount || 0);
 
-      
       let totalReceiveNow = rvData.firstTableArray.reduce(
         (sum, obj) => sum + parseFloat(obj.Receive_Now),
         0
       );
-
 
       if (sumofRecv > val) {
         toast.error("Cannot Receive More than On_account Amount22");
@@ -1065,7 +1029,6 @@ export default function CreateNewForm() {
         }
       );
 
-
       // Convert On_account to a number, round it to 2 decimal places, then parse it back to a number
       const roundedReceiveNow = parseFloat(
         parseFloat(rvData.postData.Amount).toFixed(2)
@@ -1077,7 +1040,6 @@ export default function CreateNewForm() {
         data: {
           ...prevRvData.data,
           receipt_details: response.data,
-
         },
         postData: {
           ...prevRvData.postData,
@@ -1102,34 +1064,24 @@ export default function CreateNewForm() {
         },
       }));
 
-      
-
-      if (totalReceiveNow <= (val)) {
+      if (totalReceiveNow <= val) {
         if (totalReceiveNow === invamount) {
-          let totalamnt = totalReceiveNow + onAccountValue22
+          let totalamnt = totalReceiveNow + onAccountValue22;
 
-          setOnAccountValue(totalamnt)
+          setOnAccountValue(totalamnt);
+        } else if (
+          totalReceiveNow < invamount &&
+          invamount !== onAccountValue1
+        ) {
+          setOnAccountValue(receiveNowValue + onAccountValue22);
+        } else if (totalReceiveNow < invamount) {
+          let totalamnt = totalReceiveNow + onAccountValue22;
+          setOnAccountValue(totalamnt);
+        } else {
+          let totalamnt = invamount + onAccountValue22;
+          setOnAccountValue(totalamnt);
         }
-
-        else if (totalReceiveNow < invamount && invamount !== onAccountValue1) {
-
-
-          setOnAccountValue(receiveNowValue + onAccountValue22)
-        }
-        else if (totalReceiveNow < invamount) {
-
-          let totalamnt = (totalReceiveNow) + onAccountValue22
-          setOnAccountValue(totalamnt)
-        }
-        else {
-
-          let totalamnt = (invamount) + onAccountValue22
-          setOnAccountValue(totalamnt)
-        }
-
       }
-
-
 
       // if (totalReceiveNow <= val) {
       //   if (totalReceiveNow === invamount) {
@@ -1139,7 +1091,6 @@ export default function CreateNewForm() {
       //   }
 
       //   else if (totalReceiveNow < invamount && invamount !== val) {
-
 
       //     setOnAccountValue(receiveNowValue + onAccountValue22)
       //   }
@@ -1155,8 +1106,6 @@ export default function CreateNewForm() {
       //   }
 
       // }
-
-
 
       // if (totalReceiveNow <= fixedOnaccount) {
       //   if (totalReceiveNow === invamount) {
@@ -1185,26 +1134,19 @@ export default function CreateNewForm() {
       console.log("total onaccount inside method", onAccountValue22);
       // set(amnttt)
 
-
       const updateOnaccount = await axios.put(
-
         baseURL + "/createnew/updateOnaccountValue",
         {
           on_account: onAccountValue22,
-          id: id
+          id: id,
         }
       );
-
-
     } catch (error) {
       console.error("Error removing voucher:", error);
     }
   };
 
   console.log("total onaccount valuw2", onAccountValue22);
-
-
-
 
   const getDCNo = async () => {
     const srlType = "HO PaymentRV";
@@ -1227,11 +1169,7 @@ export default function CreateNewForm() {
     }
   };
 
-
-
-
   const postInvoice = () => {
-
     if (!rvData.postData.Description) {
       toast.error("Narration Missing");
       return;
@@ -1242,26 +1180,23 @@ export default function CreateNewForm() {
       return;
     }
 
-    let val = (onAccountValue1 === 0 || onAccountValue22 === 0 || onAccountValue1 !== fixedOnaccount) ? fixedOnaccount : onAccountValue1
+    let val =
+      onAccountValue1 === 0 ||
+      onAccountValue22 === 0 ||
+      onAccountValue1 !== fixedOnaccount
+        ? fixedOnaccount
+        : onAccountValue1;
 
     let stopExecution = false;
-
 
     const sumofRecv = rvData.data.receipt_details.reduce(
       (sum, obj) => sum + parseFloat(obj.Receive_Now),
       0
     );
 
-
-
-
-
-
-
     if (rvData.data.receipt_details) {
-
       rvData.data.receipt_details.forEach((selectedRow) => {
-        if (stopExecution) return
+        if (stopExecution) return;
         // Your code logic for each item goes here
         if (parseFloat(selectedRow.Receive_Now) < 0) {
           toast.error("Incorrect Value");
@@ -1272,61 +1207,47 @@ export default function CreateNewForm() {
         const invoiceAmount = parseFloat(selectedRow.Inv_Amount || 0);
         const amountReceived = parseFloat(selectedRow.Amt_received || 0);
 
-
-
-
         if (formattedValue > invoiceAmount - amountReceived) {
           toast.error("Cannot Receive More than Invoice Amount");
           stopExecution = true; // Set flag to true to stop execution
 
           return;
-        }
-
-
-        else if (formattedValue > val) {
+        } else if (formattedValue > val) {
           toast.error("Cannot Receive More than On_account Amount");
           stopExecution = true;
           return;
-        }
-
-        else if (sumofRecv > val) {
+        } else if (sumofRecv > val) {
           toast.error("Cannot Receive More than On_account Amount22");
           stopExecution = true;
           return;
         }
-
-
       });
     }
 
-
-
-
     if (stopExecution) return;
-
     else {
       getDCNo();
       setShowPostModal(true);
     }
   };
 
-
-
   console.log("rectttttttttt", rvData.data.receipt_details);
 
-
   const handlePostYes = async () => {
-    let val = (onAccountValue1 === 0 || onAccountValue22 === 0 || onAccountValue1 !== fixedOnaccount) ? fixedOnaccount : onAccountValue1
+    let val =
+      onAccountValue1 === 0 ||
+      onAccountValue22 === 0 ||
+      onAccountValue1 !== fixedOnaccount
+        ? fixedOnaccount
+        : onAccountValue1;
     console.log("rece now sum post yes", sumofReceive);
 
     setShowPostModal(false);
     let stopExecution = false;
     try {
-
       if (rvData.data.receipt_details) {
-
         rvData.data.receipt_details.forEach((selectedRow) => {
-          if (stopExecution) return
+          if (stopExecution) return;
           // Your code logic for each item goes here
           if (parseFloat(selectedRow.Receive_Now) < 0) {
             toast.error("Incorrect Value");
@@ -1338,16 +1259,12 @@ export default function CreateNewForm() {
           const amountReceived = parseFloat(selectedRow.Amt_received || 0);
           sum += formattedValue;
 
-
           if (formattedValue > invoiceAmount - amountReceived) {
             toast.error("Cannot Receive More than Invoice Amount");
             stopExecution = true; // Set flag to true to stop execution
 
             return;
-          }
-
-
-          else if (formattedValue > val) {
+          } else if (formattedValue > val) {
             toast.error("Cannot Receive More than On_account Amount");
             stopExecution = true;
             return;
@@ -1369,7 +1286,6 @@ export default function CreateNewForm() {
         receipt_details: rvData.data.receipt_details,
         onacc: onAccountValue22,
         id: id,
-
       });
 
       console.log("PostInvoice Response", response.data);
@@ -1390,7 +1306,7 @@ export default function CreateNewForm() {
           HO_PrvId: response.data[0].HOPrvId,
           Description: response.data[0].Description,
           TxnType: response.data[0].TxnType,
-          On_account: response.data[0].On_account
+          On_account: response.data[0].On_account,
         },
 
         firstTableArray: [],
@@ -1426,7 +1342,6 @@ export default function CreateNewForm() {
 
   console.log("firstTableArray", rvData.firstTableArray);
 
-
   //store your postdata into  receipt_data
   useEffect(() => {
     if (rvData.postData) {
@@ -1438,21 +1353,17 @@ export default function CreateNewForm() {
   }, [rvData.postData]);
 
   const pdfSubmit = (e) => {
-
-
     setPdfVoucher(true);
     e.preventDefault();
-
-  }
+  };
   const [reason, setReason] = useState("");
 
   const handleReasonChange = (event) => {
-
     const newValue = event.target.value;
     setReason(event.target.value);
     // Do something with the new value, such as storing it in state
     console.log("New value of the textarea:", newValue);
-  }
+  };
 
   return (
     <>
@@ -1721,8 +1632,8 @@ export default function CreateNewForm() {
                 className="in-field"
                 name="reason"
                 disabled
-               // value={adjustmentRows ? adjustmentRows.On_account : ""}
-               value={adjustmentRows ? adjustmentRows.fixedOnaccount : ""}
+                // value={adjustmentRows ? adjustmentRows.On_account : ""}
+                value={adjustmentRows ? adjustmentRows.fixedOnaccount : ""}
               />
             </div>
           </div>
@@ -1737,7 +1648,7 @@ export default function CreateNewForm() {
             <Table className="table-data border mt-1">
               <thead
                 className="tableHeaderBGColor"
-              // style={{ textAlign: "center" }}
+                // style={{ textAlign: "center" }}
               >
                 <tr style={{ whiteSpace: "nowrap" }}>
                   <th>Srl</th>
@@ -1754,63 +1665,63 @@ export default function CreateNewForm() {
               <tbody className="tablebody">
                 {rvData.data.receipt_details
                   ? rvData.data.receipt_details.map((data, index) => (
-                    <>
-                      <tr
-                        style={{ whiteSpace: "nowrap" }}
-                        onClick={() => handleRowSelect(data)}
-                        key={data.RecdPvSrl}
-                        className={
-                          rvData.firstTableArray.some(
-                            (row) => row.Dc_inv_no === data.Dc_inv_no
-                          )
-                            ? "selectedRow"
-                            : ""
-                        }
-                      >
-                        <td>{data.RecdPvSrl}</td>
-                        <td>{data.Inv_No}</td>
+                      <>
+                        <tr
+                          style={{ whiteSpace: "nowrap" }}
+                          onClick={() => handleRowSelect(data)}
+                          key={data.RecdPvSrl}
+                          className={
+                            rvData.firstTableArray.some(
+                              (row) => row.Dc_inv_no === data.Dc_inv_no
+                            )
+                              ? "selectedRow"
+                              : ""
+                          }
+                        >
+                          <td>{data.RecdPvSrl}</td>
+                          <td>{data.Inv_No}</td>
 
-                        <td>
-                          {new Date(data.Inv_date).toLocaleDateString(
-                            "en-GB"
-                          )}
-                        </td>
+                          <td>
+                            {new Date(data.Inv_date).toLocaleDateString(
+                              "en-GB"
+                            )}
+                          </td>
 
-                        <td>{data.Inv_Type}</td>
-                        <td>{formatAmount(data.Inv_Amount)}</td>
-                        <td>{formatAmount(data.Amt_received)}</td>
-                        <td>
-                          <input
-                            type="number"
-                            // onBlur={onBlurr}
-                            name={"Receive_Now"}
-                            value={data.Receive_Now}
-                            disabled={
-                              rvData && rvData.postData.Status !== "Draft"
-                                ? rvData.postData.Status
-                                : ""
-                            }
-                            onChange={(e) =>
-                              handleInputChange(
-                                e,
-                                data,
-                                parseInt(data.Inv_Amount) -
-                                parseInt(data.Amt_received)
-                              )
-                            }
-                            onKeyPress={(e) => {
-                              // Allow only numbers (0-9) and backspace
-                              const isNumber = /^[0-9\b]+$/;
-                              if (!isNumber.test(e.key)) {
-                                e.preventDefault();
+                          <td>{data.Inv_Type}</td>
+                          <td>{formatAmount(data.Inv_Amount)}</td>
+                          <td>{formatAmount(data.Amt_received)}</td>
+                          <td>
+                            <input
+                              type="number"
+                              // onBlur={onBlurr}
+                              name={"Receive_Now"}
+                              value={data.Receive_Now}
+                              disabled={
+                                rvData && rvData.postData.Status !== "Draft"
+                                  ? rvData.postData.Status
+                                  : ""
                               }
-                            }}
-                          />
-                        </td>
-                        <td>{data.Id}</td>
-                      </tr>
-                    </>
-                  ))
+                              onChange={(e) =>
+                                handleInputChange(
+                                  e,
+                                  data,
+                                  parseInt(data.Inv_Amount) -
+                                    parseInt(data.Amt_received)
+                                )
+                              }
+                              onKeyPress={(e) => {
+                                // Allow only numbers (0-9) and backspace
+                                const isNumber = /^[0-9\b]+$/;
+                                if (!isNumber.test(e.key)) {
+                                  e.preventDefault();
+                                }
+                              }}
+                            />
+                          </td>
+                          <td>{data.Id}</td>
+                        </tr>
+                      </>
+                    ))
                   : ""}
               </tbody>
             </Table>
@@ -1917,14 +1828,14 @@ export default function CreateNewForm() {
             className="button-style"
             // style={{ width: "50px" }}
             onClick={handlePostYes}
-            style={{ fontSize: '12px' }}
+            style={{ fontSize: "12px" }}
           >
             Yes
           </button>
 
           <button
             className="button-style"
-            style={{ fontSize: '12px', backgroundColor: "rgb(173, 173, 173)" }}
+            style={{ fontSize: "12px", backgroundColor: "rgb(173, 173, 173)" }}
             onClick={handlePostModalClose}
           >
             No
@@ -1945,7 +1856,7 @@ export default function CreateNewForm() {
           <button
             className="button-style"
             //  style={{ width: "50px" }}
-            style={{ fontSize: '12px' }}
+            style={{ fontSize: "12px" }}
             onClick={forCancelFormOpen}
           >
             Yes
@@ -1954,8 +1865,8 @@ export default function CreateNewForm() {
           <button
             className="button-style"
             style={{
-              fontSize: '12px',
-              backgroundColor: "rgb(173, 173, 173)"
+              fontSize: "12px",
+              backgroundColor: "rgb(173, 173, 173)",
             }}
             onClick={alertformClose}
           >
@@ -2032,5 +1943,4 @@ export default function CreateNewForm() {
       </Modal>
     </>
   );
-
 }
