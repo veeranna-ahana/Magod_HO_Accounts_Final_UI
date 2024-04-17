@@ -30,6 +30,7 @@ import AccountSync from "./pages/HoAccounts/Sync/AccountSync/AccountSync";
 import SyncUnit from "./pages/HoAccounts/Sync/FromUnitSync/SyncUnit";
 import UnitUpdate from "./pages/HoAccounts/Sync/FromUnitUpdate/UnitUpdate";
 import NewForm from "./pages/HoAccounts/Ho/HO_PRV/CreateNew/NewForm";
+import OpenNavigatorForPRV from "./pages/HoAccounts/Ho/HO_PRV/OpenNavigatorForPRV";
 
 function App() {
   return (
@@ -69,6 +70,7 @@ function App() {
                 <Route path="DraftList" element={<Draft_List />} />
                 <Route path="PRVList" element={<PRV_List />} />
                 <Route path="OnAccountList" element={<On_AccountList />} />
+                <Route path="ForNavigation" element={<OpenNavigatorForPRV />} />
               </Route>
             </Route>
 

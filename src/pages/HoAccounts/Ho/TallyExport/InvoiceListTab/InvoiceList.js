@@ -5,6 +5,7 @@ import axios from "axios";
 import xmljs from "xml-js";
 import { useGlobalContext } from "../../../Context/Context";
 import { baseURL } from "../../../../../api/baseUrl";
+import { toast } from "react-toastify";
 const he = require('he');
 
 export default function InvoiceList({
@@ -25,6 +26,7 @@ export default function InvoiceList({
     setExportTally(false);
     if (selectedDate && selectedUnitName) {
       invoiceListSubmit();
+
     }
   }, [selectedDate, exportTally, selectedUnitName])
 
@@ -40,8 +42,19 @@ export default function InvoiceList({
       }
     )
       .then((res) => {
+        if (res.data.Result.length > 0) {
+          setInvoiceListData(res.data.Result)
+          if (invoiceListData.length === 0 && flag && selectedDate && selectedUnitName && !toastShown) {
 
-        setInvoiceListData(res.data.Result)
+            setInvoiceListData([]);
+            toast.error("no data");
+            setToastShown(true);
+
+          }
+        }
+        else {
+          setInvoiceListData([])
+        }
         // console.log("inv ", res.data.Result);
       })
       .catch((err) => {
@@ -82,7 +95,7 @@ export default function InvoiceList({
   //fetch the company from tally software
 
   const companyFromTally = async () => {
-    alert("a;ret")
+
     const companiesfromtally = await axios.get(
       baseURL + '/tallyExport/getCompanyFromTally'
 
@@ -106,8 +119,14 @@ export default function InvoiceList({
         }
       )
         .then((res) => {
+
           //  console.log("inv 2", res.data.Result);
-          setTaxInvoiceData(res.data.Result)
+          if (res.data.Result.length > 0) {
+            setTaxInvoiceData(res.data.Result)
+          }
+          else {
+            // toast.error("No Invoive data for this date")
+          }
         })
         .catch((err) => {
           console.log("err", err);
@@ -156,184 +175,6 @@ export default function InvoiceList({
   }, [invoiceListData, flag]);
 
 
-
-
-
-
-
-
-  console.log("invoice list data", invoiceListData);
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //   const tableToXml = () => {
-  //     const xmlData = {
-  //         ENVELOPE: {
-  //             HEADER: {
-  //                 TALLYREQUEST: { _text: 'Import Data' }
-  //             },
-  //             Body: {
-  //                 ImportData: {
-  //                     REQUESTDESC: {
-  //                         REPORTNAME: { _text: 'Vouchers' },
-  //                         STATICVARIABLES: {
-  //                             SVCURRENTCOMPANY: { _text: 'MLMPL_Jigani_2023_24' }
-  //                         }
-  //                     },
-  //                     TALLYMESSAGE: {
-  //                         _attributes: {
-  //                            'xmlns:UDF': 'TallyUDF' 
-  //                         },
-  //                         VOUCHER: invoiceListData.map((voucher) => {
-  //                             const creditPeriod = Math.round(
-  //                                 Math.abs(new Date(voucher.PaymentDate) - new Date(voucher.Inv_Date)) / (1000 * 60 * 60 * 24)
-  //                             );
-
-  //                             const custname = voucher.Cust_Name;
-  //                             const custDisplay = custname ? invoiceListData
-  //                                 .filter((item) => voucher.DC_Inv_No === item.DC_Inv_No)
-  //                                 .map((item) => ({
-  //                                     LEDGERNAME: item.Cust_Name,
-  //                                     GSTCLASS: '',
-  //                                     ISDEEMEDPOSITIVE: 'Yes',
-  //                                     LEDGERFROMITEM: 'No',
-  //                                     REMOVEZEROENTRIES: 'No',
-  //                                     ISPARTYLEDGER: 'Yes',
-  //                                     AMOUNT: item.GrandTotal,
-  //                                     BILLALLOCATIONS_LIST: {
-  //                                         NAME: `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`,
-  //                                         BILLCREDITPERIOD: creditPeriod.toString(),
-  //                                         BILLTYPE: 'New Ref',
-  //                                         AMOUNT: voucher.GrandTotal,
-  //                                     },
-  //                                 })) : [];
-
-  //                             const ledgerNameCall = voucher.LedgerName;
-  //                             const ledgerName = ledgerNameCall ? invoiceListData
-  //                                 .filter((item) => voucher.DC_Inv_No === item.DC_Inv_No)
-  //                                 .map((item) => ({
-  //                                     LEDGERNAME: item.LedgerName,
-  //                                     GSTCLASS: '',
-  //                                     ISDEEMEDPOSITIVE: 'Yes',
-  //                                     LEDGERFROMITEM: 'No',
-  //                                     REMOVEZEROENTRIES: 'No',
-  //                                     ISPARTYLEDGER: 'Yes',
-  //                                     AMOUNT: item.Net_Total,
-  //                                 })) : [];
-
-  //                             const taxData = taxInvoiceData.length > 0;
-  //                             const ledgerEntriesForTax = taxData ? taxInvoiceData.map((tax) => ({
-  //                                 LEDGERNAME: tax.AcctHead,
-  //                                 GSTCLASS: '',
-  //                                 ISDEEMEDPOSITIVE: 'Yes',
-  //                                 LEDGERFROMITEM: 'No',
-  //                                 REMOVEZEROENTRIES: 'No',
-  //                                 ISPARTYLEDGER: 'Yes',
-  //                                 AMOUNT: tax.TaxAmt,
-  //                             })) : [];
-
-  //                             const includeDelChg = parseInt(voucher.Del_chg) > 0;
-  //                             const allLedgerEntriesDelChg = includeDelChg ? [{
-  //                                 LEDGERNAME: 'Transport Charges',
-  //                                 GSTCLASS: voucher.Del_chg,
-  //                                 ISDEEMEDPOSITIVE: 'Yes',
-  //                                 LEDGERFROMITEM: 'No',
-  //                                 REMOVEZEROENTRIES: 'No',
-  //                                 ISPARTYLEDGER: 'Yes',
-  //                                 AMOUNT: voucher.Del_chg,
-  //                             }] : [];
-
-  //                             const includeRoundOff = parseFloat(voucher.Round_Off) !== 0;
-  //                             const allLedgerEntriesRoundOff = includeRoundOff ? [{
-  //                                 LEDGERNAME: 'Round Off',
-  //                                 GSTCLASS: '',
-  //                                 ISDEEMEDPOSITIVE: 'Yes',
-  //                                 LEDGERFROMITEM: 'No',
-  //                                 REMOVEZEROENTRIES: 'No',
-  //                                 ISPARTYLEDGER: 'Yes',
-  //                                 AMOUNT: voucher.Round_Off,
-  //                             }] : [];
-
-  //                             const allLedgerEntries = [
-  //                                 ...custDisplay,
-  //                                 ...ledgerName,
-  //                                 ...ledgerEntriesForTax,
-  //                                 ...allLedgerEntriesDelChg,
-  //                                 ...allLedgerEntriesRoundOff,
-  //                             ];
-
-  //                             const baseVoucher = {
-  //                                 _attributes: {
-  //                                     REMOTEID: `${voucher.PreFix}${voucher.DC_Inv_No}`,
-  //                                     VCHTYPE: voucher.DC_InvType,
-  //                                     ACTION: 'Create'
-  //                                 },
-  //                                 DATE: voucher.Inv_Date,
-  //                                 GUID: voucher.DC_Inv_No,
-  //                                 NARRATION: `Our WO No: ${voucher.OrderNo} Packing Note No: ${voucher.DC_no}/ ${voucher.DC_Fin_Year}`,
-  //                                 VOUCHERTYPENAME: voucher.DC_InvType,
-  //                                 VOUCHERNUMBER: `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`,
-  //                                 REFERENCE: voucher.PO_No,
-  //                                 PARTYLEDGERNAME: voucher.Cust_Name,
-  //                                 CSTFORMISSUETYPE: "",
-  //                                 CSTFORMRECVTYPE: '',
-  //                                 FBTPAYMENTTYPE: 'Default',
-  //                                 VCHGSTCLASS: '',
-  //                                 DIFFACTUALQTY: 'No',
-  //                                 AUDITED: 'No',
-  //                                 FORJOBCOSTING: 'No',
-  //                                 ISOPTIONAL: 'No',
-  //                                 EFFECTIVEDATE: voucher.Inv_Date,
-  //                                 USEFORINTEREST: 'No',
-  //                                 USEFORGAINLOSS: 'No',
-  //                                 USEFORGODOWNTRANSFER: 'No',
-  //                                 USEFORCOMPOUND: 'No',
-  //                                 ALTERID: '2',
-  //                                 EXCISEOPENING: "No",
-  //                                 ISCANCELLED: 'No',
-  //                                 HASCASHFLOW: 'No',
-  //                                 ISPOSTDATED: 'No',
-  //                                 USETRACKINGNUMBER: 'No',
-  //                                 ISINVOICE: 'No',
-  //                                 MFGJOURNAL: 'No',
-  //                                 HASDISCOUNTS: 'No',
-  //                                 ASPAYSLIP: 'No',
-  //                                 ISDELETED: 'No',
-  //                                 ASORIGINAL: 'No',
-  //                                 ...(allLedgerEntries.length > 0 && { ALLLEDGERENTRIES_LIST: allLedgerEntries }),
-  //                             };
-
-  //                             return {
-  //                                 VOUCHER: baseVoucher
-  //                             };
-  //                         }),
-  //                     },
-  //                 },
-  //             },
-  //         },
-  //     };
-
-  //     const xml = xmljs.js2xml(xmlData, { compact: true, spaces: 2 });
-  //     return xml;
-  // };
-
-
-
-
-
-
-
-//console.log("invoice list dataaaaaaaaaaaaaaaaaaaaa",invoiceListData);
 
   const tableToXml = () => {
     const xmlData = {
@@ -402,7 +243,7 @@ export default function InvoiceList({
                     break;
                   case 'CombinedBill':
                     xmlVrAction = `<VOUCHER REMOTEID='${voucher.PreFix}${voucher.DC_Inv_No}' VCHTYPE='CombinedBill' ACTION='Create'>`;
-                    xmlVrtype = "CombinedBill" ;
+                    xmlVrtype = "CombinedBill";
                     Narration = 'Being Combined Bill for many Excise and Service invoices';
                     InvNo = `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`;
                     break;
@@ -417,15 +258,15 @@ export default function InvoiceList({
 
 
                 const taxData = taxInvoiceData.length > 0;
-                              const ledgerEntriesForTax = taxData ? taxInvoiceData.map((tax) => ({
-                                  LEDGERNAME: tax.AcctHead,
-                                  GSTCLASS: '',
-                                  ISDEEMEDPOSITIVE: 'Yes',
-                                  LEDGERFROMITEM: 'No',
-                                  REMOVEZEROENTRIES: 'No',
-                                  ISPARTYLEDGER: 'Yes',
-                                  AMOUNT: tax.TaxAmt,
-                              })) : [];
+                const ledgerEntriesForTax = taxData ? taxInvoiceData.map((tax) => ({
+                  LEDGERNAME: tax.AcctHead,
+                  GSTCLASS: '',
+                  ISDEEMEDPOSITIVE: 'Yes',
+                  LEDGERFROMITEM: 'No',
+                  REMOVEZEROENTRIES: 'No',
+                  ISPARTYLEDGER: 'Yes',
+                  AMOUNT: tax.TaxAmt,
+                })) : [];
 
                 const includeDelChg = parseInt(voucher.Del_chg) > 0;
                 const allLedgerEntriesDelChg = includeDelChg ? [{
@@ -926,10 +767,10 @@ export default function InvoiceList({
   };
 
   if (exportTally) {
-   // handleExport();
+    // handleExport();
     // companyFromTally()
 
-   createXmlForEachData();
+    createXmlForEachData();
   }
 
   const [taxTable, setTaxTable] = useState()
@@ -1028,7 +869,34 @@ export default function InvoiceList({
     return dataCopyReceipt;
   };
 
+  // useEffect(() => {
+  //   if (invoiceListData.length === 0 && flag) {
+  //     setInvoiceListData([])
+  //     toast.error("no dataaaaaaaaa")
+  //   } else {
 
+  //   }
+  // }, [invoiceListData]);
+  console.log("flag", flag);
+
+  const [toastShown, setToastShown] = useState(false);
+
+  useEffect(() => {
+
+    if (flag ) {
+      noDataFunc();
+    }
+  }, [ invoiceListData,flag]);
+
+  const noDataFunc = () => {
+    if (invoiceListData.length === 0 && flag && selectedDate && selectedUnitName && !toastShown) {
+
+      setInvoiceListData([]);
+      toast.error("no data");
+      setToastShown(true);
+      setFlag(false)
+    }
+  }
 
   return (
     <>
@@ -1398,401 +1266,7 @@ export default function InvoiceList({
         </div>
       </div>
 
-      {/* --------------------------------------- */}
 
-      {/* <div className="row">
-        <div
-          className="col-md-6"
-          style={{ height: "700px", overflowX: "scroll", overflowY: "scroll" }}
-        >
-          <Table striped className="table-data border">
-            <thead className="tableHeaderBGColor">
-              <tr style={{ whiteSpace: "nowrap" }}>
-                <th>Tally</th>
-                <th onClick={() => requestSort("BillType")}>Bill Type</th>
-                <th onClick={() => requestSort("DC_InvType")}>Inv Type</th>
-                <th onClick={() => requestSort("Inv_No")}>Inv No</th>
-                <th onClick={() => requestSort("Cust_Name")}>Customer</th>
-                <th onClick={() => requestSort("GrandTotal")}>Grand Total</th>
-                <th onClick={() => requestSort("PO_No")}>PO No</th>
-                <th onClick={() => requestSort("TallyRef")}>Tally Ref</th>
-                <th onClick={() => requestSort("Cust_Code")}>Cust_Code</th>
-                <th>Updated</th>
-              </tr>
-            </thead>
-
-            <tbody className="tablebody">
-              {flag &&
-                sortedData().map((item, key) => {
-                  return (
-                    <tr
-                      onClick={() => selectedRowFun(item, key)}
-                      className={
-                        key === selectRow?.index ? "selcted-row-clr" : ""
-                      }
-                      style={{
-                        whiteSpace: "nowrap",
-                        backgroundColor: "#FF7F50",
-                      }}
-                    >
-                      <td>{<input type="checkBox" disabled />}</td>
-                      <td>{item.BillType}</td>
-                      <td>{item.DC_InvType}</td>
-                      <td>{item.Inv_No}</td>
-                      <td>{item.Cust_Name}</td>
-                      <td>{item.GrandTotal}</td>
-                      <td>{item.PO_No}</td>
-                      <td>{item.TallyRef}</td>
-                      <td>{item.Cust_Code}</td>
-                      <td>{<input type="checkBox" disabled />}</td>
-                    </tr>
-                  );
-                })}
-            </tbody>
-          </Table>
-        </div>
-
-        <div className="col-md-6">
-          <div className="">
-            <div className="row ">
-              <div className="row">
-                <div className="d-flex col-md-6" style={{ gap: "10px" }}>
-                  <label
-                    className="form-label"
-                    style={{ whiteSpace: "nowrap" }}
-                  >
-                    Invoice No
-                  </label>
-                  <input
-                    class="in-field"
-                    type="text"
-                    value={selectRow.Inv_No}
-                  />
-                </div>
-
-                <div className="d-flex col-md-6" style={{ gap: "10px" }}>
-                  <label
-                    className="form-label"
-                    style={{ whiteSpace: "nowrap" }}
-                  >
-                    PN No
-                  </label>
-                  <input
-                    class="in-field"
-                    type="text"
-                    value={selectRow.DC_No}
-                    disabled
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="row mt-1">
-              <div className="row">
-                <div className="d-flex col-md-6" style={{ gap: "10px" }}>
-                  <label className="form-label">Type</label>
-                  <input
-                    class="in-field"
-                    type="text"
-                    value={selectRow.DC_InvType}
-                    disabled
-                  />
-                </div>
-
-                <div className="d-flex col-md-6" style={{ gap: "10px" }}>
-                  <label
-                    className="form-label"
-                    style={{ whiteSpace: "nowrap" }}
-                  >
-                    PN Date
-                  </label>
-                  <input
-                    class="in-field"
-                    type="text"
-                    value={convertDateFormat(selectRow.Inv_Date)}
-                    disabled
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="row mt-1">
-              <div className="row">
-                <div className="d-flex col-md-12" style={{ gap: "10px" }}>
-                  <label
-                    className="form-label"
-                    style={{ whiteSpace: "nowrap" }}
-                  >
-                    PO No
-                  </label>
-                  <input
-                    class="in-field"
-                    type="text"
-                    value={selectRow.PO_No}
-                    disabled
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="row mt-1 ">
-              <div className="row">
-                <div className="d-flex col-md-12" style={{ gap: "10px" }}>
-                  <label className="form-label">Customer</label>
-                  <input
-                    class="in-field"
-                    type="text"
-                    value={selectRow.Cust_Name}
-                    disabled
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="row mt-1">
-              <div className="row">
-                <div className="d-flex col-md-6" style={{ gap: "10px" }}>
-                  <label className="form-label">Place</label>
-
-                  <input
-                    class="in-field"
-                    type="text"
-                    value={selectRow.Cust_place}
-                    disabled
-                  />
-                </div>
-
-                <div className="d-flex col-md-6" style={{ gap: "10px" }}>
-                  <label className="form-label">NetTotal</label>
-                  <input
-                    class="in-field"
-                    type="text"
-                    value={selectRow.Net_Total}
-                    disabled
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="row mt-1">
-              <div className="row">
-                <div className="d-flex col-md-6" style={{ gap: "10px" }}>
-                  <label className="form-label">State</label>
-                  <input
-                    class="in-field"
-                    type="text"
-                    value={selectRow.Cust_state}
-                    disabled
-                  />
-                </div>
-
-                <div className="d-flex col-md-6" style={{ gap: "10px" }}>
-                  <label
-                    className="form-label"
-                    style={{ whiteSpace: "nowrap" }}
-                  >
-                    Net Value
-                  </label>
-                  <input class="in-field" type="text" placeholder="" />
-                </div>
-              </div>
-            </div>
-
-            <div className="row mt-1">
-              <div className="row">
-                <div className="d-flex col-md-6" style={{ gap: "10px" }}>
-                  <label
-                    className="form-label"
-                    style={{ whiteSpace: "nowrap" }}
-                  >
-                    Pin Code
-                  </label>
-
-                  <input
-                    class="in-field"
-                    type="text"
-                    value={selectRow.PIN_Code}
-                    disabled
-                  />
-                </div>
-
-                <div className="d-flex col-md-6" style={{ gap: "10px" }}>
-                  <label
-                    className="form-label"
-                    style={{ whiteSpace: "nowrap" }}
-                  >
-                    Assessamble Value
-                  </label>
-
-                  <input
-                    class="in-field"
-                    type="text"
-                    value={selectRow.AssessableValue}
-                    disabled
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="row mt-2">
-              <div className="d-flex col-md-6" style={{ gap: "10px" }}>
-                <label className="form-label"> Address</label>
-
-                <textarea
-                  className="form-control"
-                  value={selectRow.Cust_address}
-                  disabled
-                  style={{ height: "100px", resize: "none" }}
-                ></textarea>
-              </div>
-              <div className="col-md-6">
-                <div className="d-flex" style={{ gap: "10px" }}>
-                  <label
-                    className="form-label"
-                    style={{ whiteSpace: "nowrap" }}
-                  >
-                    Deliver Charges
-                  </label>
-
-                  <input class="in-field" type="text" placeholder="" />
-                </div>
-
-                <div className="d-flex" style={{ gap: "10px" }}>
-                  <label className="form-label">Taxes</label>
-
-                  <input
-                    className="in-field"
-                    type="text"
-                    value={selectRow.TaxAmount}
-                    disabled
-                  />
-                </div>
-
-                <div className="d-flex" style={{ gap: "10px" }}>
-                  <label
-                    className="form-label"
-                    style={{ whiteSpace: "nowrap" }}
-                  >
-                    Invoice total
-                  </label>
-
-                  <input
-                    className="in-field"
-                    type="text"
-                    value={selectRow.InvTotal}
-                    disabled
-                  />
-                </div>
-
-                <div className="d-flex" style={{ gap: "10px" }}>
-                  <label
-                    className="form-label"
-                    style={{ whiteSpace: "nowrap" }}
-                  >
-                    Round Off
-                  </label>
-
-                  <input
-                    className="in-field"
-                    type="text"
-                    value={selectRow.Round_Off}
-                    disabled
-                  />
-                </div>
-
-                <div className="d-flex" style={{ gap: "10px" }}>
-                  <label className="form-label">Grand Total</label>
-                  <div>
-                    <input
-                      className="in-field"
-                      type="text"
-                      value={selectRow.GrandTotal}
-                      disabled
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div
-            className="col-md-12 mt-1"
-            style={{
-              height: "300px",
-              overflowX: "scroll",
-              overflowY: "scroll",
-            }}
-          >
-            <Table striped className="table-data border">
-              <thead className="tableHeaderBGColor">
-                <tr style={{ whiteSpace: "nowrap" }}>
-                  <th onClick={() => requestSortReceipt("Tax_Name")}>
-                    Tax Name
-                  </th>
-                  <th onClick={() => requestSortReceipt("TaxableAmount")}>
-                    Taxable Amount
-                  </th>
-                  <th onClick={() => requestSortReceipt("TaxPercent")}>
-                    Tax %
-                  </th>
-
-                  <th onClick={() => requestSortReceipt("TaxAmt")}>
-                    Tax Amount
-                  </th>
-                  <th onClick={() => requestSortReceipt("InvTaxId")}>
-                    Inv Taxid
-                  </th>
-                  <th>Sync_Hold</th>
-                  <th onClick={() => requestSortReceipt("Unit_UId")}>
-                    Unit_Uid
-                  </th>
-                  <th>Updated</th>
-                  <th onClick={() => requestSortReceipt("UnitName")}>
-                    UnitName
-                  </th>
-                  <th onClick={() => requestSortReceipt("dc_invTaxId")}>
-                    Dc_invTaxid
-                  </th>
-                  <th onClick={() => requestSortReceipt("Dc_inv_No")}>
-                    Dc_Inv_No
-                  </th>
-                  <th onClick={() => requestSortReceipt("DcTaxID")}>
-                    Dc TaxId
-                  </th>
-                  <th onClick={() => requestSortReceipt("InvId")}>TaxID</th>
-                </tr>
-              </thead>
-
-              <tbody className="tablebody">
-                {sortedDataReceipt().map((item, key) => {
-                  return (
-                    <tr
-                      onClick={() => tableRowSelect(item, key)}
-                      className={
-                        key === taxTable?.index ? "selcted-row-clr" : ""
-                      }
-                    >
-                      <td>{item.Tax_Name}</td>
-                      <td>{item.TaxableAmount}</td>
-                      <td>{item.TaxPercent}</td>
-                      <td>{item.TaxAmt}</td>
-                      <td>{item.InvTaxId}</td>
-                      <td></td>
-                      <td>{item.Unit_UId}</td>
-                      <td>{<input type="checkBox" />}</td>
-                      <td>{item.UnitName}</td>
-                      <td>{item.dc_invTaxId}</td>
-                      <td>{item.Dc_inv_No}</td>
-                      <td>{item.DcTaxID}</td>
-                      <td>{item.InvId}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </Table>
-          </div>
-        </div>
-      </div> */}
     </>
   );
 }

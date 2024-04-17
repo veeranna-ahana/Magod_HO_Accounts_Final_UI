@@ -3,24 +3,26 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Table } from "react-bootstrap";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { useLocation, useNavigate } from "react-router-dom";
-import { baseURL } from "../../../../../api/baseUrl";
+
 import { toast } from "react-toastify";
 import Modal from 'react-bootstrap/Modal';
 import { Button } from 'react-bootstrap';
-import PdfModal from "./PdfModal";
+import { baseURL } from "../../../../api/baseUrl";
+import PdfModal from "./CreateNew/PdfModal";
 
 
-export default function NewForm() {
+
+export default function OpenNavigatorForPRV() {
   const navigate = useNavigate();
   const location = useLocation();
 
 
   // const rowData = location.state ? location.state : "";
   const { HOPrvId, unitname } = location.state ? location.state : {};
-  const rowData = HOPrvId ? HOPrvId : '';
-  const unitFromDraft = unitname ? unitname : ''
+   const rowData = HOPrvId ? HOPrvId:'' ;
+   const unitFromDraft=unitname ? unitname:''
 
-  console.log("row dataaaa", rowData, unitname);
+   console.log("row dataaaa",rowData,unitname );
 
 
 
@@ -55,7 +57,9 @@ export default function NewForm() {
 
       Recd_PVNo: "Draft",
       HO_PrvId: "",
+   
       HORefNo: "Draft",
+   
       Status: "Draft",
       CustName: "",
       Cust_code: "",
@@ -83,6 +87,8 @@ export default function NewForm() {
 
     Recd_PVNo: "Draft",
     HO_PrvId: "",
+    //  HoRefDate: new Date().toLocaleDateString("en-GB").split("/").join("-"),
+    // HoRefDate: formatDate(new Date()),
     Status: "Draft",
     CustName: "",
     Cust_code: "",
@@ -98,7 +104,7 @@ export default function NewForm() {
     if (rvData.postData.CustName) {
       setDeleteOverAllData(true);
     }
-    else {
+    else{
       toast.error("select Customer")
     }
   }
@@ -119,6 +125,15 @@ export default function NewForm() {
     }
   }, [])
 
+
+
+
+
+
+
+
+
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -126,6 +141,11 @@ export default function NewForm() {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
+
+
+
+
+
 
   // Create a new Date object
   const currentDate = new Date();
@@ -185,26 +205,27 @@ export default function NewForm() {
     setGetCustomer(selectedCustomer ? selectedCustomer.Cust_Name : ""); // Update selected Name
     setGetCustCode(selectedCustomer ? selectedCustomer.Cust_Code : ""); // Update selected Code
 
-    let cust = selectedCustomer.Cust_Code
+    let cust=selectedCustomer.Cust_Code
 
     console.log("cust code", selectedCustomer);
 
-    setRvData(prevState => ({
-      ...prevState, postData: {
-        ...prevState.postData, Unitname: getUnit,
-        CustName: selectedCustomer ? selectedCustomer.Cust_Name : "", Cust_code: selectedCustomer ? selectedCustomer.Cust_Code : ""
-      }
-    }));
+    setRvData(prevState => ({ ...prevState, postData: { ...prevState.postData, Unitname: getUnit,
+    CustName:selectedCustomer ? selectedCustomer.Cust_Name : "", Cust_code:selectedCustomer ? selectedCustomer.Cust_Code : ""
+    } }));
 
     if (selected.length > 0) {
       try {
-
+      
 
         const invoicesResponse = await axios.get(
           baseURL + `/createnew/ho_openInvoices?customercode=${cust}&unitname=${getUnit}`
         );
 
-        console.log("inv", invoicesResponse.data);
+       
+        console.log("inv",invoicesResponse.data );
+
+      
+   
         setRvData((prevRvData) => ({
           ...prevRvData,
           data: {
@@ -214,7 +235,7 @@ export default function NewForm() {
           },
 
         }));
-
+      
 
         const hoprvIdResponse = await axios.post(
           baseURL + "/hoCreateNew/getHOPrvId",
@@ -305,9 +326,14 @@ export default function NewForm() {
 
               CustName: selectedCustomer.Cust_Name,
               Cust_code: selectedCustomer.Cust_Code,
+
+
+
             }
           }));
         }
+
+
       }
       catch (error) {
         console.log("Error in API request", error);
@@ -315,13 +341,19 @@ export default function NewForm() {
     }
   };
 
+
+
+
+
   useEffect(() => {
     handleUnitNames();
     handleCustomerNames();
   }, []);
 
-  const rowDataFetch = async () => {
 
+
+  const rowDataFetch = async () => {
+    
     if (rowData !== "") {
       try {
         //fetch Form data
@@ -361,6 +393,12 @@ export default function NewForm() {
           setGetCustomer(response.data.Result[0].CustName)
           setSelectedCustOption(response.data.Result[0].CustName)
 
+
+
+
+
+
+
           getReceipts(
             response.data.Result[0].Cust_code,
             response.data.Result[0].HOPrvId,
@@ -378,7 +416,7 @@ export default function NewForm() {
 
 
   const getReceipts = async (cust_code, hoprvid, unit) => {
-
+    
     console.log("hoooooo", hoprvid, unit);
 
     try {
@@ -392,11 +430,13 @@ export default function NewForm() {
         }
       );
 
+
+
       try {
         const response = await axios.get(
           baseURL + `/createnew/ho_openInvoices?customercode=${cust_code}&unitname=${unitFromDraft}`
         );
-
+      
         console.log("rightttttttttt with row data table data ", response.data);
 
         setRvData((prevRvData) => ({
@@ -417,6 +457,9 @@ export default function NewForm() {
     }
   };
 
+
+
+
   useEffect(() => {
     if (rvData.postData) {
       setRvData((prevRvData) => ({
@@ -428,170 +471,16 @@ export default function NewForm() {
 
 
 
-  const handlesave = async (e) => {
-
-    console.log("req body post", rvData.postData);
-
-    if (!getUnit) {
-      toast.error("Please Select Unit Name.");
-      return;
-    }
-
-    if (!getCustomer) {
-      toast.error("Please Select Customer.");
-      return;
-    }
-
-    const isAnyEmptyReceiveNow = rvData.firstTableArray.some(
-      (row) => row.Receive_Now === ""
-    );
-
-    if (isAnyEmptyReceiveNow) {
-      toast.error("Receive Now cannot be empty");
-      return;
-    }
 
 
-    if (rvData.postData.CustName === '' || rvData.postData.TxnType === '') {
-
-      toast.error("Customer Name and Transaction type can not be empty")
-    }
-
-    else {
-
-      try {
-        const response = await axios.post(
-          baseURL + "/createnew/saveReceipt",
-          rvData.postData
-        );
-
-        console.log("RESPONSE ID", response.data.result);
-
-        if (response.data.Status === "fail") {
-          toast.error(
-            "Threading Error: Column Unit_Name is constrained to be Unique value unit_Name is already present"
-          );
-        }
-        else if (response.data.Status === "query") {
-          toast.error("SQL error");
-        }
-
-        else {
-
-          let receipt_id = "";
-
-          if (response.data.result.id) {
-            receipt_id = response.data.result.id;
-            setRvData((prevRvData) => ({
-              ...prevRvData,
-              insertId: response.data.result.id,
-              data: { ...prevRvData.data, receipt_id: response.data.result.id },
-              postData: {
-                ...prevRvData.postData,
-                HO_PrvId: response.data.result.id,
-              },
-            }));
-          }
-
-          else {
-            receipt_id = response.data.result.insertId;
-            setRvData((prevRvData) => ({
-              ...prevRvData,
-              insertId: response.data.result.insertId,
-              data: { ...prevRvData.data, receipt_id: response.data.result.id },
-              postData: {
-                ...prevRvData.postData,
-                HO_PrvId: response.data.result.insertId,
-              },
-            }));
-          }
-
-          // openReceipt(rvData.postData.Cust_code, receipt_id);
-        }
-      } catch (err) {
-        console.log("Error in frontend", err);
-      }
-
-      if (rvData.data.receipt_details.length > 0) {
-        const isReceiveNowValid = rvData.data.receipt_details.every((row) => {
-          const receiveNow = parseFloat(row.Receive_Now) || 0;
-          const amtReceived = parseFloat(row.Amt_received) || 0;
-          const invAmount = parseFloat(row.Inv_Amount) || 0;
-
-          if (receiveNow < 0) {
-            toast.error("Receive Now cannot be negative");
-            return false;
-          }
-
-          if (amtReceived + receiveNow > invAmount) {
-            toast.error("Cannot Receive More than Invoice Amount");
-            return false;
-          }
-
-          return true;
-        });
-
-        if (!isReceiveNowValid) {
-          return;
-        }
-        try {
-          const updateReceive_Now = await axios.put(
-            baseURL + "/createnew/updateReceiveNowAmount",
-            {
-              receipt_details: rvData.data.receipt_details
-            }
-          );
-
-          console.log("update receibve now ", updateReceive_Now);
-          if (updateReceive_Now.data.Status === 'Success') {
-            toast.success("Saved Successfully")
-          }
-          else {
-            toast.error("Not Saved ")
-          }
-
-        } catch (err) {
-          console.log("Error in frontend", err);
-        }
-      }
-      else {
-        toast.success("Saved Successfully")
-      }
-    }
-  };
 
 
-  const handleTxnTYpeChange = (event) => {
-    setSelectedTxntType(event.target.value);
-  };
 
-  const handleCheckboxChangeSecondTable = (event, rowData) => {
-    const isChecked = event.target.checked;
 
-    setRvData((prevRvData) => {
-      const updatedInvData = prevRvData.data.inv_data?.map((row) => {
-        if (row === rowData) {
-          return { ...row, isSelected: isChecked };
-        }
-        return row;
-      });
 
-      const selectedRow = isChecked ? rowData : null;
 
-      return {
-        ...prevRvData,
-        data: {
-          ...prevRvData.data,
-          inv_data: updatedInvData,
-        },
-        secondTableArray: selectedRow
-          ? [...prevRvData.secondTableArray, selectedRow]
-          : prevRvData.secondTableArray.filter(
-            (item) => item.DC_Inv_No !== rowData.DC_Inv_No
-          ),
-      };
-    });
-  };
+
+
 
 
   //this is for rowData 
@@ -611,250 +500,12 @@ export default function NewForm() {
 
 
 
-  const addRowData = async () => {
-
-    if (!rvData.postData.HO_PrvId) {
-      toast.error("Save the Details")
-      return;
-    }
-
-
-    try {
-      const selectedRows = rvData.secondTableArray;
-
-
-      if (selectedRows.length === 0) {
-        toast.error("No rows selected for addition to voucher.");
-        return;
-      }
-
-      const rowsToAdd = [];
-
-      for (const row of selectedRows) {
-
-        // Check if the row is not already in receipt_details
-        const isRowAlreadyAdded = rvData.data.receipt_details.some(
-          (existingRow) => existingRow.Dc_inv_no === row.DC_Inv_No
-        );
-
-        // If the row is not already added, add it to rowsToAdd
-        if (!isRowAlreadyAdded) {
-          const diff = parseInt(row.GrandTotal) - parseInt(row.PymtAmtRecd);
-          console.log("difference", diff);
-
-          // Otherwise, set Receive to the difference
-          rowsToAdd.push({ ...row, Receive: diff });
-        }
-      }
-
-      if (rowsToAdd.length === 0) {
-        toast.error("Invoice already exists");
-        return;
-      }
-      console.log("rows to add", rowsToAdd);
-
-      const response = await axios.post(baseURL + "/hoCreateNew/addInvoice", {
-        selectedRows: rowsToAdd,
-        HO_PrvId: rvData.postData.HO_PrvId,
-
-        unit: getUnit,
-      });
-
-
-      const totalReceiveNow = response.data.reduce(
-        (total, item) => total + parseFloat(item.Receive_Now || 0),
-        0
-      );
-
-
-      const newRows = response.data.filter(
-        (newRow) =>
-          !rvData.data.receipt_details.some(
-            (existingRow) => existingRow.PVSrlID === newRow.PVSrlID
-          )
-      );
-
-      // // Update receipt_details and other data after addToVoucher API call
-      setRvData((prevRvData) => ({
-        ...prevRvData,
-        data: {
-          ...prevRvData.data,
-          receipt_details: [...prevRvData.data.receipt_details, ...newRows],
-          inv_data: prevRvData.data.inv_data.map((row) => ({
-            ...row,
-            isSelected: false,
-          })),
-        },
-
-        secondTableArray: [],
-      }));
-
-      setRvData((prevRvData) => ({
-        ...prevRvData,
-        data: {
-          ...prevRvData.data,
-          receipt_details: response.data,
-        },
-        firstTableArray: response.data,
-        secondTableArray: [],
-      }));
-
-      const updateAmount = await axios.post(
-        baseURL + "/hoCreateNew/updateAmount",
-        {
-          Amount: totalReceiveNow,
-          HO_PrvId: rvData.postData.HO_PrvId,
-        }
-      );
-
-      setRvData((prevRvData) => ({
-        ...prevRvData,
-        postData: {
-          ...prevRvData.postData,
-          Amount: updateAmount.data.updatedAmount[0]?.Amount,
-        },
-      }));
-      return response.data;
-    } catch (error) {
-      console.error("Error adding rows to voucher:", error);
-      throw error;
-    }
-  }
 
   //Delete Button 
 
-  const deleteButton = async () => {
+ 
 
-    setDeleteOverAllData(false);
-    let stopExecution = false;
-
-    if (rvData.data.receipt_details.length > 0) {
-
-      rvData.data.receipt_details.forEach((selectedRow) => {
-
-        // Your code logic for each item goes here
-        if (parseFloat(selectedRow.Receive_Now) < 0) {
-          toast.error("Incorrect Value");
-          stopExecution = true;
-          return;
-        }
-
-        const formattedValue = parseFloat(selectedRow.Receive_Now || 0);
-        const invoiceAmount = parseFloat(selectedRow.Inv_Amount || 0);
-        const amountReceived = parseFloat(selectedRow.Amt_received || 0);
-
-        if (formattedValue > invoiceAmount - amountReceived) {
-          toast.error("Cannot Receive More than Invoice Amount");
-
-          stopExecution = true;
-          return;
-        }
-
-        else {
-          axios.post(
-            baseURL + "/createnew/deleteButton",
-
-            { receipt_id: rvData.postData.HO_PrvId, }
-
-          ).then(resp => {
-            console.log("Response data after delete:", resp.data);
-
-            if (resp.data?.Status === 'Success') {
-              setRvData((prevData) => ({
-                ...prevData,
-
-                data: {
-                  receipt_details: [],
-
-                },
-                firstTableArray: [],
-                postData: {
-
-                  Recd_PVNo: "Draft",
-                  HO_PrvId: "",
-
-
-                  HORefNo: "Draft",
-
-                  Status: "Draft",
-                  CustName: "",
-                  Cust_code: "",
-                  TxnType: "",
-                  Amount: 0,
-                  On_account: 0,
-                  Description: "",
-                  selectedCustomer: "",
-                  RecdPvSrl: 0,
-                  PVSrlID: "",
-                  InvUpdated: 0,
-                  Sync_Hold: 0,
-                },
-              }));
-              setSelectedCustOption([]);
-              setSelectedOption([]);
-            }
-          })
-        }
-
-      });
-      toast.success("Deleted Successfully")
-    }
-
-    else {
-
-      axios.post(
-        baseURL + "/createnew/deleteButton",
-
-        { receipt_id: rvData.postData.HO_PrvId, }
-
-      ).then(resp => {
-        console.log("Response data after delete:", resp.data);
-
-        if (resp.data?.Status === 'Success') {
-          setRvData((prevData) => ({
-            ...prevData,
-
-            data: {
-              receipt_details: [],
-
-            },
-            firstTableArray: [],
-            postData: {
-
-              Recd_PVNo: "Draft",
-              HO_PrvId: "",
-              HORefNo: "Draft",
-              Status: "Draft",
-              CustName: "",
-              Cust_code: "",
-              TxnType: "",
-              Amount: 0,
-              On_account: 0,
-              Description: "",
-              selectedCustomer: "",
-              RecdPvSrl: 0,
-              PVSrlID: "",
-              InvUpdated: 0,
-              Sync_Hold: 0,
-            },
-
-
-
-          }));
-          setSelectedCustOption([]);
-          setSelectedOption([]);
-
-          toast.success("Deleted Successfully")
-
-        }
-      })
-        .catch(error => {
-          console.error("Error:", error);
-        });
-    }
-  }
-
-
+  
 
   //update the Receive_now value when onchange
   useEffect(() => {
@@ -866,6 +517,7 @@ export default function NewForm() {
           receipt_details: rvData.data.receipt_details
         }
       );
+
     }
   }, [rvData.data.receipt_details])
 
@@ -883,6 +535,12 @@ export default function NewForm() {
           : parseInt(item.Receive_Now, 10) || 0),
       0
     );
+
+
+
+
+
+
 
     const updateAmount = await axios.post(
       baseURL + "/hoCreateNew/updateAmount",
@@ -910,154 +568,31 @@ export default function NewForm() {
 
 
     rvData.firstTableArray = [];
-  };
-
-  //post
-  const postInvoice = () => {
 
 
-    if (!rvData.postData.Description) {
-      toast.error("Narration Missing");
-      return;
-    }
-
-    if (rvData.data.receipt_details.length === 0) {
-      toast.error("Select Invoices To Close");
-      return;
-    }
+  
 
 
-    let stopExecution = false;
-
-
-    if (rvData.data.receipt_details) {
-
-      rvData.data.receipt_details.forEach((selectedRow) => {
-        if (stopExecution) return
-        // Your code logic for each item goes here
-        if (parseFloat(selectedRow.Receive_Now) < 0) {
-          toast.error("Incorrect Value");
-          return;
-        }
-
-        const formattedValue = parseFloat(selectedRow.Receive_Now || 0);
-        const invoiceAmount = parseFloat(selectedRow.Inv_Amount || 0);
-        const amountReceived = parseFloat(selectedRow.Amt_received || 0);
-
-        if (formattedValue > invoiceAmount - amountReceived) {
-          toast.error("Cannot Receive More than Invoice Amount");
-          stopExecution = true; // Set flag to true to stop execution
-
-          return;
-        }
-      });
-    }
-
-
-
-
-    if (stopExecution) return;
-    else {
-      getDCNo();
-      setShowPostModal(true);
-    }
-  };
-
-  //POST after yes
-  const handlePostYes = async () => {
-    setShowPostModal(false);
-    let stopExecution = false;
-    try {
-
-      if (rvData.data.receipt_details) {
-
-        rvData.data.receipt_details.forEach((selectedRow) => {
-          if (stopExecution) return
-          // Your code logic for each item goes here
-          if (parseFloat(selectedRow.Receive_Now) < 0) {
-            toast.error("Incorrect Value");
-            return;
-          }
-
-          const formattedValue = parseFloat(selectedRow.Receive_Now || 0);
-          const invoiceAmount = parseFloat(selectedRow.Inv_Amount || 0);
-          const amountReceived = parseFloat(selectedRow.Amt_received || 0);
-
-          sum += formattedValue;
-
-          if (formattedValue > invoiceAmount - amountReceived) {
-            toast.error("Cannot Receive More than Invoice Amount");
-            stopExecution = true; // Set flag to true to stop execution
-
-            return;
-          }
-        });
-      }
-
-      if (stopExecution) return;
-      setSumofReceive(sum);
-
-      const srlType = "HO PaymentRV";
-      const unit = "HQ";
-      const response = await axios.post(baseURL + "/createNew/postInvoiceCreateNew", {
-        HO_PrvId: rvData.postData.HO_PrvId,
-        srlType: srlType,
-        unit: unit,
-        receipt_details: rvData.data.receipt_details,
-        // onacc: onAccountValue22,
-        // id: id,
-
-      });
-
-      console.log("PostInvoice Response", response.data);
-
-      // Update receipt_details and On_account after removing voucher
-      setRvData((prevRvData) => ({
-        ...prevRvData,
-        data: {
-          ...prevRvData.data,
-          // receipt_details: response.data,
-        },
-        postData: {
-          ...prevRvData.data,
-          HORefNo: response.data[0].HORef,
-          Status: response.data[0].Status,
-          Amount: response.data[0].Amount,
-          CustName: response.data[0].CustName,
-          HO_PrvId: response.data[0].HOPrvId,
-          Description: response.data[0].Description,
-          TxnType: response.data[0].TxnType,
-        },
-
-        firstTableArray: [],
-        secondTableArray: [],
-      }));
-    } catch (error) {
-      console.error("Error removing voucher post button:", error);
-    }
   };
 
 
-  const getDCNo = async () => {
-    const srlType = "HO PaymentRV";
-    const ResetPeriod = "FinanceYear";
-    const ResetValue = 0;
-    const VoucherNoLength = 4;
-    const unit = "HQ";
-    try {
-      const response = await axios.post(baseURL + `/createnew/getDCNo`, {
-        unit: unit,
-        srlType: srlType,
-        ResetPeriod: ResetPeriod,
-        ResetValue: ResetValue,
-        VoucherNoLength: VoucherNoLength,
-      });
 
-      console.log("getDCNo Responseeeeeeeeeeeeee", response.data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  //remove for rowData
+
+
 
   const removeRowdata = async () => {
     try {
@@ -1163,6 +698,12 @@ export default function NewForm() {
 
   }
 
+
+
+
+
+
+
   function formatAmount(amount) {
     // Assuming amount is a number
     const formattedAmount = new Intl.NumberFormat("en-IN", {
@@ -1186,19 +727,22 @@ export default function NewForm() {
     }));
   }, []);
 
-  const [reason, setReason] = useState("");
 
-  const handleReasonChange = (event) => {
 
-    const newValue = event.target.value;
-    setReason(event.target.value);
-    // Do something with the new value, such as storing it in state
-    console.log("New value of the textarea:", newValue);
-  }
+
+
+
+ 
+
 
   const pdfSubmit = (e) => {
+
+
     setPdfVoucher(true);
     e.preventDefault();
+
+
+
   }
 
 
@@ -1230,8 +774,14 @@ export default function NewForm() {
 
           return;
         }
+
+
+
       });
     }
+
+
+
 
     if (stopExecution) return;
 
@@ -1241,45 +791,15 @@ export default function NewForm() {
   }
 
 
-  const handleCancelClose = () => {
-    setCancelPopup(false)
-  }
 
 
-  const cancelYes = () => {
-    if (reason.length > 15) {
-      setCancelPopup(false)
-      cancelllationSubmit();
-    }
-    else {
-      toast.error("Need more than 15 chracters")
-    }
+ 
 
-  }
 
-  const cancelllationSubmit = async () => {
 
-    console.log("rece now sum cancel ()", sumofReceive);
-    const cancelData = await axios.post(
-      baseURL + "/createNew/cancelCreateNewScreen",
-      {
-        HO_PrvId: rvData.postData.HO_PrvId,
-        custName: rvData.postData.CustName,
-        totalReceiveNow: sumofReceive,
-      }
-    );
 
-    console.log("data after cancel from cretea new screen ", cancelData.data.StatusCancel);
 
-    setRvData((prevRvData) => ({
-      ...prevRvData,
 
-      postData: {
-        ...prevRvData.postData,
-        Status: cancelData.data.StatusCancel,
-      },
-    }));
-  }
 
   return (
     <>
@@ -1389,26 +909,11 @@ export default function NewForm() {
             id="TxnType"
             onChange={PaymentReceipts}
             value={rvData.postData.TxnType}
-          // disabled={
-          //   rvData.postData.Status != "Draft"
-          //     ? rvData.postData.Status
-          //     : ""
-          // }
+             disabled
+           
           >
             <option value="">Select</option>
-            <option value="Bank">Bank</option>
-            <option value="Cash">Cash</option>
-            <option value="Adjustment">Adjustment</option>
-            <option value="Rejection">Rejection</option>
-            <option value="TDS Receivable">TDS Receivable</option>
-            <option value="Rate Difference">Rate Difference</option>
-            <option value="Short Supply">Short Supply</option>
-            <option value="Balance Recoverable">Balance Recoverable</option>
-            <option value="Other Income">Other Income</option>
-            <option value="Balance Not Recoverable">
-              Balance Not Recoverable
-            </option>
-            <option value="QR Code and RTGS">QR Code and RTGS</option>
+          
           </select>
         </div>
 
@@ -1450,12 +955,12 @@ export default function NewForm() {
       </div>
 
       <div className="row mt-1">
-        <div className="d-flex col-md-3" style={{ gap: "65px" }}>
+        {/* <div className="d-flex col-md-3" style={{ gap: "65px" }}>
           <label className="form-label">Reason</label>
           <input className="in-field" name="reason" disabled value={reason} />
-        </div>
+        </div> */}
 
-        <div className="d-flex col-md-2" style={{ gap: "50px" }}>
+        <div className="d-flex col-md-3" style={{ gap: "70px" }}>
           <label className="form-label">Status</label>
           <input
             className="in-field"
@@ -1497,7 +1002,7 @@ export default function NewForm() {
                 ? "disabled-button"
                 : "button-style  group-button"
             }
-            onClick={handlesave}
+          
             disabled={
               rvData && rvData.postData.Status !== "Draft"
                 ? rvData.postData.Status
@@ -1513,8 +1018,7 @@ export default function NewForm() {
                 ? "disabled-button"
                 : "button-style  group-button"
             }
-            //  onClick={deleteButton}
-            onClick={deletecall}
+           
             disabled={
               rvData && rvData.postData.Status !== "Draft"
                 ? rvData.postData.Status
@@ -1530,7 +1034,7 @@ export default function NewForm() {
                 ? "disabled-button"
                 : "button-style  group-button"
             }
-            onClick={postInvoice}
+            
             disabled={
               rvData && rvData.postData.Status !== "Draft"
                 ? rvData.postData.Status
@@ -1544,7 +1048,7 @@ export default function NewForm() {
             Print
           </button>
 
-          <button
+          {/* <button
             className={
               rvData.postData.Status != "Pending"
                 ? "disabled-button"
@@ -1553,14 +1057,14 @@ export default function NewForm() {
             onClick={canacleButton}
             disabled={
               (rvData && rvData.postData.Status !== "Pending") ||
-              rvData.postData.Status === "Cancelled" || reason !== ''
+              rvData.postData.Status === "Cancelled"  
             }
           >
             Cancel
-          </button>
+          </button> */}
 
 
-
+          
         </div>
       </div>
 
@@ -1600,7 +1104,7 @@ export default function NewForm() {
             <Table className="table-data border">
               <thead
                 className="tableHeaderBGColor"
-              // style={{ textAlign: "center" }}
+                // style={{ textAlign: "center" }}
               >
                 <tr style={{ whiteSpace: "nowrap" }}>
                   <th>Srl</th>
@@ -1617,63 +1121,63 @@ export default function NewForm() {
               <tbody className="tablebody">
                 {rvData.data.receipt_details
                   ? rvData.data.receipt_details.map((data, index) => (
-                    <>
-                      <tr
-                        style={{ whiteSpace: "nowrap" }}
-                        onClick={() => handleRowSelect(data)}
-                        key={data.RecdPvSrl}
-                        className={
-                          rvData.firstTableArray.some(
-                            (row) => row.Dc_inv_no === data.Dc_inv_no
-                          )
-                            ? "selectedRow"
-                            : ""
-                        }
-                      >
-                        <td>{data.RecdPvSrl}</td>
-                        <td>{data.Inv_No}</td>
+                      <>
+                        <tr
+                          style={{ whiteSpace: "nowrap" }}
+                          onClick={() => handleRowSelect(data)}
+                          key={data.RecdPvSrl}
+                          className={
+                            rvData.firstTableArray.some(
+                              (row) => row.Dc_inv_no === data.Dc_inv_no
+                            )
+                              ? "selectedRow"
+                              : ""
+                          }
+                        >
+                          <td>{data.RecdPvSrl}</td>
+                          <td>{data.Inv_No}</td>
 
-                        <td>
-                          {new Date(data.Inv_date).toLocaleDateString(
-                            "en-GB"
-                          )}
-                        </td>
+                          <td>
+                            {new Date(data.Inv_date).toLocaleDateString(
+                              "en-GB"
+                            )}
+                          </td>
 
-                        <td>{data.Inv_Type}</td>
-                        <td>{formatAmount(data.Inv_Amount)}</td>
-                        <td>{formatAmount(data.Amt_received)}</td>
-                        <td>
-                          <input
-                            type="number"
-                            // onBlur={onBlurr}
-                            name={"Receive_Now"}
-                            value={data.Receive_Now}
-                            disabled={
-                              rvData && rvData.postData.Status !== "Draft"
-                                ? rvData.postData.Status
-                                : ""
-                            }
-                            onChange={(e) =>
-                              handleInputChange(
-                                e,
-                                data,
-                                parseInt(data.Inv_Amount) -
-                                parseInt(data.Amt_received)
-                              )
-                            }
-                            onKeyPress={(e) => {
-                              // Allow only numbers (0-9) and backspace
-                              const isNumber = /^[0-9\b]+$/;
-                              if (!isNumber.test(e.key)) {
-                                e.preventDefault();
+                          <td>{data.Inv_Type}</td>
+                          <td>{formatAmount(data.Inv_Amount)}</td>
+                          <td>{formatAmount(data.Amt_received)}</td>
+                          <td>
+                            <input
+                              type="number"
+                              // onBlur={onBlurr}
+                              name={"Receive_Now"}
+                              value={data.Receive_Now}
+                              disabled={
+                                rvData && rvData.postData.Status !== "Draft"
+                                  ? rvData.postData.Status
+                                  : ""
                               }
-                            }}
-                          />
-                        </td>
-                        <td>{data.Id}</td>
-                      </tr>
-                    </>
-                  ))
+                              onChange={(e) =>
+                                handleInputChange(
+                                  e,
+                                  data,
+                                  parseInt(data.Inv_Amount) -
+                                    parseInt(data.Amt_received)
+                                )
+                              }
+                              onKeyPress={(e) => {
+                                // Allow only numbers (0-9) and backspace
+                                const isNumber = /^[0-9\b]+$/;
+                                if (!isNumber.test(e.key)) {
+                                  e.preventDefault();
+                                }
+                              }}
+                            />
+                          </td>
+                          <td>{data.Id}</td>
+                        </tr>
+                      </>
+                    ))
                   : ""}
               </tbody>
             </Table>
@@ -1687,7 +1191,7 @@ export default function NewForm() {
 
             <div className="col-md-3 mb-1">
               <button
-                onClick={addRowData}
+                
                 className={
                   rvData.postData.Status !== "Draft"
                     ? "disabled-button"
@@ -1724,42 +1228,25 @@ export default function NewForm() {
               </thead>
 
               <tbody className="tablebody">
-                
-
+               
+               
                 {
-                  rvData.data.inv_data ? (
-                    rvData.data.inv_data.map((row, index) => (
-                      <tr
-                        key={index}
-                        style={{
-                          backgroundColor: row.isSelected ? "#3498db" : "inherit",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        <td>
-                          <input
-                            type="checkbox"
-                            className="mt-1"
-                            id={`checkbox_${index}`}
-                            onChange={(e) => handleCheckboxChangeSecondTable(e, row)}
-                            checked={row.isSelected}
-                          />
-                        </td>
-                        <td>{row.DC_InvType}</td>
-                        <td>{row.Inv_No}</td>
-                        <td>
-                          {new Date(row.Inv_Date)
-                            .toLocaleDateString("en-GB")
-                            .replace(/\//g, "-")}
-                        </td>
-                        <td>{row.GrandTotal}</td>
-                        <td>{row.PymtAmtRecd}</td>
-                      </tr>
-                    ))
+  rvData.data.inv_data ? (
+    rvData.data.inv_data.map((row, index) => (
+      <tr
+        key={index}
+        style={{
+          backgroundColor: row.isSelected ? "#3498db" : "inherit",
+          whiteSpace: "nowrap",
+        }}
+      >
+        
+      </tr>
+    ))
 
 
-                  ) : []
-                }
+  ) : []
+}
 
               </tbody>
             </Table>
@@ -1769,12 +1256,12 @@ export default function NewForm() {
 
 
 
-      <Modal show={showPostModal} onHide={handlePostModalClose} size="md">
+      {/* <Modal show={showPostModal} onHide={handlePostModalClose} size="md">
         <Modal.Header closeButton>
-          <Modal.Title style={{ fontSize: '12px' }}>HO Accounts</Modal.Title>
+          <Modal.Title style={{fontSize:'12px'}}>HO Accounts</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body style={{ fontSize: '12px' }}>
+        <Modal.Body style={{fontSize:'12px'}}>
           Do You wish to create a HO voucher now?. Details cannot be changed
           once created
         </Modal.Body>
@@ -1782,16 +1269,16 @@ export default function NewForm() {
         <Modal.Footer>
           <button
             className="button-style"
-            // style={{ width: "50px" }}
+           // style={{ width: "50px" }}
             onClick={handlePostYes}
-            style={{ fontSize: '12px' }}
+            style={{fontSize:'12px'}}
           >
             Yes
           </button>
 
           <button
             className="button-style"
-            style={{ fontSize: '12px', backgroundColor: "rgb(173, 173, 173)" }}
+            style={{ fontSize:'12px', backgroundColor: "rgb(173, 173, 173)" }}
             onClick={handlePostModalClose}
           >
             No
@@ -1801,7 +1288,7 @@ export default function NewForm() {
 
       <Modal size="lg" show={cancelPopup} onHide={handleCancelClose}>
         <Modal.Header closeButton>
-          <Modal.Title style={{ fontSize: '12px' }}>Magod Laser: Invoice Cancellation Form</Modal.Title>
+          <Modal.Title style={{fontSize:'12px'}}>Magod Laser: Invoice Cancellation Form</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="col-md-12">
@@ -1831,7 +1318,7 @@ export default function NewForm() {
                 <div className="col-md-4">
                   <div className="mt-2">
                     <input
-                      className="in-field"
+                       className="in-field"
                       disabled
                       name="HORefNo"
                       value={rvData.postData.HORefNo}
@@ -1840,7 +1327,7 @@ export default function NewForm() {
 
                   <div className="mt-2">
                     <input
-                      className="in-field"
+                       className="in-field"
                       name="Customer"
                       value={rvData.postData.CustName}
                       disabled
@@ -1867,7 +1354,7 @@ export default function NewForm() {
               </div>
 
               <div className="col-md-4 mt-2 mb-3 ms-2">
-                <Button variant="primary" type="submit" onClick={cancelYes} style={{ fontSize: '12px' }}>
+                <Button variant="primary" type="submit" onClick={cancelYes} style={{fontSize:'12px'}}>
                   Cancel
                 </Button>
               </div>
@@ -1878,16 +1365,16 @@ export default function NewForm() {
 
       <Modal show={deleteOverAllData} onHide={handleDeletePopup} size="md">
         <Modal.Header closeButton>
-          <Modal.Title style={{ fontSize: '12px' }}>HO Accounts</Modal.Title>
+          <Modal.Title style={{fontSize:'12px'}}>HO Accounts</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body style={{ fontSize: '12px' }}>Are you want to Delete ?</Modal.Body>
+        <Modal.Body style={{fontSize:'12px'}}>Are you want to Delete ?</Modal.Body>
 
         <Modal.Footer>
           <button
             className="button-style"
-            // style={{ width: "50px" }}
-            style={{ fontSize: '12px' }}
+           // style={{ width: "50px" }}
+           style={{fontSize:'12px'}}
             onClick={deleteButton}
           >
             Yes
@@ -1895,13 +1382,13 @@ export default function NewForm() {
 
           <button
             className="button-style"
-            style={{ fontSize: '12px', backgroundColor: "rgb(173, 173, 173)" }}
-          //  onClick={handlePostModalClose}
+            style={{ fontSize:'12px', backgroundColor: "rgb(173, 173, 173)" }}
+            //  onClick={handlePostModalClose}
           >
             No
           </button>
         </Modal.Footer>
-      </Modal>
+      </Modal> */}
     </>
   );
 }
