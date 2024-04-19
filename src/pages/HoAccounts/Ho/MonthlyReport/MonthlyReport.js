@@ -297,7 +297,7 @@ export default function MonthlyReport() {
           <button
             className="button-style mt-2 group-button"
             type="button"
-            onClick={(e) => navigate("/home")}
+            onClick={(e) => navigate("/HOAccounts")}
             style={{ float: "right" }}
           >
             Close
