@@ -526,7 +526,7 @@ export default function UnitDetails() {
               />
             </div>
 
-            <div className="d-flex col-md-6" style={{ gap: "10px" }}>
+            <div className="d-flex col-md-6" style={{ gap: "15px" }}>
               <label className="form-label" style={{ whiteSpace: "nowrap" }}>
                 {" "}
                 Tally Account Name
