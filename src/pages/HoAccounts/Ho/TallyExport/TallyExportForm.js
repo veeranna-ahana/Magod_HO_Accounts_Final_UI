@@ -7,52 +7,47 @@ import axios from "axios";
 import { baseURL } from "../../../../api/baseUrl";
 
 export default function TallyExportForm() {
-  const [selectedDate, setSelectedDate] = useState('2018-01-02');
+  const [selectedDate, setSelectedDate] = useState();
   //const {setTallyDate}=useGlobalContext();
-  const [flag, setFlag] = useState(false)
+  const [flag, setFlag] = useState(false);
   const [exportTally, setExportTally] = useState(false);
 
   const handleChange = (e) => {
     setSelectedDate(e.target.value);
-setFlag(false)
+    setFlag(false);
     // setTallyDate(e.target.value);
-  }
-
-
+  };
 
   const onLoadDataClick = () => {
-
     if (selectedUnitName) {
       setFlag(true);
     }
-
-  }
+  };
 
   const tallyExportSubmit = () => {
     setExportTally(true);
-  }
-
+  };
 
   const navigate = useNavigate();
 
-  const [selectedUnitName, setSelectedUnitName] = useState([])
-  const [selectUnit, setSelectUnit] = useState([])
+  const [selectedUnitName, setSelectedUnitName] = useState([]);
+  const [selectUnit, setSelectUnit] = useState([]);
   const [getName, setGetName] = useState("");
 
   const handleUnitSelect = (selected) => {
     const selectedCustomer = selected[0];
     setSelectUnit(selected); // Update selected option state
     setGetName(selectedCustomer ? selectedCustomer.UnitName : "");
-    setSelectedUnitName(selected)
+    setSelectedUnitName(selected);
   };
 
   console.log("select unitname", selectedUnitName[0]);
   const [unitdata, setunitData] = useState([]);
   const handleUnitName = () => {
     axios
-      .get(baseURL + '/unitReceiptList/getunitName')
+      .get(baseURL + "/unitReceiptList/getunitName")
       .then((res) => {
-        console.log("firstTable", res.data)
+        console.log("firstTable", res.data);
         setunitData(res.data);
         // if (res.data.length > 0) {
         //   setSelectedUnitName([res.data[4]]);

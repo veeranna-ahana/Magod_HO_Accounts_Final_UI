@@ -13,9 +13,7 @@ export default function On_AccountList() {
   const [onAccountList, setOnAccountList] = useState([]);
 
   // const [selectedUnitName, setSelectedUnitName] = useState([])
-  const [selectedUnitName, setSelectedUnitName] = useState([
-    { UnitName: "Jigani" },
-  ]);
+  const [selectedUnitName, setSelectedUnitName] = useState([]);
   const [selectUnit, setSelectUnit] = useState([]);
   const [getName, setGetName] = useState("");
 
@@ -35,9 +33,9 @@ export default function On_AccountList() {
       .then((res) => {
         console.log("firstTable", res.data);
         setunitData(res.data);
-        if (res.data.length > 0) {
-          setSelectedUnitName([res.data[4]]);
-        }
+        // if (res.data.length > 0) {
+        //   setSelectedUnitName(res.data);
+        // }
       })
       .catch((err) => {
         console.log("err in table", err);
@@ -145,8 +143,6 @@ export default function On_AccountList() {
       toast.error("Select Row");
     }
   };
-
-  
 
   // const requestSort = (key) => {
   //   let direction = "asc";
