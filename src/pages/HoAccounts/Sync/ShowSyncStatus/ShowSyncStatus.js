@@ -6,10 +6,9 @@ import { xml2js, js2xml } from "xml-js";
 import axios from "axios";
 import { baseURL } from "../../../../api/baseUrl";
 import { Tab, Table, Tabs } from "react-bootstrap";
-import Modal from 'react-bootstrap/Modal';
-import { Button } from 'react-bootstrap';
+import Modal from "react-bootstrap/Modal";
+import { Button } from "react-bootstrap";
 import MailModal from "../../MailModal";
-
 
 export default function ShowSyncStatus() {
   const navigate = useNavigate();
@@ -33,8 +32,8 @@ export default function ShowSyncStatus() {
   const [selectedRowColor, setSelectedRowColor] = useState("");
   const [selectRowHO, setSelectRowHO] = useState([]);
 
-  const [mailAlert, setMailAlert] = useState(false)
-  const [mailModal, setMailModal] = useState(false)
+  const [mailAlert, setMailAlert] = useState(false);
+  const [mailModal, setMailModal] = useState(false);
 
   const handleButtonClick = (e) => {
     if (getName) {
@@ -249,7 +248,7 @@ export default function ShowSyncStatus() {
       .then((res) => {
         console.log("firstTable", res.data[0].UnitName);
         setunitData(res.data);
-       // setGetName(res.data[0].UnitName);
+        // setGetName(res.data[0].UnitName);
       })
       .catch((err) => {
         console.log("err in table", err);
@@ -303,8 +302,8 @@ export default function ShowSyncStatus() {
     await axios
       .get(
         baseURL +
-        `/showSyncStatus/getUnitOpenInvAndReceiptsForExport/` +
-        getName
+          `/showSyncStatus/getUnitOpenInvAndReceiptsForExport/` +
+          getName
       )
       .then((res) => {
         setGetUnitInvoiceForExport(res.data);
@@ -321,50 +320,99 @@ export default function ShowSyncStatus() {
     }
   }, [getUnitInvoiceForExport]);
 
-  useEffect(() => {
-    if (getUnitInvoice.length === 1) {
-      compare(report);
-      toast.success("Please wait data being Populating");
-    }
-  }, [report]);
+  // useEffect(() => {
+  //   if (getUnitInvoice.length === 1) {
+  //     compare(report);
+  //     toast.success("Please wait data being Populating");
+  //   }
+  // }, [report]);
+
+  // useEffect(() => {
+  //   if (getHOInvoice.length === 1) {
+  //     HOCompare(report);
+  //   }
+  // }, [getHOInvoice]);
 
   useEffect(() => {
     if (getHOInvoice.length === 1) {
-      HOCompare(report);
+      compare(report);
+      toast.success("Please wait data being Populating");
     }
   }, [getHOInvoice]);
+
+  useEffect(() => {
+    if (getUnitInvoice.length === 1) {
+      HOCompare(report);
+    }
+  }, [report, getHOInvoice]);
 
   const [matchedInvoices, setmatchedInvoices] = useState([]);
   const [unmatchedInvoices, setunmatchedInvoices] = useState([]);
 
+  // const compare = (report) => {
+  //   console.log("reprt xml data", report);
+  //   if (getUnitInvoice.length === 1) {
+  //     const unitInvoices = getUnitInvoice[0].cmdInvList;
+  //     setInvPaymentVrList(getUnitInvoice[0].cmdInvPaymentVrList);
+  //     // Identify invoices in unitInvoices that are not in report.open_inv
+  //     unitInvoices.forEach((unitInv) => {
+  //       const matchedInv = report.open_inv.find(
+  //         (importInv) =>
+  //           parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
+  //           importInv.PymtAmtRecd === unitInv.PymtAmtRecd
+  //       );
+
+  //       if (matchedInv) {
+  //         // Invoice is matched, add to matchedInvoices array
+  //         matchedInvoices.push({ ...unitInv, matchedInv });
+  //       } else {
+  //         // Invoice is unmatched, add to unmatchedInvoices array
+  //         unmatchedInvoices.push(unitInv);
+  //       }
+  //     });
+
+  //     // Now matchedInvoices contains the matched invoices along with their corresponding importInv
+  //     console.log("matchedInvoices", matchedInvoices);
+
+  //     // Now unmatchedInvoices contains the invoices present in unitInvoices but not in report.open_inv
+  //     console.log("unmatchedInvoices", unmatchedInvoices);
+  //   } else {
+  //     console.log("there is no length");
+  //   }
+  // };
+
   const compare = (report) => {
-    if (getUnitInvoice.length === 1) {
-      const unitInvoices = getUnitInvoice[0].cmdInvList;
-      setInvPaymentVrList(getUnitInvoice[0].cmdInvPaymentVrList);
-      // Identify invoices in unitInvoices that are not in report.open_inv
-      unitInvoices.forEach((unitInv) => {
-        const matchedInv = report.open_inv.find(
-          (importInv) =>
-            parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
-            importInv.PymtAmtRecd === unitInv.PymtAmtRecd
-        );
+    try {
+      if (getUnitInvoice.length === 1) {
+        const unitInvoices = getUnitInvoice[0].cmdInvList;
+        setInvPaymentVrList(getUnitInvoice[0].cmdInvPaymentVrList);
+        // Identify invoices in unitInvoices that are not in report.open_inv
+        unitInvoices.forEach((unitInv) => {
+          const matchedInv = getHOInvoice[0].cmdHoInvList.find(
+            (importInv) =>
+              parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
+              importInv.PymtAmtRecd === unitInv.PymtAmtRecd
+          );
 
-        if (matchedInv) {
-          // Invoice is matched, add to matchedInvoices array
-          matchedInvoices.push({ ...unitInv, matchedInv });
-        } else {
-          // Invoice is unmatched, add to unmatchedInvoices array
-          unmatchedInvoices.push(unitInv);
-        }
-      });
+          if (matchedInv) {
+            // Invoice is matched, add to matchedInvoices array
+            matchedInvoices.push({ ...unitInv, matchedInv });
+          } else {
+            // Invoice is unmatched, add to unmatchedInvoices array
+            unmatchedInvoices.push(unitInv);
+          }
+        });
 
-      // Now matchedInvoices contains the matched invoices along with their corresponding importInv
-      console.log("matchedInvoices", matchedInvoices);
+        // Now matchedInvoices contains the matched invoices along with their corresponding importInv
+        console.log("matchedInvoices", matchedInvoices);
 
-      // Now unmatchedInvoices contains the invoices present in unitInvoices but not in report.open_inv
-      console.log("unmatchedInvoices", unmatchedInvoices);
-    } else {
-      console.log("there is no length");
+        // Now unmatchedInvoices contains the invoices present in unitInvoices but not in report.open_inv
+        console.log("unmatchedInvoices", unmatchedInvoices);
+      } else {
+        console.log("there is no length");
+      }
+    } catch (error) {
+      console.error("An error occurred in Unit information table:", error);
     }
   };
 
@@ -372,34 +420,76 @@ export default function ShowSyncStatus() {
   const [matchedInvoicesHo, setmatchedInvoicesHo] = useState([]);
   const [unmatchedInvoicesHO, setunmatchedInvoicesHo] = useState([]);
 
+  // const HOCompare = (report) => {
+  //   if (getHOInvoice.length === 1) {
+  //     const hoInvoices = getHOInvoice[0].cmdHoInvList;
+  //     setInvPaymentVrListHO(getHOInvoice[0].cmdHoInvPaymentVrList);
+  //     // Identify invoices in unitInvoices that are not in report.open_inv
+  //     hoInvoices.forEach((unitInv) => {
+  //       const matchedInv = getUnitInvoice[0].cmdInvList.find(
+  //         (importInv) =>
+  //           parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
+  //           importInv.PymtAmtRecd === unitInv.PymtAmtRecd
+  //       );
+
+  //       // const matchedInv = report.open_inv.find(
+  //       //   (importInv) =>
+  //       //     parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
+  //       //     importInv.PymtAmtRecd === unitInv.PymtAmtRecd
+  //       // );
+
+  //       if (matchedInv) {
+  //         // Invoice is matched, add to matchedInvoices array
+  //         matchedInvoicesHo.push({ ...unitInv, matchedInv });
+  //       } else {
+  //         // Invoice is unmatched, add to unmatchedInvoices array
+  //         unmatchedInvoicesHO.push(unitInv);
+  //       }
+  //     });
+
+  //     // Now matchedInvoices contains the matched invoices along with their corresponding importInv
+  //     console.log("matchedInvoicesHo", matchedInvoicesHo);
+
+  //     // Now unmatchedInvoices contains the invoices present in unitInvoices but not in report.open_inv
+  //     console.log("unmatchedInvoicesHO", unmatchedInvoicesHO);
+  //   } else {
+  //     console.log("there is no length");
+  //   }
+  // };
+
+  console.log("An getHOInvoice:", getHOInvoice);
   const HOCompare = (report) => {
-    if (getHOInvoice.length === 1) {
-      const hoInvoices = getHOInvoice[0].cmdHoInvList;
-      setInvPaymentVrListHO(getHOInvoice[0].cmdHoInvPaymentVrList);
-      // Identify invoices in unitInvoices that are not in report.open_inv
-      hoInvoices.forEach((unitInv) => {
-        const matchedInv = getUnitInvoice[0].cmdInvList.find(
-          (importInv) =>
-            parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
-            importInv.PymtAmtRecd === unitInv.PymtAmtRecd
-        );
+    try {
+      if (getHOInvoice.length === 1) {
+        const hoInvoices = getHOInvoice[0].cmdHoInvList;
+        setInvPaymentVrListHO(getHOInvoice[0].cmdHoInvPaymentVrList);
+        // Identify invoices in unitInvoices that are not in report.open_inv
+        hoInvoices.forEach((unitInv) => {
+          const matchedInv = report.open_inv.find(
+            (importInv) =>
+              parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
+              importInv.PymtAmtRecd === unitInv.PymtAmtRecd
+          );
 
-        if (matchedInv) {
-          // Invoice is matched, add to matchedInvoices array
-          matchedInvoicesHo.push({ ...unitInv, matchedInv });
-        } else {
-          // Invoice is unmatched, add to unmatchedInvoices array
-          unmatchedInvoicesHO.push(unitInv);
-        }
-      });
+          if (matchedInv) {
+            // Invoice is matched, add to matchedInvoices array
+            matchedInvoicesHo.push({ ...unitInv, matchedInv });
+          } else {
+            // Invoice is unmatched, add to unmatchedInvoices array
+            unmatchedInvoicesHO.push(unitInv);
+          }
+        });
 
-      // Now matchedInvoices contains the matched invoices along with their corresponding importInv
-      console.log("matchedInvoicesHo", matchedInvoicesHo);
+        // Now matchedInvoices contains the matched invoices along with their corresponding importInv
+        console.log("matchedInvoicesHo", matchedInvoicesHo);
 
-      // Now unmatchedInvoices contains the invoices present in unitInvoices but not in report.open_inv
-      console.log("unmatchedInvoicesHO", unmatchedInvoicesHO);
-    } else {
-      console.log("there is no length");
+        // Now unmatchedInvoices contains the invoices present in unitInvoices but not in report.open_inv
+        console.log("unmatchedInvoicesHO", unmatchedInvoicesHO);
+      } else {
+        console.log("there is no length");
+      }
+    } catch (error) {
+      console.error("An error occurred in Ho information table:", error);
     }
   };
 
@@ -497,6 +587,7 @@ export default function ShowSyncStatus() {
   };
 
   let countUnmatched = unmatchedInvoicesHO.length;
+
   const formatDate = (dateString) => {
     const dateObject = new Date(dateString);
     return dateObject.toLocaleDateString("en-GB", {
@@ -553,7 +644,6 @@ export default function ShowSyncStatus() {
     return dataCopy;
   };
 
-
   const [showMatchedFirst, setShowMatchedFirst] = useState(true); // State to track whether matched data should be shown first
 
   // Function to handle the filter button click
@@ -561,51 +651,53 @@ export default function ShowSyncStatus() {
     setShowMatchedFirst(!showMatchedFirst); // Toggle between showing matched data first and unmatched data first
   };
 
-
-  // for HO table 
+  // for HO table
   const [showMatchedFirstForHO, setShowMatchedFirstForHO] = useState(true);
-  const forHO=()=>{
+  const forHO = () => {
     setShowMatchedFirstForHO(!showMatchedFirstForHO);
-  }
-
+  };
 
   const handleClose = () => {
     setMailModal(false);
-    setMailAlert(false)
-  }
+    setMailAlert(false);
+  };
   const yesmailSubmit = () => {
     setMailAlert(false);
     setMailModal(true);
-  }
+  };
 
   const callMailModal = () => {
-    setMailAlert(true)
-  }
+    setMailAlert(true);
+  };
 
   return (
     <div style={{ height: "85vh", padding: "10px", overflowY: "scroll" }}>
-      <Modal
-        show={mailAlert}
-        onHide={handleClose}
-      >
+      <Modal show={mailAlert} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title  style={{fontSize:'12px'}}>magod_machine</Modal.Title>
+          <Modal.Title style={{ fontSize: "12px" }}>magod_machine</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body  style={{fontSize:'12px'}}> Accounts Sync Report Saved as (path filename.xml) Do you wish to mail it?
-
-
+        <Modal.Body style={{ fontSize: "12px" }}>
+          {" "}
+          Accounts Sync Report Saved as (path filename.xml) Do you wish to mail
+          it?
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="primary" onClick={yesmailSubmit}  style={{fontSize:'12px'}}
+          <Button
+            variant="primary"
+            onClick={yesmailSubmit}
+            style={{ fontSize: "12px" }}
           >
             Yes
           </Button>
-          <Button variant="secondary" onClick={handleClose}  style={{fontSize:'12px'}}>
+          <Button
+            variant="secondary"
+            onClick={handleClose}
+            style={{ fontSize: "12px" }}
+          >
             No
           </Button>
-
         </Modal.Footer>
       </Modal>
       <div className="row">
@@ -622,12 +714,12 @@ export default function ShowSyncStatus() {
         <div className="d-flex col-md-4" style={{ gap: "10px" }}>
           <div className="col-md-5 mt-2">
             <select className="ip-select" onChange={(e) => handleUnitSelect(e)}>
-            <option value=""> Select Unit</option> {/* Empty space */}
+              <option value=""> Select Unit</option> {/* Empty space */}
               {unitdata.map((item) => (
                 <>
-                <option key={item.id} value={item.value}>
-                  {item.UnitName}
-                </option>
+                  <option key={item.id} value={item.value}>
+                    {item.UnitName}
+                  </option>
                 </>
               ))}
             </select>
@@ -784,7 +876,7 @@ export default function ShowSyncStatus() {
                       style={{ width: "80px" }}
                       onClick={forHO}
                     >
-                      Filterr
+                      Filter
                     </button>
                   </div>
                 </div>
@@ -821,8 +913,7 @@ export default function ShowSyncStatus() {
                       </tr>
                     </thead>
 
-                    <tbody className="tablebody">
-                    
+                    {/* <tbody className="tablebody">
                       {sortedData()?.map((item, key) => {
                         return (
                           <tr
@@ -849,33 +940,7 @@ export default function ShowSyncStatus() {
                           </tr>
                         );
                       })}
-                      {/* {matchedInvoices.map((item, index) => {
-                        return (
-                          <tr
-                            onClick={() => selectedRowFun(item, index)}
-                            className={
-                              index === selectRow?.index
-                                ? "selcted-row-clr"
-                                : ""
-                            }
-                            key={`matched-${item.DC_Inv_No}`}
-                            style={{
-                              backgroundColor: "#92ec93",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            <td>{item.DC_InvType}</td>
-                            <td>{item.Inv_No}</td>
-                            <td>{formatDate(item.Dc_inv_Date)}</td>
-                            <td>{item.InvTotal}</td>
-                            <td>{item.PymtAmtRecd}</td>
-                            <td>{item.Cust_Name}</td>
-                            <td>{item.DCStatus}</td>
-                          </tr>
-                        );
-                      })} */}
-
-                      {/* Render rows for unmatchedInvoices */}
+                      
                       {unmatchedInvoices?.map((item, key) => {
                         return (
                           <tr
@@ -902,25 +967,140 @@ export default function ShowSyncStatus() {
                           </tr>
                         );
                       })}
-                      {/* {unmatchedInvoices.map((item) => {
-                        return (
-                          <tr
-                            key={`unmatched-${item.DC_Inv_No}`}
-                            style={{
-                              backgroundColor: "#f48483",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            <td>{item.DC_InvType}</td>
-                            <td>{item.Inv_No}</td>
-                            <td>{formatDate(item.Dc_inv_Date)}</td>
-                            <td>{item.InvTotal}</td>
-                            <td>{item.PymtAmtRecd}</td>
-                            <td>{item.Cust_Name}</td>
-                            <td>{item.DCStatus}</td>
-                          </tr>
-                        );
-                      })} */}
+                      
+                    </tbody> */}
+                    {/* filter for unit  unmatchedInvoices */}
+                    <tbody className="tablebody">
+                      {showMatchedFirst ? (
+                        <>
+                          {sortedData()?.map((item, key) => {
+                            return (
+                              <tr
+                                style={{
+                                  whiteSpace: "nowrap",
+                                  backgroundColor: "#92ec93",
+                                }}
+                                onClick={() =>
+                                  selectedRowFun(item, key, "#92ec93")
+                                }
+                                className={
+                                  key === selectRow?.index
+                                    ? "selcted-row-clr"
+                                    : ""
+                                }
+                              >
+                                <td>{item.DC_InvType}</td>
+                                <td>{item.Inv_No}</td>
+                                <td>{formatDate(item.Dc_inv_Date)}</td>
+                                <td style={{ textAlign: "right" }}>
+                                  {formatAmount(item.InvTotal)}
+                                </td>
+                                <td style={{ textAlign: "right" }}>
+                                  {formatAmount(item.PymtAmtRecd)}
+                                </td>
+                                <td>{item.Cust_Name}</td>
+                                <td>{item.DCStatus}</td>
+                              </tr>
+                            );
+                          })}
+                          {/* Then display unmatched data */}
+                          {unmatchedInvoices?.map((item, key) => {
+                            return (
+                              <tr
+                                style={{
+                                  whiteSpace: "nowrap",
+                                  backgroundColor: "#f48483",
+                                }}
+                                onClick={() =>
+                                  selectedRowFun(item, key, "#f48483")
+                                }
+                                className={
+                                  key === selectRow?.index
+                                    ? "selcted-row-clr"
+                                    : ""
+                                }
+                              >
+                                <td>{item.DC_InvType}</td>
+                                <td>{item.Inv_No}</td>
+                                <td>{formatDate(item.Dc_inv_Date)}</td>
+                                <td style={{ textAlign: "right" }}>
+                                  {formatAmount(item.InvTotal)}
+                                </td>
+                                <td style={{ textAlign: "right" }}>
+                                  {formatAmount(item.PymtAmtRecd)}
+                                </td>
+                                <td>{item.Cust_Name}</td>
+                                <td>{item.DCStatus}</td>
+                              </tr>
+                            );
+                          })}
+                        </>
+                      ) : (
+                        <>
+                          {/* Display unmatched data first */}
+                          {unmatchedInvoices?.map((item, key) => {
+                            return (
+                              <tr
+                                style={{
+                                  whiteSpace: "nowrap",
+                                  backgroundColor: "#f48483",
+                                }}
+                                onClick={() =>
+                                  selectedRowFun(item, key, "#f48483")
+                                }
+                                className={
+                                  key === selectRow?.index
+                                    ? "selcted-row-clr"
+                                    : ""
+                                }
+                              >
+                                <td>{item.DC_InvType}</td>
+                                <td>{item.Inv_No}</td>
+                                <td>{formatDate(item.Dc_inv_Date)}</td>
+                                <td style={{ textAlign: "right" }}>
+                                  {formatAmount(item.InvTotal)}
+                                </td>
+                                <td style={{ textAlign: "right" }}>
+                                  {formatAmount(item.PymtAmtRecd)}
+                                </td>
+                                <td>{item.Cust_Name}</td>
+                                <td>{item.DCStatus}</td>
+                              </tr>
+                            );
+                          })}
+                          {/* Then display matched data */}
+                          {sortedData()?.map((item, key) => {
+                            return (
+                              <tr
+                                style={{
+                                  whiteSpace: "nowrap",
+                                  backgroundColor: "#92ec93",
+                                }}
+                                onClick={() =>
+                                  selectedRowFun(item, key, "#92ec93")
+                                }
+                                className={
+                                  key === selectRow?.index
+                                    ? "selcted-row-clr"
+                                    : ""
+                                }
+                              >
+                                <td>{item.DC_InvType}</td>
+                                <td>{item.Inv_No}</td>
+                                <td>{formatDate(item.Dc_inv_Date)}</td>
+                                <td style={{ textAlign: "right" }}>
+                                  {formatAmount(item.InvTotal)}
+                                </td>
+                                <td style={{ textAlign: "right" }}>
+                                  {formatAmount(item.PymtAmtRecd)}
+                                </td>
+                                <td>{item.Cust_Name}</td>
+                                <td>{item.DCStatus}</td>
+                              </tr>
+                            );
+                          })}
+                        </>
+                      )}
                     </tbody>
                   </Table>
                 </div>
@@ -936,7 +1116,7 @@ export default function ShowSyncStatus() {
                   <Table striped className="table-data border mt-1">
                     <thead className="tableHeaderBGColor">
                       <tr>
-                        <th style={{ whiteSpace: "nowrap" }}>Inv Type</th>
+                        <th style={{ whiteSpace: "nowrap" }}>Inv Type </th>
                         <th style={{ whiteSpace: "nowrap" }}>Inv No</th>
                         <th>Date</th>
                         <th style={{ whiteSpace: "nowrap" }}>Inv Total</th>
@@ -946,7 +1126,7 @@ export default function ShowSyncStatus() {
                       </tr>
                     </thead>
 
-                    <tbody className="tablebody">
+                    {/* <tbody className="tablebody">
                       {unmatchedInvoicesHO?.map((item, key) => {
                         return (
                           <tr
@@ -1006,6 +1186,140 @@ export default function ShowSyncStatus() {
                           </tr>
                         );
                       })}
+                    </tbody> */}
+
+                    {/*  for filter for Ho invoices */}
+
+                    <tbody className="tablebody">
+                      {showMatchedFirstForHO ? (
+                        <>
+                          {matchedInvoicesHo?.map((item, key) => {
+                            return (
+                              <tr
+                                style={{
+                                  whiteSpace: "nowrap",
+                                  backgroundColor: "#92ec93",
+                                }}
+                                onClick={() =>
+                                  selectedRowFunHO(item, key, "#92ec93")
+                                }
+                                className={
+                                  key === selectRowHO?.index
+                                    ? "selcted-row-clr"
+                                    : ""
+                                }
+                              >
+                                <td>{item.DC_InvType}</td>
+                                <td>{item.Inv_No}</td>
+                                <td>{formatDate(item.DC_Date)}</td>
+                                <td style={{ textAlign: "right" }}>
+                                  {formatAmount(item.InvTotal)}
+                                </td>
+                                <td style={{ textAlign: "right" }}>
+                                  {formatAmount(item.PymtAmtRecd)}
+                                </td>
+                                <td>{item.Cust_Name}</td>
+                                <td>{item.DCStatus}</td>
+                              </tr>
+                            );
+                          })}
+
+                          {unmatchedInvoicesHO?.map((item, key) => {
+                            return (
+                              <tr
+                                style={{
+                                  whiteSpace: "nowrap",
+                                  backgroundColor: "#f48483",
+                                }}
+                                onClick={() =>
+                                  selectedRowFunHO(item, key, "#f48483")
+                                }
+                                className={
+                                  key === selectRowHO?.index
+                                    ? "selcted-row-clr"
+                                    : ""
+                                }
+                              >
+                                <td>{item.DC_InvType}</td>
+                                <td>{item.Inv_No}</td>
+                                <td>{formatDate(item.DC_Date)}</td>
+                                <td style={{ textAlign: "right" }}>
+                                  {formatAmount(item.InvTotal)}
+                                </td>
+                                <td style={{ textAlign: "right" }}>
+                                  {formatAmount(item.PymtAmtRecd)}
+                                </td>
+                                <td>{item.Cust_Name}</td>
+                                <td>{item.DCStatus}</td>
+                              </tr>
+                            );
+                          })}
+                        </>
+                      ) : (
+                        <>
+                          {unmatchedInvoicesHO?.map((item, key) => {
+                            return (
+                              <tr
+                                style={{
+                                  whiteSpace: "nowrap",
+                                  backgroundColor: "#f48483",
+                                }}
+                                onClick={() =>
+                                  selectedRowFunHO(item, key, "#f48483")
+                                }
+                                className={
+                                  key === selectRowHO?.index
+                                    ? "selcted-row-clr"
+                                    : ""
+                                }
+                              >
+                                <td>{item.DC_InvType}</td>
+                                <td>{item.Inv_No}</td>
+                                <td>{formatDate(item.DC_Date)}</td>
+                                <td style={{ textAlign: "right" }}>
+                                  {formatAmount(item.InvTotal)}
+                                </td>
+                                <td style={{ textAlign: "right" }}>
+                                  {formatAmount(item.PymtAmtRecd)}
+                                </td>
+                                <td>{item.Cust_Name}</td>
+                                <td>{item.DCStatus}</td>
+                              </tr>
+                            );
+                          })}
+
+                          {matchedInvoicesHo?.map((item, key) => {
+                            return (
+                              <tr
+                                style={{
+                                  whiteSpace: "nowrap",
+                                  backgroundColor: "#92ec93",
+                                }}
+                                onClick={() =>
+                                  selectedRowFunHO(item, key, "#92ec93")
+                                }
+                                className={
+                                  key === selectRowHO?.index
+                                    ? "selcted-row-clr"
+                                    : ""
+                                }
+                              >
+                                <td>{item.DC_InvType}</td>
+                                <td>{item.Inv_No}</td>
+                                <td>{formatDate(item.DC_Date)}</td>
+                                <td style={{ textAlign: "right" }}>
+                                  {formatAmount(item.InvTotal)}
+                                </td>
+                                <td style={{ textAlign: "right" }}>
+                                  {formatAmount(item.PymtAmtRecd)}
+                                </td>
+                                <td>{item.Cust_Name}</td>
+                                <td>{item.DCStatus}</td>
+                              </tr>
+                            );
+                          })}
+                        </>
+                      )}
                     </tbody>
                   </Table>
                 </div>
@@ -1089,9 +1403,7 @@ export default function ShowSyncStatus() {
             <Tab eventKey="HOR" title=" HO Payment Receipnts"></Tab>
           </Tabs>
         </div>
-        {
-          <MailModal   mailModal={mailModal} setMailModal={setMailModal}/>
-        }
+        {<MailModal mailModal={mailModal} setMailModal={setMailModal} />}
       </div>
     </div>
   );

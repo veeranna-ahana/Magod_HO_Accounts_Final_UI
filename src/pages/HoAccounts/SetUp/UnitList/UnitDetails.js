@@ -113,7 +113,7 @@ export default function UnitDetails() {
       setLastToastTimestamp(now);
     }
     try {
-      if (postData.UnitID === "" || postData.Name === "") {
+      if (postData.UnitID === "" || postData.UnitName === "") {
         if (test > 0) {
           toast.error("Please add UnitId and UnitName");
         }
