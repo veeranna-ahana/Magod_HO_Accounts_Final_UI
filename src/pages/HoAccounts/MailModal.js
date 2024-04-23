@@ -1,14 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Col, Row, Form, ModalHeader, ModalTitle, ModalBody } from "react-bootstrap";
+import {
+  Col,
+  Row,
+  Form,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+} from "react-bootstrap";
 import { useSearchParams } from "react-router-dom";
 import { Buffer } from "buffer";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { baseURL } from "../../api/baseUrl";
-import Modal from 'react-bootstrap/Modal';
-
-
-
+import Modal from "react-bootstrap/Modal";
 
 const {
   // getRequest,
@@ -17,38 +21,28 @@ const {
 } = require("../../api/apiinstance");
 const { endpoints } = require("../../api/constants");
 
-function MailModal({mailModal, setMailModal,xmlFile}) {
- // const [searchParams] = useSearchParams();
+function MailModal({ mailModal, setMailModal, xmlFile }) {
+  // const [searchParams] = useSearchParams();
 
   // let history = useHistory();
   // let [formMessageBody, setFormMessageBody] = useState("");
   // let [formSubject, setFormSubject] = useState("");
   const isFirstClickRef = useRef(true);
 
+  console.log("xml file", xmlFile);
 
-
-
-console.log("xml file", xmlFile);
-
-
-
-//   useEffect(() => {
-//     console.log(searchParams.get("mlbody"));
-//     // setFormMessageBody(searchParams.get("mlbody"));
-//     document.getElementById("formMessageBody").value = Buffer.from(
-//       searchParams.get("mlbody"),
-//       "base64"
-//     ).toString("ascii");
-//     document.getElementById("formSubject").value = Buffer.from(
-//       searchParams.get("mlsubjct"),
-//       "base64"
-//     ).toString("ascii");
-//   }, []);
-
-
-
-
-
+  //   useEffect(() => {
+  //     console.log(searchParams.get("mlbody"));
+  //     // setFormMessageBody(searchParams.get("mlbody"));
+  //     document.getElementById("formMessageBody").value = Buffer.from(
+  //       searchParams.get("mlbody"),
+  //       "base64"
+  //     ).toString("ascii");
+  //     document.getElementById("formSubject").value = Buffer.from(
+  //       searchParams.get("mlsubjct"),
+  //       "base64"
+  //     ).toString("ascii");
+  //   }, []);
 
   const sendmaildetails = async (e) => {
     e.preventDefault();
@@ -67,12 +61,12 @@ console.log("xml file", xmlFile);
     formData.append("ccAddress", copyto);
     formData.append("subjectLine", subject);
     formData.append("mailBody", mailbody);
-   formData.append("file",  files[0]);
-   // formData.append("file", xmlFile, xmlFile.name);
+    formData.append("file", files[0]);
+    // formData.append("file", xmlFile, xmlFile.name);
 
     formData.append("fromAddress", from);
 
-    console.log("form datra",formData);
+    console.log("form datra", formData);
 
     postRequestFormData(endpoints.sendAttachmentMails, formData, (data) => {
       if (data != null) {
@@ -90,23 +84,15 @@ console.log("xml file", xmlFile);
         }, 3000);
       }
     });
-
   };
-
-
-
-
-
-
- 
 
   let closesendmail = () => {
     setMailModal(false);
     if (isFirstClickRef.current) {
-    //   toast.success("Closing Email..", {
-    //     autoClose: 2000, 
-        
-    //   });
+      //   toast.success("Closing Email..", {
+      //     autoClose: 2000,
+
+      //   });
       isFirstClickRef.current = false;
     }
 
@@ -116,18 +102,18 @@ console.log("xml file", xmlFile);
     }, 3000);
   };
 
- // const [mailModal, setMailModal] = useState(false)
+  // const [mailModal, setMailModal] = useState(false)
   const sendModalopen = () => {
     setMailModal(true);
-  }
+  };
   const handleClose = () => {
     setMailModal(false);
-  }
+  };
   return (
     <>
-      <Modal show={mailModal} size='lg' onHide={handleClose}>
+      <Modal show={mailModal} size="lg" onHide={handleClose}>
         <ModalHeader closeButton>
-          <ModalTitle>Send Quotation</ModalTitle>
+          <ModalTitle style={{ fontSize: "14px" }}>Send Quotation</ModalTitle>
         </ModalHeader>
         <ModalBody>
           <div className="form-style">
@@ -144,52 +130,57 @@ console.log("xml file", xmlFile);
                                         <Form.Control type="text" controlId="fromaddress" value={fromaddress} style={{ width: '200px', height: '30px', fontFamily: 'Roboto', fontSize: '14px' }} />
                                     </Row> */}
 
-
                   <Form.Group className=" row" controlId="from">
-
-                    <div className=" d-flex col-md-8 mt-2" style={{ gap: '65px' }}>
+                    <div
+                      className=" d-flex col-md-8 mt-2"
+                      style={{ gap: "65px" }}
+                    >
                       <label className="form-label">From</label>
-                      <Form.Control type="text" required  id="fromInput"/>
-
-
+                      <Form.Control type="text" required id="fromInput" />
                     </div>
-
-
                   </Form.Group>
                   <Form.Group className=" row" controlId="formToAddress">
-
-                    <div className=" d-flex col-md-8 mt-2" style={{ gap: '80px' }}>
+                    <div
+                      className=" d-flex col-md-8 mt-2"
+                      style={{ gap: "80px" }}
+                    >
                       <label className="form-label">To</label>
                       <Form.Control type="text" required />
-
-
                     </div>
-
-
                   </Form.Group>
 
                   <Form.Group as={Row} controlId="formCCAddress">
-                    <div className=" d-flex col-md-8 mt-2" style={{ gap: '80px' }}>
+                    <div
+                      className=" d-flex col-md-8 mt-2"
+                      style={{ gap: "80px" }}
+                    >
                       <label className="form-label">CC</label>
                       <Form.Control type="text" />
                     </div>
                   </Form.Group>
                   <Form.Group as={Row} controlId="attachments">
-                    <div className=" d-flex col-md-8 mt-2" style={{ gap: '20px' }}>
+                    <div
+                      className=" d-flex col-md-8 mt-2"
+                      style={{ gap: "20px" }}
+                    >
                       <label className="form-label">Attachments</label>
-                      <Form.Control type="file" required   />
+                      <Form.Control type="file" required />
                     </div>
                   </Form.Group>
                   <Form.Group as={Row} controlId="formSubject">
-                    <div className="d-flex col-md-8 mt-2 " style={{ gap: '50px' }}>
+                    <div
+                      className="d-flex col-md-8 mt-2 "
+                      style={{ gap: "50px" }}
+                    >
                       <label className="form-label">Subject</label>
                       <Form.Control type="text" />
-
-
                     </div>
                   </Form.Group>
                   <Form.Group as={Row} controlId="formMessageBody">
-                    <div className="d-flex col-md-8 mt-2" style={{ gap: '40px' }}>
+                    <div
+                      className="d-flex col-md-8 mt-2"
+                      style={{ gap: "40px" }}
+                    >
                       <label className="form-label">Message</label>
                       <Form.Control
                         as="textarea"
@@ -216,7 +207,6 @@ console.log("xml file", xmlFile);
                     >
                       Close
                     </button>
-
                   </Form.Group>
                 </Form>
               </div>
@@ -224,10 +214,6 @@ console.log("xml file", xmlFile);
           </div>
         </ModalBody>
       </Modal>
-
-      
-
-
     </>
   );
 }

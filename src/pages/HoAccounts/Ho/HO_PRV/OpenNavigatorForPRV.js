@@ -51,7 +51,7 @@ export default function OpenNavigatorForPRV() {
       Recd_PVNo: "Draft",
       HO_PrvId: "",
 
-      HORefNo: "Draft",
+      HORef: "Draft",
 
       Status: "Draft",
       CustName: "",
@@ -650,7 +650,7 @@ export default function OpenNavigatorForPRV() {
             name="HORefNo"
             placeholder=""
             disabled
-            value={rvData.postData.HORefNo}
+            value={rvData.postData.HORef}
           />
         </div>
 

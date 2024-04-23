@@ -92,7 +92,7 @@ export default function UnitDetails() {
           toast.error("Unit Initial length should be less than 3 ");
         } else if (res.data.status === "success") {
           console.log("qwertyuio");
-          toast.success(" Jigani Unit added Successfully");
+          toast.success("  Unit data added Successfully");
 
           setTimeout(() => {
             window.location.reload();
@@ -122,7 +122,7 @@ export default function UnitDetails() {
 
         if (test > 0) {
           toast.error(
-            "Unit_Intial should be unique and  Length must be less than 3  "
+            "Unit_Intial should be unique and  Length must be less than or equal to 3  "
           );
         }
       } else if (

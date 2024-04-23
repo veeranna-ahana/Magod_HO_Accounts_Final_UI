@@ -37,7 +37,7 @@ export default function SaveChangesModal({
           console.log("res in frontend", res.data);
           // alert("data updated")
 
-          toast.success(" Jigani Unit Updated Successfully");
+          toast.success("  Unit data Updated Successfully");
 
           setTimeout(() => {
             window.location.reload();

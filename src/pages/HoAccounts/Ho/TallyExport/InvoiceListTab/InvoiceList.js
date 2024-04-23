@@ -39,16 +39,16 @@ export default function InvoiceList({
       .then((res) => {
         if (res.data.Result.length > 0) {
           setInvoiceListData(res.data.Result);
+          console.log("invocie dataaaaaaaaaa", invoiceListData);
           if (
             invoiceListData.length === 0 &&
             flag &&
             selectedDate &&
-            selectedUnitName &&
-            !toastShown
+            selectedUnitName
           ) {
             setInvoiceListData([]);
             toast.error("no data");
-            setToastShown(true);
+            // setToastShown(true);
           }
         } else {
           setInvoiceListData([]);
@@ -141,6 +141,13 @@ export default function InvoiceList({
 
     return dateString;
   };
+
+  // useEffect(() => {
+
+  //   const timer = setTimeout(() => {
+  //     toast.success("Data being populated");
+  //   }, 4000); // Adjust the time delay (in milliseconds) as needed
+  // }, [flag]);
 
   useEffect(() => {
     if (invoiceListData.length > 0 && flag) {
@@ -398,20 +405,26 @@ export default function InvoiceList({
       return createXml([voucher]); // Assuming createXml function accepts an array
     });
 
+    const concatenatedXml = xmlResults.join("");
+    console.log("xmlllllllllllllllllll service ", concatenatedXml);
+    // exportInvoices(concatenatedXml);
+    console.log("xml resultrs", concatenatedXml);
+
     // filtered service
-    const filteredInvoicesService = invoiceListData.filter(
-      (voucher) => voucher.DC_InvType === "Service"
-    );
 
-    const xmlResultsService = filteredInvoicesService.map((voucher) => {
-      const xmlres = createXml([voucher]);
+    // const filteredInvoicesService = invoiceListData.filter(
+    //   (voucher) => voucher.DC_InvType === "Service"
+    // );
 
-      const concatenatedXml = xmlres.join("");
-      console.log("xmlllllllllllllllllll service ", concatenatedXml);
-      exportInvoices(concatenatedXml);
+    // const xmlResultsService = filteredInvoicesService.map((voucher) => {
+    //   const xmlres = createXml([voucher]);
 
-      return createXml([voucher]); // Assuming createXml function accepts an array
-    });
+    //   const concatenatedXml = xmlres.join("");
+    //   console.log("xmlllllllllllllllllll service ", concatenatedXml);
+    //   exportInvoices(concatenatedXml);
+
+    //   return createXml([voucher]); // Assuming createXml function accepts an array
+    // });
   };
 
   // const createXml = (filteredInvoices) => {
