@@ -647,3 +647,77 @@ input::-webkit-inner-spin-button {
 li.nav-item {
   margin-left: 5px !important;
 }
+
+/* for Unit information */
+
+.paginationUnit {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.paginationUnit li {
+  margin: 0 5px;
+  display: inline;
+  font-size: 12px;
+}
+
+.paginationUnit li a {
+  padding: 3px 7px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #333;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.paginationUnit li a:hover {
+  background-color: #2b3a55;
+  color: #fff !important;
+}
+
+.paginationUnit li.active a {
+  background-color: #2b3a55;
+  color: #fff;
+}
+
+/* for HO information */
+
+.paginationHO {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.paginationHO li {
+  margin: 0 5px;
+  display: inline;
+  font-size: 12px;
+}
+
+.paginationHO li a {
+  padding: 3px 7px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #333;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.paginationHO li a:hover {
+  background-color: #2b3a55;
+  color: #fff !important;
+}
+
+.paginationHO li.active a {
+  background-color: #2b3a55;
+  color: #fff;
+}
