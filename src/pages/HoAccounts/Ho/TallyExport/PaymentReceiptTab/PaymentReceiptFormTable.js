@@ -16,12 +16,40 @@ export default function PaymentReceiptFormTable({
   const [paymentReceiptDetails, setPaymentReceiptDetails] = useState([]);
   const [payment, setPayment] = useState([]);
 
+  const [companyAndGuid, setCompanyAndGuid] = useState([]);
+  const [cmpName, setCmpName] = useState([]);
+
   useEffect(() => {
     setExportTally(false);
     if (selectedDate && selectedUnitName) {
       PaymentReceiptSubmit();
     }
   }, [selectedDate, exportTally, selectedUnitName]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (selectedUnitName) {
+        try {
+          const company = await axios.post(
+            baseURL + "/tallyExport/getCompanyGuid",
+            {
+              selectedUnitName: selectedUnitName?.UnitName,
+            }
+          );
+          console.log("company", company.data.Result[0].Tally_account_Name);
+
+          if (company.data.Status === "Success") {
+            setCmpName(company.data.Result[0].Tally_account_Name);
+            //setCompanyAndGuid(company.data.Result);
+          }
+        } catch (error) {
+          console.error("Error fetching company:", error);
+        }
+      }
+    };
+
+    fetchData(); // Call the async function here
+  }, [selectedUnitName]);
 
   const PaymentReceiptSubmit = () => {
     axios
@@ -85,8 +113,36 @@ export default function PaymentReceiptFormTable({
     }
   }, [paymentReceiptDetails, flag]);
 
+  const [paymentXML, setPaymentXML] = useState([]);
+  useEffect(() => {
+    if (selectedUnitName && selectedDate) {
+      paymentDataForXml();
+    }
+  }, [selectedUnitName, selectedDate]);
+
+  const paymentDataForXml = () => {
+    axios
+      .get(baseURL + "/tallyExport/getPaymentForXml", {
+        params: {
+          selectedUnitName: selectedUnitName,
+          date: selectedDate,
+        },
+      })
+      .then((res) => {
+        console.log("tax xml ", res.data.Result);
+        setPaymentXML(res.data.Result);
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
+  };
+
   const tableToXml = () => {
     /* Your payment receipt details array */
+
+    const filterPaymentReceipts = paymentReceiptDetails.filter(
+      (pymnt) => pymnt.Recd_PVNo !== "Adjustment"
+    );
 
     const xmlData = {
       ENVELOPE: {
@@ -98,29 +154,42 @@ export default function PaymentReceiptFormTable({
             REQUESTDESC: {
               REPORTNAME: { _text: "Vouchers" },
               STATICVARIABLES: {
-                SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+                SVCURRENTCOMPANY: { _text: cmpName },
               },
             },
-            TALLYMESSAGE: paymentReceiptDetails.map((voucher) => {
-              // const billAllocationsList = payment
-              //     .filter((item) => item.Recd_PVNo === voucher.Recd_PVNo)
-              //     .map((item) => {
-              //         return {
-              //             NAME: `${item.PreFix} / ${item.RefNo}`,
-              //             BILLTYPE: 'Agst Ref',
-              //             AMOUNT: item.Receive_Now,
-              //         };
-              //     });
-
-              const taxData = payment.length > 0;
-              const billAllocationsList = taxData
-                ? payment.map((item) => ({
+            TALLYMESSAGE: filterPaymentReceipts.map((voucher) => {
+              const billAllocationsList = paymentXML
+                .filter((item) => item.Recd_PVNo === voucher.Recd_PVNo)
+                .map((item) => {
+                  return {
                     NAME: `${item.PreFix} / ${item.RefNo}`,
                     BILLTYPE: "Agst Ref",
-                    AMOUNT: item.Receive_Now, // Replace with the actual property from taxInvoiceData
-                    // Other properties for tax entry
-                  }))
-                : [];
+                    AMOUNT: item.Receive_Now,
+                  };
+                });
+
+              // const taxData = paymentXML.filter((item) => {
+              //   console.log(
+              //     "Inv pvno",
+
+              //     voucher.Inv_Type,
+              //     item.Inv_Type
+              //   );
+
+              //   item.Recd_PVNo === voucher.Recd_PVNo;
+              // });
+              // console.log("paymnenttttt ", taxData, "----??");
+
+              // const billAllocationsList = taxData
+              //   ? taxData.map((item) => ({
+              //       NAME: `${item.PreFix} / ${item.RefNo}`,
+              //       BILLTYPE: "Agst Ref",
+              //       AMOUNT: item.Receive_Now, // Replace with the actual property from taxInvoiceData
+              //       // Other properties for tax entry
+              //     }))
+              //   : [];
+
+              console.log("bill ", billAllocationsList, "----??");
 
               return {
                 _attributes: { "xmlns:UDF": "TallyUDF" },
@@ -161,7 +230,7 @@ export default function PaymentReceiptFormTable({
                   ISDELETED: "No",
                   ASORIGINAL: "No",
 
-                  ALLLEDGERENTRIES_LIST: [
+                  "ALLLEDGERENTRIES.LIST": [
                     {
                       LEDGERNAME: voucher.CustName,
                       GSTCLASS: "",
@@ -170,7 +239,7 @@ export default function PaymentReceiptFormTable({
                       REMOVEZEROENTRIES: "No",
                       ISPARTYLEDGER: "Yes",
                       AMOUNT: voucher.Amount,
-                      BILLALLOCATIONS_LIST: billAllocationsList,
+                      "BILLALLOCATIONS.LIST": billAllocationsList,
                     },
                     {
                       LEDGERNAME: voucher.TxnType, // Assuming Bank is the ledger name
@@ -233,7 +302,7 @@ export default function PaymentReceiptFormTable({
     const xmlResults = filterPaymentReceipts.map((pymnt) => {
       const xmlres = createXmlForPymnt([pymnt]); // Assuming createXml function accepts an array
       const concatenatedXml = xmlres.join("");
-      //console.log("xmlllllllllllllllllll payment  ", concatenatedXml);
+      console.log("xmlllllllllllllllllll payment  ", concatenatedXml);
     });
   };
 
@@ -241,18 +310,15 @@ export default function PaymentReceiptFormTable({
     /* Your payment receipt details array */
 
     const xmlArray = paymentReceiptDetails.map((voucher) => {
-      const taxData = payment.filter(
-        (inv) => inv.RecdPVID === voucher.RecdPVID
-      );
-      const billAllocationsList =
-        taxData.length > 0
-          ? payment.map((item) => ({
-              NAME: `${item.PreFix} / ${item.RefNo}`,
-              BILLTYPE: "Agst Ref",
-              AMOUNT: item.Receive_Now, // Replace with the actual property from taxInvoiceData
-              // Other properties for tax entry
-            }))
-          : [];
+      const billAllocationsList = paymentXML
+        .filter((item) => item.Recd_PVNo === voucher.Recd_PVNo)
+        .map((item) => {
+          return {
+            NAME: `${item.PreFix} / ${item.RefNo}`,
+            BILLTYPE: "Agst Ref",
+            AMOUNT: item.Receive_Now,
+          };
+        });
 
       const xmlData = {
         ENVELOPE: {
@@ -264,7 +330,7 @@ export default function PaymentReceiptFormTable({
               REQUESTDESC: {
                 REPORTNAME: { _text: "Vouchers" },
                 STATICVARIABLES: {
-                  SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+                  SVCURRENTCOMPANY: { _text: cmpName },
                 },
               },
               TALLYMESSAGE: {
@@ -306,7 +372,7 @@ export default function PaymentReceiptFormTable({
                   ISDELETED: "No",
                   ASORIGINAL: "No",
 
-                  ALLLEDGERENTRIES_LIST: [
+                  "ALLLEDGERENTRIES.LIST": [
                     {
                       LEDGERNAME: voucher.CustName,
                       GSTCLASS: "",
@@ -315,7 +381,7 @@ export default function PaymentReceiptFormTable({
                       REMOVEZEROENTRIES: "No",
                       ISPARTYLEDGER: "Yes",
                       AMOUNT: voucher.Amount,
-                      BILLALLOCATIONS_LIST: billAllocationsList,
+                      "BILLALLOCATIONS.LIST": billAllocationsList,
                     },
                     {
                       LEDGERNAME: voucher.TxnType, // Assuming Bank is the ledger name
@@ -339,6 +405,7 @@ export default function PaymentReceiptFormTable({
 
     return xmlArray;
   };
+  console.log("payment cmpname ", cmpName);
 
   // const [response, setResponse] = useState(null);
   // const exportPaymentReceipts = async (formData) => {
@@ -399,7 +466,7 @@ export default function PaymentReceiptFormTable({
   };
 
   if (exportTally) {
-    // handleExportPayment();
+    //handleExportPayment();
     //createXmlForEachPaymentReceipt();
   }
 

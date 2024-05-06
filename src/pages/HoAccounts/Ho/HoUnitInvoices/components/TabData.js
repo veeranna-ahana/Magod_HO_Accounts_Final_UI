@@ -44,7 +44,7 @@ export default function TabData() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
-  const [key, setKey] = useState("customer_O");
+  const [key, setKey] = useState("unit_O");
   const [customersData, setCustomersData] = useState([]);
   const [selectedCustCode, setSelectedCustCode] = useState("");
   const [selectedDCType, setSelectedDCType] = useState("");
@@ -70,7 +70,7 @@ export default function TabData() {
         console.log("get customers", res.data.Result);
         setCustomersData(res.data.Result);
       })
-      .catch((err) => { });
+      .catch((err) => {});
   };
 
   const [distictDCType, setDistinctDCType] = useState([]);
@@ -156,7 +156,6 @@ export default function TabData() {
   console.log("Distinct PO_NOs:", distinctPO_NOs);
   console.log("Sum of Balances for each PO_NO:", poSumMap);
 
-
   const [selectedUnitName, setSelectedUnitName] = useState("");
   const [selectUnit, setSelectUnit] = useState([]);
   const handleUnitSelect = (selected) => {
@@ -211,28 +210,27 @@ export default function TabData() {
       </div>
 
       <div className="row">
-        
-         <div className="col-md-4 col-sm-6">
+        <div className="col-md-4 col-sm-6">
           <div className="d-flex ">
             <div className="col-4">
-            <label className="form-label" style={{ whiteSpace: "nowrap" }}>
-              Select Unit
-            </label>
+              <label className="form-label" style={{ whiteSpace: "nowrap" }}>
+                Select Unit
+              </label>
             </div>
             <div className="col-8 mt-2">
-            <Typeahead
-              // className="ip-select col-md-5"
-              className="input-disabled  "
-              id="ip-select"
-              labelKey={(option) =>
-                option && option.UnitName ? option.UnitName.toString() : ""
-              }
-              options={unitdata}
-              placeholder="Select Unit"
-              onChange={handleUnitSelect}
-              selected={selectedUnitName}
-            //   selected={selectedUnitName ? [selectedUnitName] : []}
-            />
+              <Typeahead
+                // className="ip-select col-md-5"
+                className="input-disabled  "
+                id="ip-select"
+                labelKey={(option) =>
+                  option && option.UnitName ? option.UnitName.toString() : ""
+                }
+                options={unitdata}
+                placeholder="Select Unit"
+                onChange={handleUnitSelect}
+                selected={selectedUnitName}
+                //   selected={selectedUnitName ? [selectedUnitName] : []}
+              />
             </div>
           </div>
         </div>
@@ -286,34 +284,27 @@ export default function TabData() {
       </div>
 
       <div className="row">
-
-        
-        
-
-         <div className="d-flex col-md-4">
+        <div className="d-flex col-md-4">
           <div className="col-md-4">
-          <label className="form-label" style={{ whiteSpace: "nowrap" }}>
-                Select Customer
-              </label>
+            <label className="form-label" style={{ whiteSpace: "nowrap" }}>
+              Select Customer
+            </label>
           </div>
           <div className="col-8 mt-2">
-           
-
-          <Typeahead
-                // className="ip-select"
-                id="basic-example "
-                labelKey={(option) =>
-                  option && option.Cust_name ? option.Cust_name.toString() : ""
-                }
-                valueKey="Cust_Code"
-                options={customersData}
-                placeholder="Select Customer"
-                onChange={handleTypeaheadChange}
-                selected={selectedOption}
-              />
+            <Typeahead
+              // className="ip-select"
+              id="basic-example "
+              labelKey={(option) =>
+                option && option.Cust_name ? option.Cust_name.toString() : ""
+              }
+              valueKey="Cust_Code"
+              options={customersData}
+              placeholder="Select Customer"
+              onChange={handleTypeaheadChange}
+              selected={selectedOption}
+            />
           </div>
         </div>
-
 
         <div className="d-flex col-md-6">
           <div className="mt-1 p-1">
@@ -426,7 +417,6 @@ export default function TabData() {
         <div className="col-md-6"></div>
       </div>
 
-      
       <div>
         <Tabs
           id="controlled-tab-example "
@@ -435,7 +425,7 @@ export default function TabData() {
           className="mt-3 tab_font"
         >
           <Tab eventKey="unit_O" title="Unit Outstanding">
-            <UnitOutStanding  unitname={selectUnit[0]?.UnitName}/>
+            <UnitOutStanding unitname={selectUnit[0]?.UnitName} />
           </Tab>
 
           <Tab eventKey="customer_O" title="Customer Outstanding">
@@ -450,7 +440,6 @@ export default function TabData() {
               selectedDCType={selectedDCType}
               setFilterData={setFilterData}
               filterData={filterData}
-
               unitname={selectUnit[0]?.UnitName}
             />
           </Tab>

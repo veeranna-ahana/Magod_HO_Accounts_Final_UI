@@ -621,10 +621,10 @@ export default function ShowSyncStatus() {
   console.log("setconfirg unit", sortConfig);
   //For unit information
   const sortedData = () => {
-    const dataCopy = [...currentPageData];
+    const dataCopy1 = [...currentPageData];
 
     if (sortConfig.key) {
-      dataCopy.sort((a, b) => {
+      dataCopy1.sort((a, b) => {
         let valueA = a[sortConfig.key];
         let valueB = b[sortConfig.key];
 
@@ -642,7 +642,7 @@ export default function ShowSyncStatus() {
         return 0;
       });
     }
-    return dataCopy;
+    return dataCopy1;
   };
 
   //for Ho information
