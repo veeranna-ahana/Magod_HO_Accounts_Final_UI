@@ -21,7 +21,7 @@ export default function MonthlyReport() {
   const [getName, setGetName] = useState("");
   const [month, setMonth] = useState("");
   const [wordMonth, setWordMonth] = useState("");
-  const [year, setYear] = useState(new Date().getFullYear().toString());
+  const [year, setYear] = useState("");
   const [getInvoiceValues, setGetIvoiceValues] = useState([]);
   const [getClearanceValues, setGetClearanceValues] = useState([]);
   const [getTaxValues, setGetTaxValues] = useState([]);
@@ -88,19 +88,24 @@ export default function MonthlyReport() {
     convertToMonthName(e.target.value);
   };
 
-  const getCurrentYear = () => {
-    return new Date().getFullYear();
-  };
+  useEffect(() => {
+    // Set the initial value of year to the current year
+    setYear(new Date().getFullYear());
+  }, []);
 
   const handleYear = (e) => {
     const inputYear = e.target.value;
-    const currentYear = new Date().getFullYear();
+    setYear(inputYear); // Update the year value immediately
+  };
 
-    if (inputYear < 2014) {
+  const validateYear = () => {
+    const currentYear = new Date().getFullYear();
+    if (year < 2014) {
       toast.error("Please select a year after 2014");
-    } else if (inputYear <= currentYear) {
-      // Set the year if it's less than or equal to the current year
-      setYear(inputYear);
+      setYear(""); // Clear the year value
+    } else if (year > currentYear) {
+      toast.error("Please select a year before or equal to the current year");
+      setYear(""); // Clear the year value
     }
   };
 
@@ -116,110 +121,114 @@ export default function MonthlyReport() {
   }, []);
 
   const handleGetData = async () => {
-    toast.success("Data is populating please wait.");
-    try {
-      const response = await axios.post(
-        baseURL + `/monthlyReportData/monthlyInvoiceSummary`,
-        {
-          getName: getName,
-          month: month,
-          year: year,
-        }
-      );
-      // console.log("firstTable", response.data)
-      setGetIvoiceValues(response.data);
-    } catch (error) {
-      console.error("Error in table", error);
-    }
+    if (year < 2014) {
+      // toast.error("Please select a year after 2014");
+    } else {
+      toast.success("Data is populating please wait.");
+      try {
+        const response = await axios.post(
+          baseURL + `/monthlyReportData/monthlyInvoiceSummary`,
+          {
+            getName: getName,
+            month: month,
+            year: year,
+          }
+        );
+        // console.log("firstTable", response.data)
+        setGetIvoiceValues(response.data);
+      } catch (error) {
+        console.error("Error in table", error);
+      }
 
-    try {
-      const response = await axios.post(
-        baseURL + `/monthlyReportData/monthlyClearanceSummary`,
-        {
-          getName: getName,
-          month: month,
-          year: year,
-        }
-      );
-      // console.log("firstTable", response.data)
-      setGetClearanceValues(response.data);
-    } catch (error) {
-      console.error("Error in table", error);
-    }
+      try {
+        const response = await axios.post(
+          baseURL + `/monthlyReportData/monthlyClearanceSummary`,
+          {
+            getName: getName,
+            month: month,
+            year: year,
+          }
+        );
+        // console.log("firstTable", response.data)
+        setGetClearanceValues(response.data);
+      } catch (error) {
+        console.error("Error in table", error);
+      }
 
-    try {
-      const response = await axios.post(
-        baseURL + `/monthlyReportData/monthlyTaxSummary`,
-        {
-          getName: getName,
-          month: month,
-          year: year,
-        }
-      );
-      // console.log("firstTable", response.data)
-      setGetTaxValues(response.data);
-    } catch (error) {
-      console.error("Error in table", error);
-    }
+      try {
+        const response = await axios.post(
+          baseURL + `/monthlyReportData/monthlyTaxSummary`,
+          {
+            getName: getName,
+            month: month,
+            year: year,
+          }
+        );
+        // console.log("firstTable", response.data)
+        setGetTaxValues(response.data);
+      } catch (error) {
+        console.error("Error in table", error);
+      }
 
-    try {
-      const response = await axios.post(
-        baseURL + `/monthlyReportData/monthlyCollectionSummary`,
-        {
-          getName: getName,
-          month: month,
-          year: year,
-        }
-      );
-      // console.log("firstTable", response.data)
-      setGetCollectionValues(response.data);
-    } catch (error) {
-      console.error("Error in table", error);
-    }
+      try {
+        const response = await axios.post(
+          baseURL + `/monthlyReportData/monthlyCollectionSummary`,
+          {
+            getName: getName,
+            month: month,
+            year: year,
+          }
+        );
+        // console.log("firstTable", response.data)
+        setGetCollectionValues(response.data);
+      } catch (error) {
+        console.error("Error in table", error);
+      }
 
-    try {
-      const response = await axios.post(
-        baseURL + `/monthlyReportData/monthlyCutomerAddition`,
-        {
-          getName: getName,
-          month: month,
-          year: year,
-        }
-      );
-      // console.log("firstTable", response.data)
-      setGetAdditionValues(response.data);
-    } catch (error) {
-      console.error("Error in table", error);
-    }
+      try {
+        const response = await axios.post(
+          baseURL + `/monthlyReportData/monthlyCutomerAddition`,
+          {
+            getName: getName,
+            month: month,
+            year: year,
+          }
+        );
+        // console.log("firstTable", response.data)
+        setGetAdditionValues(response.data);
+      } catch (error) {
+        console.error("Error in table", error);
+      }
 
-    try {
-      const response = await axios.post(
-        baseURL + `/monthlyReportData/allOutStandingBills`,
-        {
-          //getName: getName,
-          month: month,
-          year: year,
-        }
-      );
-      // console.log("firstTable", response.data)
-      setGetAllOutStandingValues(response.data);
-    } catch (error) {
-      console.error("Error in table", error);
-    }
+      try {
+        const response = await axios.post(
+          baseURL + `/monthlyReportData/allOutStandingBills`,
+          {
+            //getName: getName,
+            month: month,
+            year: year,
+          }
+        );
+        // console.log("firstTable", response.data)
+        setGetAllOutStandingValues(response.data);
+      } catch (error) {
+        console.error("Error in table", error);
+      }
 
-    try {
-      const response = await axios.post(
-        baseURL + `/monthlyReportData/salesOutStandingBills`,
-        {
-          //getName: getName,
-          month: month,
-          year: year,
-        }
-      );
-      // console.log("firstTable", response.data)
-      setGetSalesOutStandingValues(response.data);
-    } catch (error) {
-      console.error("Error in table", error);
+      try {
+        const response = await axios.post(
+          baseURL + `/monthlyReportData/salesOutStandingBills`,
+          {
+            //getName: getName,
+            month: month,
+            year: year,
+          }
+        );
+        // console.log("firstTable", response.data)
+        setGetSalesOutStandingValues(response.data);
+      } catch (error) {
+        console.error("Error in table", error);
+      }
     }
   };
 
@@ -279,10 +288,10 @@ export default function MonthlyReport() {
             <label className="form-label">Year</label>
             <input
               onChange={(e) => handleYear(e)}
+              onBlur={validateYear} // Validate year when input loses focus
               className="in-field"
               type="number"
               value={year}
-              max={getCurrentYear()}
             />
           </div>
         </div>
