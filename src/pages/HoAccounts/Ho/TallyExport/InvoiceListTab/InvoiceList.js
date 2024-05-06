@@ -20,6 +20,7 @@ export default function InvoiceList({
   const [taxInvoiceData, setTaxInvoiceData] = useState([]);
 
   const [companyAndGuid, setCompanyAndGuid] = useState([]);
+  const [cmpName, setCmpName] = useState([]);
 
   useEffect(() => {
     setExportTally(false);
@@ -27,6 +28,26 @@ export default function InvoiceList({
       invoiceListSubmit();
     }
   }, [selectedDate, exportTally, selectedUnitName]);
+
+  // useEffect(() => {
+  //   if (selectedDate && selectedUnitName && flag) {
+  //    toast.error("daata loadung");
+  //   }
+  // }, [selectedDate, flag, selectedUnitName]);
+
+  useEffect(() => {
+    if (selectedDate && selectedUnitName && flag) {
+      const toastId = toast.success(" Loading...");
+      const interval = setInterval(() => {
+        toast.update(toastId, { progress: toast.progress + 1 });
+      }, 2500); // Update every second
+      setTimeout(() => {
+        
+        clearInterval(interval);
+        toast.dismiss(toastId);
+      }, 10000);
+    }
+  }, [selectedDate, flag, selectedUnitName]);
 
   const invoiceListSubmit = () => {
     axios
@@ -61,6 +82,7 @@ export default function InvoiceList({
   };
 
   //get company namer and GUID
+
   useEffect(() => {
     const fetchData = async () => {
       if (selectedUnitName) {
@@ -71,10 +93,11 @@ export default function InvoiceList({
               selectedUnitName: selectedUnitName?.UnitName,
             }
           );
-          console.log("company", company.data.Result);
+          console.log("company", company.data.Result[0].Tally_account_Name);
 
           if (company.data.Status === "Success") {
-            setCompanyAndGuid(company.data.Result);
+            setCmpName(company.data.Result[0].Tally_account_Name);
+            //setCompanyAndGuid(company.data.Result);
           }
         } catch (error) {
           console.error("Error fetching company:", error);
@@ -88,14 +111,26 @@ export default function InvoiceList({
   //fetch the company from tally software
 
   const companyFromTally = async () => {
-    const companiesfromtally = await axios.get(
-      baseURL + "/tallyExport/getCompanyFromTally"
+    // const companiesfromtally = await axios.get(
+    //   baseURL + "/tallyExport/getCompanyFromTally"
+    // );
+
+    const companiesfromtally = await axios.post(
+      baseURL + "/tallyExport/getCompanyFromTally",
+      { cmp: cmpName }
     );
 
-    console.log("company from tlly", companiesfromtally);
+    console.log("cmp resultttt", companiesfromtally.data);
+    if (companiesfromtally.data.company === "companyExist") {
+      return companiesfromtally.data.company;
+    } else if (companiesfromtally.data.company === "companyNot") {
+      toast.error(`Company Account Name and GUID Mismatch for ${cmpName}`);
+    }
+
+    //return companiesfromtally;
   };
 
-  // console.log("com", companyAndGuid[0].Tally_account_Name);
+  //console.log("com", companyAndGuid[0].Tally_account_Name);
 
   const invoiceTaxDetails = (dcNo) => {
     console.log("dc noo", dcNo);
@@ -108,11 +143,12 @@ export default function InvoiceList({
           },
         })
         .then((res) => {
-          //  console.log("inv 2", res.data.Result);
+          console.log("inv based on dc inv number 2", res.data.Result);
+
           if (res.data.Result.length > 0) {
             setTaxInvoiceData(res.data.Result);
           } else {
-            // toast.error("No Invoive data for this date")
+            setTaxInvoiceData([]);
           }
         })
         .catch((err) => {
@@ -177,25 +213,220 @@ export default function InvoiceList({
     }
   }, [invoiceListData, flag]);
 
+  // const tableToXml = () => {
+  //   const xmlData = {
+  //     ENVELOPE: {
+  //       HEADER: {
+  //         TALLYREQUEST: { _text: "Import Data" },
+  //       },
+  //       Body: {
+  //         ImportData: {
+  //           REQUESTDESC: {
+  //             REPORTNAME: { _text: "Vouchers" },
+  //             STATICVARIABLES: {
+  //               SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+  //             },
+  //           },
+  //           TALLYMESSAGE: {
+  //             _attributes: {
+  //               "xmlns:UDF": "TallyUDF",
+  //             },
+  //             VOUCHER: invoiceListData.map((voucher) => {
+  //               const creditPeriod = Math.round(
+  //                 Math.abs(
+  //                   new Date(voucher.PaymentDate) - new Date(voucher.Inv_Date)
+  //                 ) /
+  //                   (1000 * 60 * 60 * 24)
+  //               );
+
+  //               const custname = voucher.Cust_Name;
+  //               const custDisplay = custname
+  //                 ? invoiceListData
+  //                     .filter((item) => voucher.DC_Inv_No === item.DC_Inv_No)
+  //                     .map((item) => ({
+  //                       LEDGERNAME: item.Cust_Name,
+  //                       GSTCLASS: "",
+  //                       ISDEEMEDPOSITIVE: "Yes",
+  //                       LEDGERFROMITEM: "No",
+  //                       REMOVEZEROENTRIES: "No",
+  //                       ISPARTYLEDGER: "Yes",
+  //                       AMOUNT: item.GrandTotal,
+  //                       BILLALLOCATIONS_LIST: {
+  //                         NAME: `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`,
+  //                         BILLCREDITPERIOD: creditPeriod.toString(),
+  //                         BILLTYPE: "New Ref",
+  //                         AMOUNT: voucher.GrandTotal,
+  //                       },
+  //                     }))
+  //                 : [];
+
+  //               const ledgerNameCall = voucher.LedgerName;
+  //               const ledgerName = ledgerNameCall
+  //                 ? invoiceListData
+  //                     .filter((item) => voucher.DC_Inv_No === item.DC_Inv_No)
+  //                     .map((item) => ({
+  //                       LEDGERNAME: item.LedgerName,
+  //                       GSTCLASS: "",
+  //                       ISDEEMEDPOSITIVE: "Yes",
+  //                       LEDGERFROMITEM: "No",
+  //                       REMOVEZEROENTRIES: "No",
+  //                       ISPARTYLEDGER: "Yes",
+  //                       AMOUNT: item.Net_Total,
+  //                     }))
+  //                 : [];
+
+  //               let xmlVrAction, xmlVrtype, Narration, InvNo;
+
+  //               switch (voucher.DC_InvType) {
+  //                 case "SERVICE":
+  //                   xmlVrAction = `<VOUCHER REMOTEID=${voucher.PreFix} ${voucher.DC_Inv_No} VCHTYPE='Service' ACTION='Create'>`;
+  //                   xmlVrtype = "Service";
+  //                   Narration = `Our WO No: ${voucher.OrderNo} Packing Note No: ${voucher.DC_No}/ ${voucher.DC_Fin_Year}`;
+  //                   InvNo = `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`;
+  //                   break;
+  //                 case "CombinedBill":
+  //                   xmlVrAction = `<VOUCHER REMOTEID='${voucher.PreFix}${voucher.DC_Inv_No}' VCHTYPE='CombinedBill' ACTION='Create'>`;
+  //                   xmlVrtype = "CombinedBill";
+  //                   Narration =
+  //                     "Being Combined Bill for many Excise and Service invoices";
+  //                   InvNo = `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`;
+  //                   break;
+  //                 default:
+  //                   xmlVrAction = `<VOUCHER REMOTEID=${voucher.PreFix}${voucher.DC_Inv_No} VCHTYPE='Sales' ACTION='Create'>`;
+  //                   // xmlVrtype = `<VOUCHERTYPENAME> Sales</VOUCHERTYPENAME>`;
+  //                   xmlVrtype = "Sales";
+  //                   Narration = `Our WO No: ${voucher.OrderNo} Packing Note No: ${voucher.DC_No}/ ${voucher.DC_Fin_Year}`;
+  //                   InvNo = `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`;
+  //                   break;
+  //               }
+
+  //               const taxData = taxInvoiceData.length > 0;
+  //               const ledgerEntriesForTax = taxData
+  //                 ? taxInvoiceData.map((tax) => ({
+  //                     LEDGERNAME: tax.AcctHead,
+  //                     GSTCLASS: "",
+  //                     ISDEEMEDPOSITIVE: "Yes",
+  //                     LEDGERFROMITEM: "No",
+  //                     REMOVEZEROENTRIES: "No",
+  //                     ISPARTYLEDGER: "Yes",
+  //                     AMOUNT: tax.TaxAmt,
+  //                   }))
+  //                 : [];
+
+  //               const includeDelChg = parseInt(voucher.Del_chg) > 0;
+  //               const allLedgerEntriesDelChg = includeDelChg
+  //                 ? [
+  //                     {
+  //                       LEDGERNAME: "Transport Charges",
+  //                       GSTCLASS: voucher.Del_chg,
+  //                       ISDEEMEDPOSITIVE: "Yes",
+  //                       LEDGERFROMITEM: "No",
+  //                       REMOVEZEROENTRIES: "No",
+  //                       ISPARTYLEDGER: "Yes",
+  //                       AMOUNT: voucher.Del_chg,
+  //                     },
+  //                   ]
+  //                 : [];
+
+  //               const includeRoundOff = parseFloat(voucher.Round_Off) !== 0;
+  //               const allLedgerEntriesRoundOff = includeRoundOff
+  //                 ? [
+  //                     {
+  //                       LEDGERNAME: "Round Off",
+  //                       GSTCLASS: "",
+  //                       ISDEEMEDPOSITIVE: "Yes",
+  //                       LEDGERFROMITEM: "No",
+  //                       REMOVEZEROENTRIES: "No",
+  //                       ISPARTYLEDGER: "Yes",
+  //                       AMOUNT: voucher.Round_Off,
+  //                     },
+  //                   ]
+  //                 : [];
+
+  //               const allLedgerEntries = [
+  //                 ...custDisplay,
+  //                 ...ledgerName,
+  //                 ...ledgerEntriesForTax,
+  //                 ...allLedgerEntriesDelChg,
+  //                 ...allLedgerEntriesRoundOff,
+  //               ];
+  //               const baseVoucher = {
+  //                 _attributes: {
+  //                   REMOTEID: `${voucher.PreFix}${voucher.DC_Inv_No}`,
+  //                   VCHTYPE: voucher.DC_InvType,
+  //                   ACTION: "Create",
+  //                 },
+  //                 DATE: voucher.Inv_Date.replace(/-/g, ""),
+  //                 GUID: voucher.DC_Inv_No,
+  //                 NARRATION: Narration,
+  //                 VOUCHERTYPENAME: xmlVrtype,
+  //                 VOUCHERNUMBER: InvNo,
+  //                 REFERENCE: voucher.PO_No,
+  //                 PARTYLEDGERNAME: voucher.Cust_Name,
+  //                 CSTFORMISSUETYPE: "",
+  //                 CSTFORMRECVTYPE: "",
+  //                 FBTPAYMENTTYPE: "Default",
+  //                 VCHGSTCLASS: "",
+  //                 DIFFACTUALQTY: "No",
+  //                 AUDITED: "No",
+  //                 FORJOBCOSTING: "No",
+  //                 ISOPTIONAL: "No",
+  //                 EFFECTIVEDATE: voucher.Inv_Date,
+  //                 USEFORINTEREST: "No",
+  //                 USEFORGAINLOSS: "No",
+  //                 USEFORGODOWNTRANSFER: "No",
+  //                 USEFORCOMPOUND: "No",
+  //                 ALTERID: "2",
+  //                 EXCISEOPENING: "No",
+  //                 ISCANCELLED: "No",
+  //                 HASCASHFLOW: "No",
+  //                 ISPOSTDATED: "No",
+  //                 USETRACKINGNUMBER: "No",
+  //                 ISINVOICE: "No",
+  //                 MFGJOURNAL: "No",
+  //                 HASDISCOUNTS: "No",
+  //                 ASPAYSLIP: "No",
+  //                 ISDELETED: "No",
+  //                 ASORIGINAL: "No",
+  //                 ...(allLedgerEntries.length > 0 && {
+  //                   ALLLEDGERENTRIES_LIST: allLedgerEntries,
+  //                 }),
+  //               };
+
+  //               return {
+  //                 VOUCHER: baseVoucher,
+  //               };
+  //             }),
+  //           },
+  //         },
+  //       },
+  //     },
+  //   };
+
+  //   const xml = xmljs.js2xml(xmlData, { compact: true, spaces: 2 });
+  //   return xml;
+  // };
+
   const tableToXml = () => {
     const xmlData = {
       ENVELOPE: {
         HEADER: {
           TALLYREQUEST: { _text: "Import Data" },
         },
-        Body: {
-          ImportData: {
+        BODY: {
+          IMPORTDATA: {
             REQUESTDESC: {
               REPORTNAME: { _text: "Vouchers" },
               STATICVARIABLES: {
-                SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+                // SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+                SVCURRENTCOMPANY: { _text: cmpName },
               },
             },
             TALLYMESSAGE: {
               _attributes: {
                 "xmlns:UDF": "TallyUDF",
               },
-              VOUCHER: invoiceListData.map((voucher) => {
+              VOUCHER: invoiceListData.map((voucher, index) => {
                 const creditPeriod = Math.round(
                   Math.abs(
                     new Date(voucher.PaymentDate) - new Date(voucher.Inv_Date)
@@ -214,12 +445,12 @@ export default function InvoiceList({
                         LEDGERFROMITEM: "No",
                         REMOVEZEROENTRIES: "No",
                         ISPARTYLEDGER: "Yes",
-                        AMOUNT: item.GrandTotal,
-                        BILLALLOCATIONS_LIST: {
+                        AMOUNT: -item.GrandTotal,
+                        "BILLALLOCATIONS.LIST": {
                           NAME: `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`,
                           BILLCREDITPERIOD: creditPeriod.toString(),
                           BILLTYPE: "New Ref",
-                          AMOUNT: voucher.GrandTotal,
+                          AMOUNT: -voucher.GrandTotal,
                         },
                       }))
                   : [];
@@ -231,7 +462,7 @@ export default function InvoiceList({
                       .map((item) => ({
                         LEDGERNAME: item.LedgerName,
                         GSTCLASS: "",
-                        ISDEEMEDPOSITIVE: "Yes",
+                        ISDEEMEDPOSITIVE: "No",
                         LEDGERFROMITEM: "No",
                         REMOVEZEROENTRIES: "No",
                         ISPARTYLEDGER: "Yes",
@@ -269,7 +500,7 @@ export default function InvoiceList({
                   ? taxInvoiceData.map((tax) => ({
                       LEDGERNAME: tax.AcctHead,
                       GSTCLASS: "",
-                      ISDEEMEDPOSITIVE: "Yes",
+                      ISDEEMEDPOSITIVE: "No",
                       LEDGERFROMITEM: "No",
                       REMOVEZEROENTRIES: "No",
                       ISPARTYLEDGER: "Yes",
@@ -335,12 +566,12 @@ export default function InvoiceList({
                   AUDITED: "No",
                   FORJOBCOSTING: "No",
                   ISOPTIONAL: "No",
-                  EFFECTIVEDATE: voucher.Inv_Date,
+                  EFFECTIVEDATE: voucher.Inv_Date.replace(/-/g, ""),
                   USEFORINTEREST: "No",
                   USEFORGAINLOSS: "No",
                   USEFORGODOWNTRANSFER: "No",
                   USEFORCOMPOUND: "No",
-                  ALTERID: "2",
+                  ALTERID: index + 1,
                   EXCISEOPENING: "No",
                   ISCANCELLED: "No",
                   HASCASHFLOW: "No",
@@ -352,10 +583,11 @@ export default function InvoiceList({
                   ASPAYSLIP: "No",
                   ISDELETED: "No",
                   ASORIGINAL: "No",
-                  ...(allLedgerEntries.length > 0 && {
-                    ALLLEDGERENTRIES_LIST: allLedgerEntries,
-                  }),
                 };
+
+                if (allLedgerEntries.length > 0) {
+                  baseVoucher["ALLLEDGERENTRIES.LIST"] = allLedgerEntries;
+                }
 
                 return {
                   VOUCHER: baseVoucher,
@@ -370,11 +602,10 @@ export default function InvoiceList({
     const xml = xmljs.js2xml(xmlData, { compact: true, spaces: 2 });
     return xml;
   };
-
-  const handleExport = () => {
+  const handleExport = async () => {
     const xml = tableToXml();
 
-    console.log("xml fileeeeeeeeeee", xml);
+    // console.log("xml fileeeeeeeeeee", xml);
 
     const currentDate = new Date();
     const day = currentDate.getDate().toString().padStart(2, "0");
@@ -391,7 +622,13 @@ export default function InvoiceList({
     a.click();
     window.URL.revokeObjectURL(url);
 
+    // createXmlForEachData;
     // exportInvoices(xml);
+
+    const cm = await companyFromTally();
+    if (cm === "companyExist") {
+      createXmlForEachData();
+    }
   };
 
   //create  xml file for each row of invoicelistdata
@@ -402,181 +639,215 @@ export default function InvoiceList({
     );
 
     const xmlResults = filteredInvoices.map((voucher) => {
-      return createXml([voucher]); // Assuming createXml function accepts an array
+      // return createXml([voucher]);
+      // Assuming createXml function accepts an array
     });
 
     const concatenatedXml = xmlResults.join("");
-    console.log("xmlllllllllllllllllll service ", concatenatedXml);
+    // console.log("xmlllllllllllllllllll service ", concatenatedXml);
     // exportInvoices(concatenatedXml);
-    console.log("xml resultrs", concatenatedXml);
 
     // filtered service
 
-    // const filteredInvoicesService = invoiceListData.filter(
-    //   (voucher) => voucher.DC_InvType === "Service"
-    // );
+    const filteredInvoicesService = invoiceListData.filter(
+      (voucher) => voucher.DC_InvType === "Service"
+    );
 
-    // const xmlResultsService = filteredInvoicesService.map((voucher) => {
-    //   const xmlres = createXml([voucher]);
+    const xmlResultsService = filteredInvoicesService.map((voucher) => {
+      const xmlres = createXml([voucher]);
 
-    //   const concatenatedXml = xmlres.join("");
-    //   console.log("xmlllllllllllllllllll service ", concatenatedXml);
-    //   exportInvoices(concatenatedXml);
+      const concatenatedXml = xmlres.join("");
+      console.log("xmlllllllllllllllllll service ", concatenatedXml);
+      exportInvoices(concatenatedXml);
 
-    //   return createXml([voucher]); // Assuming createXml function accepts an array
-    // });
+      return createXml([voucher]);
+      // Assuming createXml function accepts an array
+    });
   };
 
   // const createXml = (filteredInvoices) => {
-  //   const xmlArray = filteredInvoices.map((voucher) => {
-  //       const creditPeriod = Math.round(
-  //           Math.abs(new Date(voucher.PaymentDate) - new Date(voucher.Inv_Date)) / (1000 * 60 * 60 * 24)
-  //       );
+  //   const xmlDataArray = filteredInvoices.map((voucher) => {
+  //     const creditPeriod = Math.round(
+  //       Math.abs(new Date(voucher.PaymentDate) - new Date(voucher.Inv_Date)) /
+  //         (1000 * 60 * 60 * 24)
+  //     );
 
-  //       const custname = voucher.Cust_Name;
-  //       const custDisplay = custname ? filteredInvoices
+  //     const custname = voucher.Cust_Name;
+  //     const custDisplay = custname
+  //       ? filteredInvoices
   //           .filter((item) => voucher.DC_Inv_No === item.DC_Inv_No)
   //           .map((item) => ({
-  //               LEDGERNAME: item.Cust_Name,
-  //               GSTCLASS: '',
-  //               ISDEEMEDPOSITIVE: 'Yes',
-  //               LEDGERFROMITEM: 'No',
-  //               REMOVEZEROENTRIES: 'No',
-  //               ISPARTYLEDGER: 'Yes',
-  //               AMOUNT: item.GrandTotal,
-  //               BILLALLOCATIONS_LIST: {
-  //                   NAME: `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`,
-  //                   BILLCREDITPERIOD: creditPeriod.toString(),
-  //                   BILLTYPE: 'New Ref',
-  //                   AMOUNT: voucher.GrandTotal,
+  //             LEDGERNAME: item.Cust_Name,
+  //             GSTCLASS: "",
+  //             ISDEEMEDPOSITIVE: "Yes",
+  //             LEDGERFROMITEM: "No",
+  //             REMOVEZEROENTRIES: "No",
+  //             ISPARTYLEDGER: "Yes",
+  //             AMOUNT: item.GrandTotal,
+  //             // BILLALLOCATIONS_LIST: {
+  //             //   NAME: `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`,
+  //             //   BILLCREDITPERIOD: creditPeriod.toString(),
+  //             //   BILLTYPE: "New Ref",
+  //             //   AMOUNT: voucher.GrandTotal,
+  //             // },
+  //             BILLALLOCATIONS: {
+  //               LIST: {
+  //                 NAME: `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`,
+  //                 BILLCREDITPERIOD: creditPeriod.toString(),
+  //                 BILLTYPE: "New Ref",
+  //                 AMOUNT: voucher.GrandTotal,
   //               },
-  //           })) : [];
+  //             },
+  //           }))
+  //       : [];
 
-  //       const ledgerNameCall = voucher.LedgerName;
-  //       const ledgerName = ledgerNameCall ? filteredInvoices
+  //     const ledgerNameCall = voucher.LedgerName;
+  //     const ledgerName = ledgerNameCall
+  //       ? filteredInvoices
   //           .filter((item) => voucher.DC_Inv_No === item.DC_Inv_No)
   //           .map((item) => ({
-  //               LEDGERNAME: item.LedgerName,
-  //               GSTCLASS: '',
-  //               ISDEEMEDPOSITIVE: 'Yes',
-  //               LEDGERFROMITEM: 'No',
-  //               REMOVEZEROENTRIES: 'No',
-  //               ISPARTYLEDGER: 'Yes',
-  //               AMOUNT: item.Net_Total,
-  //           })) : [];
+  //             LEDGERNAME: item.LedgerName,
+  //             GSTCLASS: "",
+  //             ISDEEMEDPOSITIVE: "Yes",
+  //             LEDGERFROMITEM: "No",
+  //             REMOVEZEROENTRIES: "No",
+  //             ISPARTYLEDGER: "Yes",
+  //             AMOUNT: item.Net_Total,
+  //           }))
+  //       : [];
 
-  //       const taxData = taxInvoiceData.filter(tax => tax.Dc_inv_No === voucher.DC_Inv_No);
-  //       const ledgerEntriesForTax = taxData.length > 0 ? taxData.map((tax) => ({
-  //           LEDGERNAME: tax.AcctHead,
-  //           GSTCLASS: '',
-  //           ISDEEMEDPOSITIVE: 'Yes',
-  //           LEDGERFROMITEM: 'No',
-  //           REMOVEZEROENTRIES: 'No',
-  //           ISPARTYLEDGER: 'Yes',
-  //           AMOUNT: tax.TaxAmt,
-  //       })) : [];
+  //     const taxData = taxInvoiceData.filter(
+  //       (tax) => tax.Dc_inv_No === voucher.DC_Inv_No
+  //     );
+  //     const ledgerEntriesForTax =
+  //       taxData.length > 0
+  //         ? taxInvoiceData.map((tax) => ({
+  //             LEDGERNAME: tax.AcctHead,
+  //             GSTCLASS: "",
+  //             ISDEEMEDPOSITIVE: "Yes",
+  //             LEDGERFROMITEM: "No",
+  //             REMOVEZEROENTRIES: "No",
+  //             ISPARTYLEDGER: "Yes",
+  //             AMOUNT: tax.TaxAmt,
+  //           }))
+  //         : [];
 
-  //       const includeDelChg = parseInt(voucher.Del_chg) > 0;
-  //       const allLedgerEntriesDelChg = includeDelChg ? [{
-  //           LEDGERNAME: 'Transport Charges',
-  //           GSTCLASS: voucher.Del_chg,
-  //           ISDEEMEDPOSITIVE: 'Yes',
-  //           LEDGERFROMITEM: 'No',
-  //           REMOVEZEROENTRIES: 'No',
-  //           ISPARTYLEDGER: 'Yes',
-  //           AMOUNT: voucher.Del_chg,
-  //       }] : [];
-
-  //       const includeRoundOff = parseFloat(voucher.Round_Off) !== 0;
-  //       const allLedgerEntriesRoundOff = includeRoundOff ? [{
-  //           LEDGERNAME: 'Round Off',
-  //           GSTCLASS: '',
-  //           ISDEEMEDPOSITIVE: 'Yes',
-  //           LEDGERFROMITEM: 'No',
-  //           REMOVEZEROENTRIES: 'No',
-  //           ISPARTYLEDGER: 'Yes',
-  //           AMOUNT: voucher.Round_Off,
-  //       }] : [];
-
-  //       const allLedgerEntries = [
-  //           ...custDisplay,
-  //           ...ledgerName,
-  //           ...ledgerEntriesForTax,
-  //           ...allLedgerEntriesDelChg,
-  //           ...allLedgerEntriesRoundOff,
-  //       ];
-
-  //       const baseVoucher = {
-  //           _attributes: {
-  //               REMOTEID: `${voucher.PreFix}${voucher.DC_Inv_No}`,
-  //               VCHTYPE: voucher.DC_InvType,
-  //               ACTION: 'Create'
+  //     const includeDelChg = parseInt(voucher.Del_chg) > 0;
+  //     const allLedgerEntriesDelChg = includeDelChg
+  //       ? [
+  //           {
+  //             LEDGERNAME: "Transport Charges",
+  //             GSTCLASS: voucher.Del_chg,
+  //             ISDEEMEDPOSITIVE: "Yes",
+  //             LEDGERFROMITEM: "No",
+  //             REMOVEZEROENTRIES: "No",
+  //             ISPARTYLEDGER: "Yes",
+  //             AMOUNT: voucher.Del_chg,
   //           },
-  //           DATE: voucher.Inv_Date,
-  //           GUID: voucher.DC_Inv_No,
-  //           NARRATION: `Our WO No: ${voucher.OrderNo} Packing Note No: ${voucher.DC_no}/ ${voucher.DC_Fin_Year}`,
-  //           VOUCHERTYPENAME: voucher.DC_InvType,
-  //           VOUCHERNUMBER: `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`,
-  //           REFERENCE: voucher.PO_No,
-  //           PARTYLEDGERNAME: voucher.Cust_Name,
-  //           CSTFORMISSUETYPE: "",
-  //           CSTFORMRECVTYPE: '',
-  //           FBTPAYMENTTYPE: 'Default',
-  //           VCHGSTCLASS: '',
-  //           DIFFACTUALQTY: 'No',
-  //           AUDITED: 'No',
-  //           FORJOBCOSTING: 'No',
-  //           ISOPTIONAL: 'No',
-  //           EFFECTIVEDATE: voucher.Inv_Date,
-  //           USEFORINTEREST: 'No',
-  //           USEFORGAINLOSS: 'No',
-  //           USEFORGODOWNTRANSFER: 'No',
-  //           USEFORCOMPOUND: 'No',
-  //           ALTERID: '2',
-  //           EXCISEOPENING: "No",
-  //           ISCANCELLED: 'No',
-  //           HASCASHFLOW: 'No',
-  //           ISPOSTDATED: 'No',
-  //           USETRACKINGNUMBER: 'No',
-  //           ISINVOICE: 'No',
-  //           MFGJOURNAL: 'No',
-  //           HASDISCOUNTS: 'No',
-  //           ASPAYSLIP: 'No',
-  //           ISDELETED: 'No',
-  //           ASORIGINAL: 'No',
-  //           ...(allLedgerEntries.length > 0 && { ALLLEDGERENTRIES_LIST: allLedgerEntries }),
-  //       };
+  //         ]
+  //       : [];
 
-  //       const voucherXml = xmljs.js2xml({ VOUCHER: baseVoucher }, { compact: true, spaces: 2 });
+  //     const includeRoundOff = parseFloat(voucher.Round_Off) !== 0;
+  //     const allLedgerEntriesRoundOff = includeRoundOff
+  //       ? [
+  //           {
+  //             LEDGERNAME: "Round Off",
+  //             GSTCLASS: "",
+  //             ISDEEMEDPOSITIVE: "Yes",
+  //             LEDGERFROMITEM: "No",
+  //             REMOVEZEROENTRIES: "No",
+  //             ISPARTYLEDGER: "Yes",
+  //             AMOUNT: voucher.Round_Off,
+  //           },
+  //         ]
+  //       : [];
 
-  //       const envelopeXml = xmljs.js2xml({
-  //           ENVELOPE: {
-  //               HEADER: {
-  //                   TALLYREQUEST: { _text: 'Import Data' }
+  //     const allLedgerEntries = [
+  //       ...custDisplay,
+  //       ...ledgerName,
+  //       ...ledgerEntriesForTax,
+  //       ...allLedgerEntriesDelChg,
+  //       ...allLedgerEntriesRoundOff,
+  //     ];
+
+  //     const baseVoucher = {
+  //       _attributes: {
+  //         REMOTEID: `${voucher.PreFix}${voucher.DC_Inv_No}`,
+  //         VCHTYPE: voucher.DC_InvType,
+  //         ACTION: "Create",
+  //       },
+  //       DATE: voucher.Inv_Date.replace(/-/g, ""),
+  //       GUID: voucher.DC_Inv_No,
+  //       NARRATION: `Our WO No: ${voucher.OrderNo} Packing Note No: ${voucher.DC_No}/ ${voucher.DC_Fin_Year}`,
+  //       VOUCHERTYPENAME: voucher.DC_InvType,
+  //       VOUCHERNUMBER: `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`,
+  //       REFERENCE: voucher.PO_No,
+  //       PARTYLEDGERNAME: voucher.Cust_Name,
+  //       CSTFORMISSUETYPE: "",
+  //       CSTFORMRECVTYPE: "",
+  //       FBTPAYMENTTYPE: "Default",
+  //       VCHGSTCLASS: "",
+  //       DIFFACTUALQTY: "No",
+  //       AUDITED: "No",
+  //       FORJOBCOSTING: "No",
+  //       ISOPTIONAL: "No",
+  //       EFFECTIVEDATE: voucher.Inv_Date.replace(/-/g, ""),
+  //       USEFORINTEREST: "No",
+  //       USEFORGAINLOSS: "No",
+  //       USEFORGODOWNTRANSFER: "No",
+  //       USEFORCOMPOUND: "No",
+  //       ALTERID: "2",
+  //       EXCISEOPENING: "No",
+  //       ISCANCELLED: "No",
+  //       HASCASHFLOW: "No",
+  //       ISPOSTDATED: "No",
+  //       USETRACKINGNUMBER: "No",
+  //       ISINVOICE: "No",
+  //       MFGJOURNAL: "No",
+  //       HASDISCOUNTS: "No",
+  //       ASPAYSLIP: "No",
+  //       ISDELETED: "No",
+  //       ASORIGINAL: "No",
+  //       ...(allLedgerEntries.length > 0 && {
+  //         // ALLLEDGERENTRIES_LIST: allLedgerEntries,
+  //         ALLLEDGERENTRIES: {
+  //           LIST: allLedgerEntries,
+  //         },
+  //       }),
+  //     };
+
+  //     const xmlData = {
+  //       ENVELOPE: {
+  //         HEADER: {
+  //           TALLYREQUEST: { _text: "Import Data" },
+  //         },
+  //         Body: {
+  //           ImportData: {
+  //             REQUESTDESC: {
+  //               REPORTNAME: { _text: "Vouchers" },
+  //               STATICVARIABLES: {
+  //                 SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
   //               },
-  //               BODY: {
-  //                   IMPORTDATA: {
-  //                       REQUESTDESC: {
-  //                           REPORTNAME: { _text: 'Vouchers' },
-  //                           STATICVARIABLES: {
-  //                               SVCURRENTCOMPANY: { _text: 'MLMPL_Jigani_2023_24' }
-  //                           }
-  //                       },
-  //                        TALLYMESSAGE: {  _attributes: { 'xmlns:UDF': 'TallyUDF' },_cdata: voucherXml }
+  //             },
+  //             TALLYMESSAGE: {
+  //               _attributes: {
+  //                 "xmlns:UDF": "TallyUDF",
+  //               },
+  //               VOUCHER: baseVoucher,
+  //             },
+  //           },
+  //         },
+  //       },
+  //     };
 
-  //                   }
-  //               }
-  //           }
-  //       }, { compact: true, spaces: 2 });
-
-  //       return envelopeXml;
+  //     return xmljs.js2xml(xmlData, { compact: true, spaces: 2 });
   //   });
 
-  //   return xmlArray;
-  // }
+  //   return xmlDataArray;
+  // };
 
   const createXml = (filteredInvoices) => {
-    const xmlDataArray = filteredInvoices.map((voucher) => {
+    const xmlDataArray = filteredInvoices.map((voucher, index) => {
       const creditPeriod = Math.round(
         Math.abs(new Date(voucher.PaymentDate) - new Date(voucher.Inv_Date)) /
           (1000 * 60 * 60 * 24)
@@ -593,12 +864,20 @@ export default function InvoiceList({
               LEDGERFROMITEM: "No",
               REMOVEZEROENTRIES: "No",
               ISPARTYLEDGER: "Yes",
-              AMOUNT: item.GrandTotal,
-              BILLALLOCATIONS_LIST: {
+              AMOUNT: -item.GrandTotal,
+              // BILLALLOCATIONS: {
+              //   LIST: {
+              //     NAME: `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`,
+              //     BILLCREDITPERIOD: creditPeriod.toString(),
+              //     BILLTYPE: "New Ref",
+              //     AMOUNT: voucher.GrandTotal,
+              //   },
+              // },
+              "BILLALLOCATIONS.LIST": {
                 NAME: `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`,
                 BILLCREDITPERIOD: creditPeriod.toString(),
                 BILLTYPE: "New Ref",
-                AMOUNT: voucher.GrandTotal,
+                AMOUNT: -voucher.GrandTotal,
               },
             }))
         : [];
@@ -610,7 +889,7 @@ export default function InvoiceList({
             .map((item) => ({
               LEDGERNAME: item.LedgerName,
               GSTCLASS: "",
-              ISDEEMEDPOSITIVE: "Yes",
+              ISDEEMEDPOSITIVE: "No",
               LEDGERFROMITEM: "No",
               REMOVEZEROENTRIES: "No",
               ISPARTYLEDGER: "Yes",
@@ -626,7 +905,7 @@ export default function InvoiceList({
           ? taxInvoiceData.map((tax) => ({
               LEDGERNAME: tax.AcctHead,
               GSTCLASS: "",
-              ISDEEMEDPOSITIVE: "Yes",
+              ISDEEMEDPOSITIVE: "No",
               LEDGERFROMITEM: "No",
               REMOVEZEROENTRIES: "No",
               ISPARTYLEDGER: "Yes",
@@ -698,7 +977,7 @@ export default function InvoiceList({
         USEFORGAINLOSS: "No",
         USEFORGODOWNTRANSFER: "No",
         USEFORCOMPOUND: "No",
-        ALTERID: "2",
+        ALTERID: index + 1,
         EXCISEOPENING: "No",
         ISCANCELLED: "No",
         HASCASHFLOW: "No",
@@ -710,22 +989,30 @@ export default function InvoiceList({
         ASPAYSLIP: "No",
         ISDELETED: "No",
         ASORIGINAL: "No",
-        ...(allLedgerEntries.length > 0 && {
-          ALLLEDGERENTRIES_LIST: allLedgerEntries,
-        }),
       };
+      if (allLedgerEntries.length > 0) {
+        baseVoucher["ALLLEDGERENTRIES.LIST"] = allLedgerEntries;
+      }
+      // if (allLedgerEntries.length > 0) {
+      //   baseVoucher["BILLALLOCATIONS.LIST"] = allLedgerEntries.map((entry) => ({
+      //     NAME: `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`,
+      //     BILLCREDITPERIOD: creditPeriod.toString(),
+      //     BILLTYPE: "New Ref",
+      //     AMOUNT: -entry.AMOUNT,
+      //   }));
+      // }
 
       const xmlData = {
         ENVELOPE: {
           HEADER: {
             TALLYREQUEST: { _text: "Import Data" },
           },
-          Body: {
-            ImportData: {
+          BODY: {
+            IMPORTDATA: {
               REQUESTDESC: {
                 REPORTNAME: { _text: "Vouchers" },
                 STATICVARIABLES: {
-                  SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+                  SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_08_09" },
                 },
               },
               TALLYMESSAGE: {
@@ -746,23 +1033,11 @@ export default function InvoiceList({
   };
 
   const exportInvoices = async (xml) => {
-    console.log("xml invoices ", xml);
+    // console.log("xml invoices ", xml);
     const tallyUrl = "http://localhost:9000";
 
     try {
       console.log("tally export11");
-      // const response = await fetch(`${tallyUrl}/exporttally`, {
-      //     method: 'POST',
-      //     headers: {
-      //         'Content-Type': 'application/xml',
-      //     },
-      //     body: xml,
-      // });
-
-      // const response = await axios.post(`${baseURL}/exporttally`, xml, {
-      //   headers: {
-      //     'Content-Type': 'application/xml',
-      //   },})
 
       const response = await axios.post(baseURL + "/tallyExport/exporttally", {
         xml: xml,
@@ -771,6 +1046,24 @@ export default function InvoiceList({
       console.log("response from tally", response);
       if (response.data.message === "Exception") {
         console.error("Failed to send XML data to Tally.");
+      } else if (response.data.company === "companyNot") {
+        toast.error(`Company Account Name and GUID Mismatch for ${cmpName}`);
+      } else if (response.data.guids && response.data.guids.length > 0) {
+        console.log("Received GUIDs:", response.data.guids);
+        // Handle the GUID array as needed, such as displaying it in the UI
+
+        // Compare GUIDs with invoiceListData
+        response.data.guids.forEach((guid) => {
+          const matchingInvoice = invoiceListData.find(
+            (invoice) => invoice.DC_inv_no === guid
+          );
+          if (matchingInvoice) {
+            // Invoice is already present
+            alert(`Invoice ${guid} is already present.`);
+          } else {
+            // alert("export succesfully");
+          }
+        });
       } else {
         console.log("XML data successfully sent to Tally.");
       }
@@ -782,9 +1075,8 @@ export default function InvoiceList({
 
   if (exportTally) {
     // handleExport();
-    // companyFromTally()
-
-    createXmlForEachData();
+    //createXmlForEachData();
+    //companyFromTally();
   }
 
   const [taxTable, setTaxTable] = useState();
