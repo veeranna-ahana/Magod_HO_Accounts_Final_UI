@@ -35,6 +35,7 @@ export default function ShowSyncStatus() {
 
   const [mailAlert, setMailAlert] = useState(false);
   const [mailModal, setMailModal] = useState(false);
+  let storedUnitInvData = [];
 
   const handleButtonClick = (e) => {
     if (getName) {
@@ -356,6 +357,9 @@ export default function ShowSyncStatus() {
   let count = 0;
   const [matchedAndUnmatchedInvoices, setMatchedAndUnmatchedInvoices] =
     useState([]);
+
+  const [inv, setInv] = useState([]);
+
   const compare = (report) => {
     try {
       if (getUnitInvoice.length === 1) {
@@ -366,7 +370,7 @@ export default function ShowSyncStatus() {
         setMatchedAndUnmatchedInvoices([]);
 
         // Iterate through unitInvoices
-        unitInvoices.forEach((unitInv) => {
+        const zx = unitInvoices.map((unitInv) => {
           const matchedInv = getHOInvoice[0].cmdHoInvList.find(
             (importInv) =>
               parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
@@ -377,19 +381,18 @@ export default function ShowSyncStatus() {
           if (!matchedInv) {
             count++;
           }
-          // // Push both matched and unmatched data into the same array
-          setMatchedAndUnmatchedInvoices((prevState) => [
-            ...prevState,
-            { unitInv, matchedInv, isMatched: !!matchedInv },
-          ]);
+          return {
+            ...unitInv,
+            matched: !!matchedInv,
+          };
         });
+        setMatchedAndUnmatchedInvoices(zx);
       }
     } catch (error) {
       console.error(error);
     }
     setUnmatchedCount(count);
   };
-
   console.log("unmatchedCount count", unmatchedCount);
 
   // const HOCompare = (report) => {
@@ -431,7 +434,8 @@ export default function ShowSyncStatus() {
 
   const [matchedAndUnmatchedHOInvoices, setMatchedAndUnmatchedHOInvoices] =
     useState([]);
-  console.log("An getHOInvoice:", getHOInvoice);
+  console.log("An getHOInvoice:", inv);
+
   const HOCompare = (report) => {
     try {
       if (getHOInvoice.length === 1) {
@@ -585,7 +589,7 @@ export default function ShowSyncStatus() {
     startIndex,
     endIndex
   );
-  // console.log(currentPageData, "currentPageData");
+  // const currentPageData = inv.slice(startIndex, endIndex);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -604,13 +608,13 @@ export default function ShowSyncStatus() {
     startIndexHO,
     endIndexHO
   );
-  // console.log(currentPageData, "currentPageData");
 
   const handlePageChangeForHO = ({ selected }) => {
     setCurrentPageHO(selected);
   };
 
   const requestSort = (key) => {
+    console.log("key fro unit req ", key);
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
       direction = "desc";
@@ -621,6 +625,7 @@ export default function ShowSyncStatus() {
   console.log("setconfirg unit", sortConfig);
   //For unit information
   const sortedData = () => {
+    console.log("key fro unit soted", key);
     const dataCopy1 = [...currentPageData];
 
     if (sortConfig.key) {
@@ -648,6 +653,7 @@ export default function ShowSyncStatus() {
   //for Ho information
 
   const requestSortHO = (key) => {
+    console.log("key fro HO", key);
     let direction = "asc";
     if (sortConfigHO.key === key && sortConfigHO.direction === "asc") {
       direction = "desc";
@@ -656,6 +662,7 @@ export default function ShowSyncStatus() {
   };
 
   const sortedDataForHO = () => {
+    console.log("key fro ho.......", key);
     const dataCopy = [...currentPageDataHO];
 
     if (sortConfigHO.key) {
@@ -880,38 +887,34 @@ export default function ShowSyncStatus() {
                     </thead>
 
                     <tbody className="tablebody">
-                      {sortedData()?.map(
-                        ({ unitInv, matchedInv, isMatched }, index) => (
-                          <tr
-                            key={index}
-                            style={{
-                              backgroundColor: isMatched
-                                ? "#92ec93"
-                                : "#f48483",
-                            }}
-                            onClick={() =>
-                              selectedRowFun(
-                                unitInv,
-                                index,
-                                isMatched ? "#92ec93" : "#f48483"
-                              )
-                            }
-                            className={
-                              index === selectRow?.index
-                                ? "selcted-row-clr"
-                                : ""
-                            }
-                          >
-                            <td>{unitInv.DC_InvType}</td>
-                            <td>{unitInv.Inv_No}</td>
-                            <td>{formatDate(unitInv.Dc_inv_Date)}</td>
-                            <td>{unitInv.InvTotal}</td>
-                            <td>{unitInv.PymtAmtRecd}</td>
-                            <td>{unitInv.Cust_Name}</td>
-                            <td>{unitInv.DCStatus}</td>
-                          </tr>
-                        )
-                      )}
+                      {sortedData()?.map((unitInv, index) => (
+                        <tr
+                          key={index}
+                          style={{
+                            backgroundColor: unitInv.matched
+                              ? "#92ec93"
+                              : "#f48483",
+                          }}
+                          onClick={() =>
+                            selectedRowFun(
+                              unitInv,
+                              index,
+                              unitInv.matched ? "#92ec93" : "#f48483"
+                            )
+                          }
+                          className={
+                            index === selectRow?.index ? "selcted-row-clr" : ""
+                          }
+                        >
+                          <td>{unitInv.DC_InvType}</td>
+                          <td>{unitInv.Inv_No}</td>
+                          <td>{formatDate(unitInv.Dc_inv_Date)}</td>
+                          <td>{unitInv.InvTotal}</td>
+                          <td>{unitInv.PymtAmtRecd}</td>
+                          <td>{unitInv.Cust_Name}</td>
+                          <td>{unitInv.DCStatus}</td>
+                        </tr>
+                      ))}
                     </tbody>
                     {/* <tbody className="tablebody">
                       {sortedData()?.map(
