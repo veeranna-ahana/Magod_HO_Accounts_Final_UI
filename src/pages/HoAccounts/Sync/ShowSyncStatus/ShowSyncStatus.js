@@ -40,7 +40,9 @@ export default function ShowSyncStatus() {
   const handleButtonClick = (e) => {
     if (getName) {
       fileInputRef.current.click();
+
       console.log("Xml File", fileInputRef);
+
       handleApi();
     } else {
       toast.warn("Select Unit");
@@ -221,6 +223,7 @@ export default function ShowSyncStatus() {
       open_unit: [],
     };
     // Function to extract data dynamically from nodes
+    toast.success("Loading...");
     const extractData = (nodes, targetArray) => {
       nodes.forEach((node) => {
         const mediaObject = {};
@@ -234,6 +237,7 @@ export default function ShowSyncStatus() {
       });
     };
 
+    // toast.success("Loading...");
     // Call the function for both arrays
     extractData(multiMediaNodesunit, parsedData.open_unit);
     extractData(multiMediaNodes, parsedData.open_inv);
@@ -336,7 +340,7 @@ export default function ShowSyncStatus() {
 
   useEffect(() => {
     if (getHOInvoice.length === 1) {
-      toast.success("Please wait data being Populating");
+      // toast.success("Please wait data being Populating");
       compare(report);
     }
   }, [getHOInvoice]);
