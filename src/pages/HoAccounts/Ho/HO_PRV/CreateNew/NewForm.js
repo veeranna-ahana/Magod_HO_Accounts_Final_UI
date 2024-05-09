@@ -138,6 +138,9 @@ export default function NewForm() {
   const handlePostModalClose = () => {
     setShowPostModal(false);
   };
+  const handleDeleteClose = () => {
+    setDeleteOverAllData(false);
+  };
 
   const handleUnitNames = () => {
     axios
@@ -1656,7 +1659,7 @@ export default function NewForm() {
 
           <button
             className="button-style"
-            style={{ fontSize: "12px", backgroundColor: "rgb(173, 173, 173)" }}
+            style={{ fontSize: "12px" }}
             onClick={handlePostModalClose}
           >
             No
@@ -1769,8 +1772,8 @@ export default function NewForm() {
 
           <button
             className="button-style"
-            style={{ fontSize: "12px", backgroundColor: "rgb(173, 173, 173)" }}
-            //  onClick={handlePostModalClose}
+            style={{ fontSize: "12px" }}
+            onClick={handleDeleteClose}
           >
             No
           </button>

@@ -84,6 +84,9 @@ function MailModal({ mailModal, setMailModal, xmlFile }) {
         }, 3000);
       }
     });
+
+    setMailModal(false);
+    // toast.success("Mail sent Successfully");
   };
 
   let closesendmail = () => {
