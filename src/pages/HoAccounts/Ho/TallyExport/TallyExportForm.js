@@ -26,7 +26,6 @@ export default function TallyExportForm() {
 
   const tallyExportSubmit = () => {
     setExportTally(true);
-   
   };
 
   const navigate = useNavigate();

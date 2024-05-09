@@ -260,6 +260,7 @@ export default function UnitDetails() {
     setState(true);
   };
 
+  console.log("selected row", selectRow);
   const pincodehandleChange = (e) => {
     const value = e.target.value.replace(/\D/g, "");
     if (!state) {
@@ -486,7 +487,7 @@ export default function UnitDetails() {
                 id="UnitID"
                 required
                 value={selectRow?.UnitID || postData.UnitID}
-                // disabled={selectRow.UnitID !== ""}
+                disabled={selectRow.UnitID !== ""}
                 onChange={unitFormChange}
               />
             </div>

@@ -762,7 +762,11 @@ export default function ShowSyncStatus() {
         <div className="d-flex col-md-4" style={{ gap: "10px" }}>
           <div className="col-md-5 mt-2">
             <select className="ip-select" onChange={(e) => handleUnitSelect(e)}>
-              <option value=""> Select Unit</option> {/* Empty space */}
+              <option value="" disabled selected>
+                {" "}
+                Select Unit
+              </option>{" "}
+              {/* Empty space */}
               {unitdata.map((item) => (
                 <>
                   <option key={item.id} value={item.value}>
