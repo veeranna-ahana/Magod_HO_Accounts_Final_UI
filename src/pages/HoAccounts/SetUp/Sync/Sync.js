@@ -81,12 +81,15 @@ export default function Sync() {
             className="ip-select"
             value={selectedUnit} // Set the value of the select to the state variable
             onChange={handleSelectChange}
+            placeholder="Select unit"
           >
+            <option value="" disabled selected>
+              Select unit
+            </option>
             {units.map((item, index) => {
               return (
                 <>
                   <option key={index} value={item.UnitName}>
-                    {" "}
                     {item.UnitName}
                   </option>
                 </>

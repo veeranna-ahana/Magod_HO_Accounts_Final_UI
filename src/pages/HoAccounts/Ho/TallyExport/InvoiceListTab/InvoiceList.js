@@ -22,6 +22,10 @@ export default function InvoiceList({
   const [companyAndGuid, setCompanyAndGuid] = useState([]);
   const [cmpName, setCmpName] = useState([]);
 
+  const [selectedRow, setSelectedRow] = useState(null);
+  // const [dummyArray] = useState([2147346988, 1234567890, 2147346982]);
+  const [dummyArray] = useState([]);
+
   useEffect(() => {
     setExportTally(false);
     if (selectedDate && selectedUnitName) {
@@ -40,12 +44,11 @@ export default function InvoiceList({
       const toastId = toast.success(" Loading...");
       const interval = setInterval(() => {
         toast.update(toastId, { progress: toast.progress + 1 });
-      }, 2500); // Update every second
+      }, 4000); // Update every second
       setTimeout(() => {
-        
         clearInterval(interval);
         toast.dismiss(toastId);
-      }, 10000);
+      }, 15000);
     }
   }, [selectedDate, flag, selectedUnitName]);
 
@@ -68,7 +71,7 @@ export default function InvoiceList({
             selectedUnitName
           ) {
             setInvoiceListData([]);
-            toast.error("no data");
+            // toast.error("no data");
             // setToastShown(true);
           }
         } else {
@@ -161,6 +164,7 @@ export default function InvoiceList({
   const selectedRowFun = (item, index) => {
     let list = { ...item, index: index };
     setSelectRow(list);
+    setSelectedRow({ item, index });
 
     invoiceTaxDetails(item.DC_Inv_No);
   };
@@ -418,8 +422,8 @@ export default function InvoiceList({
             REQUESTDESC: {
               REPORTNAME: { _text: "Vouchers" },
               STATICVARIABLES: {
-                // SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
-                SVCURRENTCOMPANY: { _text: cmpName },
+                SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+                // SVCURRENTCOMPANY: { _text: cmpName },
               },
             },
             TALLYMESSAGE: {
@@ -622,7 +626,7 @@ export default function InvoiceList({
     a.click();
     window.URL.revokeObjectURL(url);
 
-    // createXmlForEachData;
+    //createXmlForEachData;
     // exportInvoices(xml);
 
     const cm = await companyFromTally();
@@ -639,30 +643,30 @@ export default function InvoiceList({
     );
 
     const xmlResults = filteredInvoices.map((voucher) => {
-      // return createXml([voucher]);
+      return createXml([voucher]);
       // Assuming createXml function accepts an array
     });
 
     const concatenatedXml = xmlResults.join("");
-    // console.log("xmlllllllllllllllllll service ", concatenatedXml);
-    // exportInvoices(concatenatedXml);
+
+    exportInvoices(concatenatedXml);
 
     // filtered service
 
-    const filteredInvoicesService = invoiceListData.filter(
-      (voucher) => voucher.DC_InvType === "Service"
-    );
+    // const filteredInvoicesService = invoiceListData.filter(
+    //   (voucher) => voucher.DC_InvType === "Service"
+    // );
 
-    const xmlResultsService = filteredInvoicesService.map((voucher) => {
-      const xmlres = createXml([voucher]);
+    // const xmlResultsService = filteredInvoicesService.map((voucher) => {
+    //   const xmlres = createXml([voucher]);
 
-      const concatenatedXml = xmlres.join("");
-      console.log("xmlllllllllllllllllll service ", concatenatedXml);
-      exportInvoices(concatenatedXml);
+    //   const concatenatedXml = xmlres.join("");
+    //   console.log("xmlllllllllllllllllll service ", concatenatedXml);
+    //   exportInvoices(concatenatedXml);
 
-      return createXml([voucher]);
-      // Assuming createXml function accepts an array
-    });
+    //   return createXml([voucher]);
+    //   // Assuming createXml function accepts an array
+    // });
   };
 
   // const createXml = (filteredInvoices) => {
@@ -1012,7 +1016,8 @@ export default function InvoiceList({
               REQUESTDESC: {
                 REPORTNAME: { _text: "Vouchers" },
                 STATICVARIABLES: {
-                  SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_08_09" },
+                  // SVCURRENTCOMPANY: { _text: cmpName },
+                  SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
                 },
               },
               TALLYMESSAGE: {
@@ -1032,6 +1037,7 @@ export default function InvoiceList({
     return xmlDataArray;
   };
 
+  const guidsFromBackend = [];
   const exportInvoices = async (xml) => {
     // console.log("xml invoices ", xml);
     const tallyUrl = "http://localhost:9000";
@@ -1053,6 +1059,7 @@ export default function InvoiceList({
         // Handle the GUID array as needed, such as displaying it in the UI
 
         // Compare GUIDs with invoiceListData
+
         response.data.guids.forEach((guid) => {
           const matchingInvoice = invoiceListData.find(
             (invoice) => invoice.DC_inv_no === guid
@@ -1076,7 +1083,6 @@ export default function InvoiceList({
   if (exportTally) {
     // handleExport();
     //createXmlForEachData();
-    //companyFromTally();
   }
 
   const [taxTable, setTaxTable] = useState();
@@ -1230,9 +1236,21 @@ export default function InvoiceList({
                       className={
                         key === selectRow?.index ? "selcted-row-clr" : ""
                       }
+                      // style={{
+                      //   whiteSpace: "nowrap",
+                      //   backgroundColor: dummyArray.includes(item.DC_Inv_No)
+                      //     ? "#FF7F50"
+                      //     : "",
+                      // }}
+
                       style={{
                         whiteSpace: "nowrap",
-                        backgroundColor: "#FF7F50",
+                        backgroundColor:
+                          dummyArray.length > 0 // Check if dummyArray is not empty
+                            ? dummyArray.includes(item.DC_Inv_No) // Check if item.DC_Inv_No is in dummyArray
+                              ? "#FF7F50" // If included, set background color to coral
+                              : "" // If not included, set background color to purple
+                            : "#FF7F50", // If dummyArray is empty, set default background color to white
                       }}
                     >
                       <td>{<input type="checkBox" disabled />}</td>

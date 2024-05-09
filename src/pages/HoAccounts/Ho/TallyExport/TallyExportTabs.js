@@ -12,6 +12,7 @@ export default function TallyExportTabs({
   exportTally,
   setExportTally,
   selectedUnitName,
+  
 }) {
   const [key, setKey] = useState("Inv");
   return (

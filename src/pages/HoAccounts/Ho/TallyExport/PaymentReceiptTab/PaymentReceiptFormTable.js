@@ -13,6 +13,9 @@ export default function PaymentReceiptFormTable({
   setExportTally,
   selectedUnitName,
 }) {
+  const [selectedRow, setSelectedRow] = useState(null);
+  // const [dummyArray] = useState([35120]);
+  const [dummyArray] = useState([]);
   const [paymentReceiptDetails, setPaymentReceiptDetails] = useState([]);
   const [payment, setPayment] = useState([]);
 
@@ -93,6 +96,7 @@ export default function PaymentReceiptFormTable({
     let list = { ...item, index: index };
 
     setSelectRow(list);
+    setSelectedRow({ item, index });
 
     paymentReceipt(item.Recd_PVNo);
   };
@@ -302,8 +306,16 @@ export default function PaymentReceiptFormTable({
     const xmlResults = filterPaymentReceipts.map((pymnt) => {
       const xmlres = createXmlForPymnt([pymnt]); // Assuming createXml function accepts an array
       const concatenatedXml = xmlres.join("");
-      console.log("xmlllllllllllllllllll payment  ", concatenatedXml);
+
+      exportPaymentReceipts(concatenatedXml);
     });
+
+    // const xmlResults = filterPaymentReceipts.map((pymnt) => {
+    //   const xmlres = createXmlForPymnt([pymnt]); // Assuming createXml function accepts an array
+    //   return xmlres.join("");
+    // });
+
+    //exportPaymentReceipts(xmlResults); // Sending the array of XML strings
   };
 
   const createXmlForPymnt = (paymentReceiptDetails) => {
@@ -405,7 +417,6 @@ export default function PaymentReceiptFormTable({
 
     return xmlArray;
   };
-  console.log("payment cmpname ", cmpName);
 
   // const [response, setResponse] = useState(null);
   // const exportPaymentReceipts = async (formData) => {
@@ -435,26 +446,57 @@ export default function PaymentReceiptFormTable({
 
   const [response, setResponse] = useState(null);
 
+  // const exportPaymentReceipts = async (formData) => {
+  //   alert("payment");
+  //   try {
+  //     if (
+  //       formData.has("xmlFile") &&
+  //       formData.get("xmlFile").type === "application/xml"
+  //     ) {
+  //       console.log("Sending XML data to Tally...");
+
+  //       const backendResponse = await fetch(
+  //         baseURL + "/tallyExport/exporttallyForPaymentReceipts",
+  //         {
+  //           method: "POST",
+  //           body: formData,
+  //         }
+  //       );
+
+  //       const result = await backendResponse.text(); // Read response as text
+  //       setResponse(result);
+
+  //       console.log("Tally server response:", result);
+  //     } else {
+  //       console.log("File is not XML or missing.");
+  //       // Handle this case, e.g., show a user-friendly message
+  //     }
+  //   } catch (error) {
+  //     console.error("Error sending XML data to Tally:", error);
+  //     // Handle error, e.g., show an error message to the user
+  //   }
+  // };
+
   const exportPaymentReceipts = async (formData) => {
     try {
-      if (
-        formData.has("xmlFile") &&
-        formData.get("xmlFile").type === "application/xml"
-      ) {
-        console.log("Sending XML data to Tally...");
-
-        const backendResponse = await fetch(
-          baseURL + "/tallyExport/exporttally",
+      if (formData) {
+        const response = await axios.post(
+          baseURL + "/tallyExport/exporttallyForPaymentReceipts",
           {
-            method: "POST",
-            body: formData,
+            xml: formData,
           }
         );
 
-        const result = await backendResponse.text(); // Read response as text
-        setResponse(result);
+        if (response.data.message === "Exception") {
+          console.error("Failed to send XML data to Tally.");
+        } else if (response.data.company === "companyNot") {
+          toast.error(`Company Account Name and GUID Mismatch for ${cmpName}`);
+        } else if (response.data.guids && response.data.guids.length > 0) {
+          console.log(" payment Received GUIDs:", response.data.guids);
+          // Handle the GUID array as needed, such as displaying it in the UI
 
-        console.log("Tally server response:", result);
+          // Compare GUIDs with invoiceListData
+        }
       } else {
         console.log("File is not XML or missing.");
         // Handle this case, e.g., show a user-friendly message
@@ -464,10 +506,9 @@ export default function PaymentReceiptFormTable({
       // Handle error, e.g., show an error message to the user
     }
   };
-
   if (exportTally) {
     //handleExportPayment();
-    //createXmlForEachPaymentReceipt();
+    createXmlForEachPaymentReceipt();
   }
 
   const [taxTable, setTaxTable] = useState();
@@ -586,11 +627,23 @@ export default function PaymentReceiptFormTable({
                   sortedData().map((item, key) => {
                     return (
                       <tr
-                        style={{ whiteSpace: "nowrap" }}
+                        // style={{ whiteSpace: "nowrap" }}
                         onClick={() => selectedRowFun(item, key)}
+                        // className={
+                        //   key === selectRow?.index ? "selcted-row-clr" : ""
+                        // }
                         className={
                           key === selectRow?.index ? "selcted-row-clr" : ""
                         }
+                        style={{
+                          whiteSpace: "nowrap",
+                          backgroundColor:
+                            dummyArray.length > 0 // Check if dummyArray is not empty
+                              ? dummyArray.includes(item.RecdPVID) // Check if item.DC_Inv_No is in dummyArray
+                                ? "#FF7F50" // If included, set background color to coral
+                                : "" // If not included, set background color to purple
+                              : "#FF7F50", // If dummyArray is empty, set default background color to white
+                        }}
                       >
                         <td>{item.Recd_PVNo}</td>
                         <td>{item.TxnType}</td>

@@ -32,7 +32,7 @@ export default function SaveChangesModal({
         if (res.data.status === "fail") {
           toast.error("Unit_Name must be Unique");
         } else if (res.data.status === "query") {
-          toast.error("Unit_Name  and UnitIntial must be Unique  ");
+          toast.error("Error in  sql query ");
         } else if (res.data.status === "success") {
           console.log("res in frontend", res.data);
           // alert("data updated")
