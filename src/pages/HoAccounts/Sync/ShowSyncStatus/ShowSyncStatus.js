@@ -251,7 +251,7 @@ export default function ShowSyncStatus() {
 
   const handleUnitName = () => {
     axios
-      .get(baseURL + `/showSyncStatus/hoUnitNames`)
+      .get(baseURL + `/unitReceiptList/getunitName`)
       .then((res) => {
         console.log("firstTable", res.data[0].UnitName);
         setunitData(res.data);

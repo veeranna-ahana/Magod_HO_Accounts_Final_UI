@@ -86,7 +86,7 @@ function MailModal({ mailModal, setMailModal, xmlFile }) {
     });
 
     setMailModal(false);
-    // toast.success("Mail sent Successfully");
+    toast.success("Mail sent Successfully");
   };
 
   let closesendmail = () => {

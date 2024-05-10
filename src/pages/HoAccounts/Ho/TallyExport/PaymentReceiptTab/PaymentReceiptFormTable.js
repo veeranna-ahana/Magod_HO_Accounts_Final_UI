@@ -4,6 +4,7 @@ import { Table } from "react-bootstrap";
 import { Form } from "react-bootstrap";
 import { baseURL } from "../../../../../api/baseUrl";
 import xmljs from "xml-js";
+import { toast } from "react-toastify";
 
 export default function PaymentReceiptFormTable({
   selectedDate,
@@ -55,6 +56,7 @@ export default function PaymentReceiptFormTable({
   }, [selectedUnitName]);
 
   const PaymentReceiptSubmit = () => {
+    setPaymentReceiptDetails([]);
     axios
       .get(
         baseURL + "/tallyExport/getPaymentReceipntData",
@@ -67,7 +69,11 @@ export default function PaymentReceiptFormTable({
       )
       .then((res) => {
         console.log("Paymnet Receipnt", res.data.Result[0]);
-        setPaymentReceiptDetails(res.data.Result);
+        if (res.data.Result.length > 0) {
+          setPaymentReceiptDetails(res.data.Result);
+        } else {
+          setPaymentReceiptDetails([]);
+        }
       })
       .catch((err) => {
         console.log("err", err);
@@ -75,6 +81,7 @@ export default function PaymentReceiptFormTable({
   };
 
   const paymentReceipt = (Recd_PVNo) => {
+    setPayment([]);
     axios
       .get(baseURL + "/tallyExport/getPayment", {
         params: {

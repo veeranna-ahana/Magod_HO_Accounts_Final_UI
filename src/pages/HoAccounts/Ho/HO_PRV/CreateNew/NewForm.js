@@ -144,7 +144,7 @@ export default function NewForm() {
 
   const handleUnitNames = () => {
     axios
-      .get(baseURL + "/hoCreateNew/unitNames")
+      .get(baseURL + "/unitReceiptList/getunitName")
       .then((res) => {
         setGetUnitNames(res.data);
       })

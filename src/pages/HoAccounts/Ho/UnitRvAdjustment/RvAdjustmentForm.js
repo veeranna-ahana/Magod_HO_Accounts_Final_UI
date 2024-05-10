@@ -186,7 +186,9 @@ export default function RvAdjustmentForm() {
 
       <div className="row">
         <div className="d-flex col-md-3" style={{ gap: "10px" }}>
-          <label className="form-label" style={{ whiteSpace: "nowrap" }}>Select Unit</label>
+          <label className="form-label" style={{ whiteSpace: "nowrap" }}>
+            Select Unit
+          </label>
           <Typeahead
             className="ip-select"
             id="ip-select"

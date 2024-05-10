@@ -6,6 +6,9 @@ import Spinner from "../Spinner";
 import { xml2js, js2xml } from "xml-js";
 import { baseURL } from "../../../../api/baseUrl";
 import { useNavigate } from "react-router-dom";
+import Modal from "react-bootstrap/Modal";
+import { Button } from "react-bootstrap";
+import MailModal from "../../MailModal";
 
 export default function SyncUnit() {
   const fileInputRef = useRef(null);
@@ -318,6 +321,7 @@ export default function SyncUnit() {
     } catch (error) {
       console.error("Error saving file:", error);
     }
+    await setTimeout(callMailModal, 10000);
   };
 
   const arrayToXML = (data) => {
@@ -418,8 +422,53 @@ export default function SyncUnit() {
   console.log("hello receipt details", receiptDeInsertedData);
   console.log("hello cancelled Inv", cancelledInvInsertedData);
 
+  const [mailAlert, setMailAlert] = useState(false);
+  const [mailModal, setMailModal] = useState(false);
+
+  const callMailModal = () => {
+    setMailAlert(true);
+  };
+
+  const handleClose = () => {
+    // setMailModal(false);
+    setMailAlert(false);
+  };
+
+  const yesmailSubmit = () => {
+    setMailAlert(false);
+    setMailModal(true);
+  };
+
   return (
     <>
+      <Modal show={mailAlert} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title style={{ fontSize: "12px" }}>magod_machine</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body style={{ fontSize: "12px" }}>
+          {" "}
+          Accounts Sync Report Saved as (path filename.xml) Do you wish to mail
+          it?
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button
+            variant="primary"
+            onClick={yesmailSubmit}
+            style={{ fontSize: "12px" }}
+          >
+            Yes
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleClose}
+            style={{ fontSize: "12px" }}
+          >
+            No
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <div className={`col-md-12 ${isLoading ? "loading" : ""}`}>
         <div className="row">
           <h4 className="title">From Unit Sync</h4>
@@ -480,6 +529,9 @@ export default function SyncUnit() {
           Close
         </button>
       </div> */}
+      {mailModal && (
+        <MailModal mailModal={mailModal} setMailModal={setMailModal} />
+      )}
       {isLoading && <Spinner />}
     </>
   );
