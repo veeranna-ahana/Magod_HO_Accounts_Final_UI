@@ -4,6 +4,9 @@ import OpenInvoice from "./OpenInvoice";
 import OpenReceipt from "./OpenReceipt";
 import HoReceiptVoucher from "./HoReceiptVoucher";
 import { js2xml } from "xml-js";
+import Modal from "react-bootstrap/Modal";
+import { Button } from "react-bootstrap";
+import MailModal from "../../../MailModal";
 
 export default function Export({ data, selectedUnit }) {
   const [activeTab, setActiveTab] = useState("openInvoice");
@@ -67,7 +70,7 @@ export default function Export({ data, selectedUnit }) {
   };
 
   const DownloadXMLButton = ({ data }) => {
-    const handleDownload = () => {
+    const handleDownload = async () => {
       const xmlString = arrayToXML(data);
       const finalXmlString = `<?xml version="1.0" standalone="yes"?>\n${xmlString}`;
       const blob = new Blob([finalXmlString], { type: "text/xml" });
@@ -90,6 +93,8 @@ export default function Export({ data, selectedUnit }) {
       a.click();
       URL.revokeObjectURL(url);
       document.body.removeChild(a);
+
+      await setTimeout(callMailModal, 10000);
     };
 
     return (
@@ -115,8 +120,53 @@ export default function Export({ data, selectedUnit }) {
         break;
     }
   }, [activeTab, tabData]);
+
+  const [mailAlert, setMailAlert] = useState(false);
+  const [mailModal, setMailModal] = useState(false);
+  const callMailModal = () => {
+    setMailAlert(true);
+  };
+
+  const handleClose = () => {
+    // setMailModal(false);
+    setMailAlert(false);
+  };
+
+  const yesmailSubmit = () => {
+    setMailAlert(false);
+    setMailModal(true);
+  };
+
   return (
     <div>
+      <Modal show={mailAlert} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title style={{ fontSize: "12px" }}>magod_machine</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body style={{ fontSize: "12px" }}>
+          {" "}
+          Accounts Sync Report Saved as (path filename.xml) Do you wish to mail
+          it?
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button
+            variant="primary"
+            onClick={yesmailSubmit}
+            style={{ fontSize: "12px" }}
+          >
+            Yes
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleClose}
+            style={{ fontSize: "12px" }}
+          >
+            No
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <div>
         <div className="mb-3">
           {/* <button className="button-style  group-button"
@@ -140,6 +190,10 @@ export default function Export({ data, selectedUnit }) {
           </Tab>
         </Tabs>
       </div>
+
+      {mailModal && (
+        <MailModal mailModal={mailModal} setMailModal={setMailModal} />
+      )}
     </div>
   );
 }

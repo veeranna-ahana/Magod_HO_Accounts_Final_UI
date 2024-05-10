@@ -23,6 +23,7 @@ export default function TallyExportForm() {
       setFlag(true);
     }
   };
+  // console.log("selcted date", selectedDate);
 
   const tallyExportSubmit = () => {
     setExportTally(true);

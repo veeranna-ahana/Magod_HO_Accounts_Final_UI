@@ -26,8 +26,10 @@ export default function InvoiceList({
   // const [dummyArray] = useState([2147346988, 1234567890, 2147346982]);
   const [dummyArray] = useState([]);
 
+  console.log("selecvt6ed date", selectedDate);
   useEffect(() => {
     setExportTally(false);
+
     if (selectedDate && selectedUnitName) {
       invoiceListSubmit();
     }
@@ -35,24 +37,19 @@ export default function InvoiceList({
 
   // useEffect(() => {
   //   if (selectedDate && selectedUnitName && flag) {
-  //    toast.error("daata loadung");
+  //     const toastId = toast.success(" Loading...");
+  //     const interval = setInterval(() => {
+  //       toast.update(toastId, { progress: toast.progress + 1 });
+  //     }, 4000); // Update every second
+  //     setTimeout(() => {
+  //       clearInterval(interval);
+  //       toast.dismiss(toastId);
+  //     }, 15000);
   //   }
   // }, [selectedDate, flag, selectedUnitName]);
 
-  useEffect(() => {
-    if (selectedDate && selectedUnitName && flag) {
-      const toastId = toast.success(" Loading...");
-      const interval = setInterval(() => {
-        toast.update(toastId, { progress: toast.progress + 1 });
-      }, 4000); // Update every second
-      setTimeout(() => {
-        clearInterval(interval);
-        toast.dismiss(toastId);
-      }, 15000);
-    }
-  }, [selectedDate, flag, selectedUnitName]);
-
   const invoiceListSubmit = () => {
+    setInvoiceListData([]);
     axios
       .get(baseURL + "/tallyExport/getInvoiceData", {
         params: {
@@ -64,16 +61,6 @@ export default function InvoiceList({
         if (res.data.Result.length > 0) {
           setInvoiceListData(res.data.Result);
           console.log("invocie dataaaaaaaaaa", invoiceListData);
-          if (
-            invoiceListData.length === 0 &&
-            flag &&
-            selectedDate &&
-            selectedUnitName
-          ) {
-            setInvoiceListData([]);
-            // toast.error("no data");
-            // setToastShown(true);
-          }
         } else {
           setInvoiceListData([]);
         }
@@ -1203,6 +1190,7 @@ export default function InvoiceList({
   //     setFlag(false)
   //   }
   // }
+  console.log("inv22222222", invoiceListData);
 
   return (
     <>

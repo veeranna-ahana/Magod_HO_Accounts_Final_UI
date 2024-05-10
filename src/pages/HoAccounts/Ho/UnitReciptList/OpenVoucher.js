@@ -147,8 +147,6 @@ export default function OpenVoucher() {
     }
   };
 
- 
-
   const handleUnitSelect = (selected) => {
     const selectedCustomer = selected[0];
     setSelectUnit(selected); // Update selected option state
@@ -281,78 +279,6 @@ export default function OpenVoucher() {
         </div>
       </div>
 
-      {/* <div className="row mt-1">
-        <div className="col-md-3 mt-2">
-          <label className="form-label" style={{ whiteSpace: "nowrap" }}>
-            Payment Receipt Vouchers
-          </label>
-        </div>
-
-        <div className="col-md-2">
-          <label className="form-label">Search</label>
-          <input
-            type="search"
-            onChange={handleSearch}
-            value={searchInput}
-          ></input>
-        </div>
-
-        <div className="col-md-3">
-          <button
-            className="button-style mt-2 group-button"
-            style={{ width: "150px", marginLeft: "20px" }}
-            // onClick={() => navigate("/HOAccounts/HO/Openvoucher")}
-            onClick={handleOpenVoucherClick}
-          >
-            Open Voucher
-          </button>
-        </div>
-
-        <div className="col-md-3">
-          <button
-            className="button-style mt-2 group-button"
-            onClick={() => navigate("/home")}
-          >
-            Close
-          </button>
-        </div>
-      </div>
-
-      <div className="row">
-        <div className="col-md-3">
-          <label className="form-label">Select Unit</label>
-
-          <Typeahead
-            className="ip-select"
-            id="basic-example"
-            labelKey={(option) =>
-              option && option.UnitName ? option.UnitName.toString() : ""
-            }
-            options={unitdata}
-            placeholder="Select Unit"
-            onChange={handleUnitSelect}
-            selected={selectedUnitName}
-          />
-        </div>
-
-        <div className="col-md-3">
-          <label className="form-label">Select Customer</label>
-
-          <Typeahead
-            className="ip-select"
-            id="basic-example"
-            labelKey={(option) =>
-              option && option.Cust_name ? option.Cust_name.toString() : ""
-            }
-            valueKey="Cust_Code"
-            options={getCustomers}
-            placeholder="Select Customer"
-            onChange={handleTypeaheadChange}
-            selected={selectedOption}
-          />
-        </div>
-      </div> */}
-
       <div
         className="col-md-12 mt-3"
         style={{ height: "300px", overflowX: "scroll", overflowY: "scroll" }}
@@ -363,9 +289,10 @@ export default function OpenVoucher() {
               <th onClick={() => requestSort("Recd_PVNo")}>Receipt VrNo</th>
               <th>Receipt Status</th>
 
-              <th onClick={() => requestSort("Formatted_Recd_PV_Date")}>
+              {/* <th onClick={() => requestSort("Formatted_Recd_PV_Date")}>
                 Date
-              </th>
+              </th> */}
+              <th onClick={() => requestSort("Recd_PV_Date")}>Date</th>
               <th onClick={() => requestSort("CustName")}>Customer</th>
               <th onClick={() => requestSort("TxnType")}>Transaction Type</th>
               <th onClick={() => requestSort("Amount")}>Amount</th>
@@ -387,7 +314,8 @@ export default function OpenVoucher() {
                   <td>{item.Recd_PVNo}</td>
                   <td></td>
                   <td style={{ whiteSpace: "nowrap" }}>
-                    {item.Formatted_Recd_PV_Date}
+                    {/* {item.Formatted_Recd_PV_Date} */}
+                    {new Date(item.Recd_PV_Date).toLocaleDateString("en-GB")}
                   </td>
                   <td style={{ whiteSpace: "nowrap" }}>{item.CustName}</td>
                   <td>{item.TxnType}</td>
