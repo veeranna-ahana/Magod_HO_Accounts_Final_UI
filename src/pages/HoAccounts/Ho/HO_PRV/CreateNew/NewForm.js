@@ -1156,6 +1156,8 @@ export default function NewForm() {
     }));
   };
 
+  // sorting functionality for the  rvData.data.inv_data   and rvData.data.receipt_details
+
   return (
     <>
       {pdfVoucher && (
@@ -1730,7 +1732,7 @@ export default function NewForm() {
                 <label className="form-label">Reason for Cancellation </label>
                 <textarea
                   className="in-field"
-                  style={{ width: "500px", height: "100px", resize: "none" }}
+                  style={{ width: "450px", height: "100px", resize: "none" }}
                   type="textarea"
                   onChange={handleReasonChange}
                 />

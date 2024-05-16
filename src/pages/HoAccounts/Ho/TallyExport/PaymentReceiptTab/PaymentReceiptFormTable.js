@@ -56,7 +56,6 @@ export default function PaymentReceiptFormTable({
   }, [selectedUnitName]);
 
   const PaymentReceiptSubmit = () => {
-    setPaymentReceiptDetails([]);
     axios
       .get(
         baseURL + "/tallyExport/getPaymentReceipntData",
@@ -81,7 +80,6 @@ export default function PaymentReceiptFormTable({
   };
 
   const paymentReceipt = (Recd_PVNo) => {
-    setPayment([]);
     axios
       .get(baseURL + "/tallyExport/getPayment", {
         params: {
@@ -515,7 +513,7 @@ export default function PaymentReceiptFormTable({
   };
   if (exportTally) {
     //handleExportPayment();
-    createXmlForEachPaymentReceipt();
+    //createXmlForEachPaymentReceipt();
   }
 
   const [taxTable, setTaxTable] = useState();

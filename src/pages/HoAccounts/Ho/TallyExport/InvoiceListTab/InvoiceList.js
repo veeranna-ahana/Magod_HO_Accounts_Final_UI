@@ -49,7 +49,6 @@ export default function InvoiceList({
   // }, [selectedDate, flag, selectedUnitName]);
 
   const invoiceListSubmit = () => {
-    setInvoiceListData([]);
     axios
       .get(baseURL + "/tallyExport/getInvoiceData", {
         params: {
@@ -1069,7 +1068,7 @@ export default function InvoiceList({
 
   if (exportTally) {
     // handleExport();
-    //createXmlForEachData();
+    createXmlForEachData();
   }
 
   const [taxTable, setTaxTable] = useState();
@@ -1190,7 +1189,6 @@ export default function InvoiceList({
   //     setFlag(false)
   //   }
   // }
-  console.log("inv22222222", invoiceListData);
 
   return (
     <>

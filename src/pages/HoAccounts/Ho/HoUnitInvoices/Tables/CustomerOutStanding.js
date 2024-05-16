@@ -87,7 +87,7 @@ export default function CustomerOutStanding({
               toast.error("Select Suitable Invoice For");
             } else if (res.data.Result === "select dc type") {
               setDataBasedOnCust([]);
-              // toast.error("Select Suitableee DC Inv Type")
+              toast.error("Select Suitable DC Inv Type");
             } else if (res.data.Result === "cust dont have dc") {
               toast.error("Customer dont have  DC Inv Type");
             } else {
