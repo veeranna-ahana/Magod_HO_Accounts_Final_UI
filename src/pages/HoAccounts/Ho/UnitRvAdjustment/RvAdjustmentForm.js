@@ -177,7 +177,40 @@ export default function RvAdjustmentForm() {
     handleUnitName();
   }, []);
 
-  console.log("currrrrent", selectedUnitName.UnitName);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedData = () => {
+    const dataCopy = [...currentPageData];
+
+    if (sortConfig.key) {
+      dataCopy.sort((a, b) => {
+        let valueA = a[sortConfig.key];
+        let valueB = b[sortConfig.key];
+
+        if (sortConfig.key === "Amount" || sortConfig.key === "On_account") {
+          valueA = parseFloat(valueA);
+          valueB = parseFloat(valueB);
+        }
+
+        if (valueA < valueB) {
+          return sortConfig.direction === "asc" ? -1 : 1;
+        }
+        if (valueA > valueB) {
+          return sortConfig.direction === "asc" ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return dataCopy;
+  };
+
   return (
     <div>
       <div className="row">
@@ -249,70 +282,6 @@ export default function RvAdjustmentForm() {
         </div>
       </div>
 
-      {/* <div className="row">
-        <div className="col-md-2">
-          <label className="form-label">Select Unit</label>
-          <Typeahead
-            id="basic-example"
-            labelKey={(option) =>
-              option && option.UnitName ? option.UnitName.toString() : ""
-            }
-            options={unitdata}
-            placeholder="Select Unit"
-            onChange={handleUnitSelect}
-            selected={selectedUnitName}
-          />
-        </div>
-
-        <div className="col-md-4">
-          <label className="form-label">Select Customer</label>
-          <Typeahead
-            id="basic-example"
-            labelKey={(option) =>
-              option && option.Cust_name ? option.Cust_name.toString() : ""
-            }
-            valueKey="Cust_Code"
-            options={getCustomer}
-            placeholder="Select Customer"
-            onChange={handleTypeaheadChange}
-            selected={selectedOption}
-          />
-        </div>
-
-        <div className="col-md-2 mt-2">
-          <button
-            className="button-style group-button"
-            onClick={() => {
-              handleButtonClick(selectRow);
-            }}
-          >
-            Adjustment Voucher
-          </button>
-        </div>
-        <div className="col-md-1">
-          <button
-            className="button-style group-button"
-            onClick={(e) => navigate("/HOAccounts")}
-          >
-            Close
-          </button>
-        </div>
-
-        <div className="row col-md-3">
-          <div className="col-md-1">
-            <input
-              className="  custom-checkbox"
-              type="checkbox"
-              onChange={() => setShowAll(!showAll)}
-            />
-          </div>
-
-          <div className="col-md-2">
-            <label className="form-label">Show All</label>
-          </div>
-        </div>
-      </div> */}
-
       <div className="col-md-12">
         <div className="mt-3 col-md-12">
           <div
@@ -324,23 +293,38 @@ export default function RvAdjustmentForm() {
           >
             <Table className="table-data border" striped>
               <thead className="tableHeaderBGColor">
-                <tr>
-                  <th style={{ whiteSpace: "nowrap" }}>Rv No</th>
-                  {showAll && <th>Cust_Code</th>}
-                  {showAll && <th>Cust_name</th>}
-                  <th>Amount</th>
-                  <th style={{ whiteSpace: "nowrap" }}>On Account</th>
-                  <th style={{ whiteSpace: "nowrap" }}>Receipt Status</th>
-                  <th style={{ whiteSpace: "nowrap" }}>Rv Date</th>
-                  <th style={{ whiteSpace: "nowrap" }}>Description</th>
-                  <th style={{ whiteSpace: "nowrap" }}>Txn Type</th>
+                <tr style={{ whiteSpace: "nowrap" }}>
+                  <th
+                    style={{ whiteSpace: "nowrap" }}
+                    onClick={() => requestSort("Recd_PVNo")}
+                  >
+                    Rv No
+                  </th>
+                  {showAll && (
+                    <th onClick={() => requestSort("Cust_code")}>Cust_Code</th>
+                  )}
+                  {showAll && (
+                    <th onClick={() => requestSort("CustName")}>Cust_name</th>
+                  )}
+                  <th onClick={() => requestSort("Amount")}>Amount</th>
+                  <th onClick={() => requestSort("On_account")}>On Account</th>
+                  <th onClick={() => requestSort("ReceiptStatus")}>
+                    Receipt Status
+                  </th>
+                  <th onClick={() => requestSort("Formatted_Recd_PV_Date")}>
+                    Rv Date
+                  </th>
+                  <th onClick={() => requestSort("Description")}>
+                    Description
+                  </th>
+                  <th onClick={() => requestSort("TxnType")}>Txn Type</th>
                   {/* <th>HO_PrvId</th> */}
                 </tr>
               </thead>
 
               <tbody className="tablebody">
-                {currentPageData
-                  ? currentPageData.map((item, key) => {
+                {sortedData()
+                  ? sortedData().map((item, key) => {
                       return (
                         <tr
                           onClick={() => selectedRowFun(item, key)}

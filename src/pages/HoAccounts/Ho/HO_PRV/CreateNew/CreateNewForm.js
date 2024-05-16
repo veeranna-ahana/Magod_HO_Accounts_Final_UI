@@ -1365,6 +1365,79 @@ export default function CreateNewForm() {
     console.log("New value of the textarea:", newValue);
   };
 
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  console.log("sort congig ", sortConfig);
+  const sortedData = () => {
+    const dataCopy = [...rvData.data.receipt_details];
+
+    if (sortConfig.key) {
+      dataCopy.sort((a, b) => {
+        let valueA = a[sortConfig.key];
+        let valueB = b[sortConfig.key];
+
+        if (sortConfig.key === "Amount") {
+          valueA = parseFloat(valueA);
+          valueB = parseFloat(valueB);
+        }
+
+        if (valueA < valueB) {
+          return sortConfig.direction === "asc" ? -1 : 1;
+        }
+        if (valueA > valueB) {
+          return sortConfig.direction === "asc" ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return dataCopy;
+  };
+
+  //sorting for invoice table
+  const [sortConfigForInv, setSortConfigForInv] = useState({
+    key: null,
+    direction: null,
+  });
+  const requestSortForInv = (key) => {
+    let direction = "asc";
+    if (sortConfigForInv.key === key && sortConfigForInv.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfigForInv({ key, direction });
+  };
+
+  console.log("sort congig for open invoice", sortConfigForInv);
+  const sortedDataForInv = () => {
+    const dataCopy = [...rvData.data.inv_data];
+
+    if (sortConfigForInv.key) {
+      dataCopy.sort((a, b) => {
+        let valueA = a[sortConfigForInv.key];
+        let valueB = b[sortConfigForInv.key];
+
+        if (sortConfigForInv.key === "Amount") {
+          valueA = parseFloat(valueA);
+          valueB = parseFloat(valueB);
+        }
+
+        if (valueA < valueB) {
+          return sortConfigForInv.direction === "asc" ? -1 : 1;
+        }
+        if (valueA > valueB) {
+          return sortConfigForInv.direction === "asc" ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return dataCopy;
+  };
   return (
     <>
       {pdfVoucher && (
@@ -1651,20 +1724,22 @@ export default function CreateNewForm() {
                 // style={{ textAlign: "center" }}
               >
                 <tr style={{ whiteSpace: "nowrap" }}>
-                  <th>Srl</th>
-                  <th>Invoice No</th>
-                  <th>Date</th>
-                  <th>Type</th>
-                  <th>Amount</th>
-                  <th>Received</th>
-                  <th>Receive Now</th>
-                  <th>Id</th>
+                  <th onClick={() => requestSort("UnitID")}>Srl</th>
+                  <th onClick={() => requestSort("Inv_No")}>Invoice No</th>
+                  <th onClick={() => requestSort("Inv_date")}>Date</th>
+                  <th onClick={() => requestSort("Inv_Type")}>Type</th>
+                  <th onClick={() => requestSort("Inv_Amount")}>Amount</th>
+                  <th onClick={() => requestSort("Amt_received")}>Received</th>
+                  <th onClick={() => requestSort("Receive_Now")}>
+                    Receive Now
+                  </th>
+                  <th onClick={() => requestSort("Id")}>Id</th>
                 </tr>
               </thead>
 
               <tbody className="tablebody">
-                {rvData.data.receipt_details
-                  ? rvData.data.receipt_details.map((data, index) => (
+                {sortedData()
+                  ? sortedData().map((data, index) => (
                       <>
                         <tr
                           style={{ whiteSpace: "nowrap" }}
@@ -1768,16 +1843,22 @@ export default function CreateNewForm() {
               <thead className="tableHeaderBGColor">
                 <tr style={{ whiteSpace: "nowrap" }}>
                   <th style={{ textAlign: "center" }}>Select</th>
-                  <th>Type</th>
-                  <th>Invoice No</th>
-                  <th>Date</th>
-                  <th>Grand Total</th>
-                  <th>Amount Received</th>
+                  <th onClick={() => requestSortForInv("DC_InvType")}>Type</th>
+                  <th onClick={() => requestSortForInv("Inv_No")}>
+                    Invoice No
+                  </th>
+                  <th onClick={() => requestSortForInv("Inv_Date")}>Date</th>
+                  <th onClick={() => requestSortForInv("GrandTotal")}>
+                    Grand Total
+                  </th>
+                  <th onClick={() => requestSortForInv("PymtAmtRecd")}>
+                    Amount Received
+                  </th>
                 </tr>
               </thead>
 
               <tbody className="tablebody">
-                {rvData.data.inv_data?.map((row, index) => (
+                {sortedDataForInv().map((row, index) => (
                   <tr
                     key={index}
                     style={{
@@ -1929,7 +2010,7 @@ export default function CreateNewForm() {
             <label className="form-label">Reason for Cancellation </label>
             <textarea
               className="in-field"
-              style={{ width: "500px", height: "70px", resize: "none" }}
+              style={{ width: "450px", height: "70px", resize: "none" }}
               type="textarea"
               onChange={handleReasonChange}
             />

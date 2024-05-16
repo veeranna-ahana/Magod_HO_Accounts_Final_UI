@@ -55,7 +55,7 @@ export default function PRV_List() {
       navigate("/HOAccounts/HO/HOPRV/ForNavigation", {
         state: {
           HOPrvId: selectRow.HOPrvId,
-          unitname: selectRow.Unitname // assuming you have unitname variable defined
+          unitname: selectRow.Unitname, // assuming you have unitname variable defined
         },
       });
     } else {
