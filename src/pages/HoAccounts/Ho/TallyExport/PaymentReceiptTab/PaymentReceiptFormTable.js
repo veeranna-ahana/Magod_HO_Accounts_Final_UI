@@ -512,7 +512,7 @@ export default function PaymentReceiptFormTable({
     }
   };
   if (exportTally) {
-    //handleExportPayment();
+    handleExportPayment();
     //createXmlForEachPaymentReceipt();
   }
 
