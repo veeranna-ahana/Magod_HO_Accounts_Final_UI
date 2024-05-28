@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
-import { Form } from "react-bootstrap";
+
 import axios from "axios";
 import xmljs from "xml-js";
-import { useGlobalContext } from "../../../Context/Context";
+
 import { baseURL } from "../../../../../api/baseUrl";
 import { toast } from "react-toastify";
-const he = require("he");
 
 export default function InvoiceList({
   selectedDate,
@@ -604,7 +603,7 @@ export default function InvoiceList({
 
     const cm = await companyFromTally();
     if (cm === "companyExist") {
-      createXmlForEachData();
+     // createXmlForEachData();
     }
   };
 
@@ -1054,13 +1053,13 @@ export default function InvoiceList({
   };
 
   if (exportTally) {
-    // handleExport();
+    handleExport();
     // createXmlForEachData();
   }
 
-  useEffect(() => {
-    companyFromTally();
-  }, []);
+  // useEffect(() => {
+  //   companyFromTally();
+  // }, []);
   const [taxTable, setTaxTable] = useState();
   const tableRowSelect = (item, index) => {
     let list = { ...item, index: index };
