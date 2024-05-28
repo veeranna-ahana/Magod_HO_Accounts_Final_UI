@@ -124,10 +124,10 @@ export default function TabData() {
       setFlag(value);
     }
   };
-  console.log("set flag", flag);
+
   const handleSelectChange = (e) => {
     const value = e.target.value;
-    console.log("nnnnnnnnnnnnnnn", value);
+
     setSelectedDCType(value);
   };
 
@@ -136,7 +136,6 @@ export default function TabData() {
   const pdfSubmit = () => {
     setPdfOpen(true);
   };
-  console.log("selected ", selectedDCType);
 
   const poSumMap = {};
 
@@ -153,19 +152,22 @@ export default function TabData() {
   // Get distinct PO_NO values
   const distinctPO_NOs = Object.keys(poSumMap);
 
-  console.log("Distinct PO_NOs:", distinctPO_NOs);
-  console.log("Sum of Balances for each PO_NO:", poSumMap);
-
   const [selectedUnitName, setSelectedUnitName] = useState("");
   const [selectUnit, setSelectUnit] = useState([]);
+
+  const [unit, setUnit] = useState([]);
+
   const handleUnitSelect = (selected) => {
+    console.log("selectexdddddddd", selected);
     const selectedCustomer = selected[0];
-    setSelectUnit(selected); // Update selected option state
-    // setGetName(selectedCustomer ? selectedCustomer.UnitName : "");
+
+    setSelectUnit(selected);
+    setUnit(selected[0].UnitName);
+
     setSelectedUnitName(selected);
   };
 
-  console.log("selected unit", selectUnit[0]?.UnitName);
+  console.log("selected unit", selectUnit);
 
   const [unitdata, setunitData] = useState([]);
   const handleUnitName = () => {
@@ -187,6 +189,24 @@ export default function TabData() {
     handleUnitName();
   }, []);
 
+  useEffect(() => {
+    if (unit) {
+      fetchUnitAddress();
+    }
+  }, [selectUnit]);
+  const [unitAddress, setUnitAddress] = useState([]);
+  const fetchUnitAddress = () => {
+    axios
+      .post(baseURL + "/customerOutstanding/getAddress", {
+        unit,
+      })
+      .then((res) => {
+        setUnitAddress(res.data.Result);
+      })
+      .catch((err) => {
+        console.log("errin pdf address", err);
+      });
+  };
   return (
     <>
       {pdfOpen && (
@@ -200,6 +220,8 @@ export default function TabData() {
           selectedDCType={selectedDCType}
           setFilterData={setFilterData}
           filterData={filterData}
+          selectedUnitName={selectedUnitName}
+          unitAddress={unitAddress}
         />
       )}
 

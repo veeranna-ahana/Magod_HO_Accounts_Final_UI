@@ -87,7 +87,7 @@ export default function CustomerOutStanding({
               toast.error("Select Suitable Invoice For");
             } else if (res.data.Result === "select dc type") {
               setDataBasedOnCust([]);
-              toast.error("Select Suitable DC Inv Type");
+              //toast.error("Select Suitable DC Inv Type");
             } else if (res.data.Result === "cust dont have dc") {
               toast.error("Customer dont have  DC Inv Type");
             } else {
@@ -124,7 +124,7 @@ export default function CustomerOutStanding({
 
   const po = filterData.map((item, index) => {
     const invoicesForPO = getInvoicesByPO(item.PO_No);
-    console.log("in", invoicesForPO);
+    // console.log("in", invoicesForPO);
   });
 
   const [selectedDCInvNo, setSelectedDCInvNo] = useState("");
@@ -234,36 +234,7 @@ export default function CustomerOutStanding({
               </tr>
             </thead>
 
-            {/* <tbody className='tablebody'>
-
-                            {filterData.map((item, index) => (
-
-                                <tr onClick={() => handleRowSelect(item.DC_Inv_No)}
-                                    key={index}
-
-                                    className={selectedRow === item.DC_Inv_No ? 'selcted-row-clr' : ''}
-                                >
-
-                                    <td style={{ whiteSpace: 'nowrap' }}>{item.DC_InvType}</td>
-                                    <td>{item.Inv_No}</td>
-                                    <td>{item.InvoiceFor}</td>
-                                    <td>{new Date(item.Inv_Date).toLocaleDateString('en-GB')}</td>
-                                    <td style={{textAlign:'right'}}>{formatAmount(item.GrandTotal)}</td>
-                                    <td style={{textAlign:'right'}}>{formatAmount(item.Balance)}</td>
-                                    <td style={{textAlign:'center'}}>{item.duedays}</td>
-                                    <td>{item.DCStatus}</td>
-
-                                </tr>
-                            ))}
-
-                            {
-
-                            }
-
-
-
-                        </tbody> */}
-            <tbody className="tablebody">
+            {/* <tbody className="tablebody">
               {sortedData().map((item, index) => (
                 <tr
                   onClick={() => handleRowSelect(item.DC_Inv_No)}
@@ -288,6 +259,40 @@ export default function CustomerOutStanding({
               ))}
 
               {}
+            </tbody> */}
+            <tbody className="tablebody">
+              {sortedData().length > 0 ? (
+                sortedData().map((item, index) => (
+                  <tr
+                    onClick={() => handleRowSelect(item.DC_Inv_No)}
+                    key={index}
+                    className={
+                      selectedRow === item.DC_Inv_No ? "selcted-row-clr" : ""
+                    }
+                  >
+                    <td style={{ whiteSpace: "nowrap" }}>{item.DC_InvType}</td>
+                    <td>{item.Inv_No}</td>
+                    <td>{item.InvoiceFor}</td>
+                    <td>
+                      {new Date(item.Inv_Date).toLocaleDateString("en-GB")}
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      {formatAmount(item.GrandTotal)}
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      {formatAmount(item.Balance)}
+                    </td>
+                    <td style={{ textAlign: "center" }}>{item.duedays}</td>
+                    <td>{item.DCStatus}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: "center" }}>
+                    No data for this DC_Inv Type
+                  </td>
+                </tr>
+              )}
             </tbody>
           </Table>
         </div>

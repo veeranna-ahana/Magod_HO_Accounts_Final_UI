@@ -37,6 +37,12 @@ export default function ShowSyncStatus() {
   const [mailModal, setMailModal] = useState(false);
   let storedUnitInvData = [];
 
+  const [matchedInvoicesHo, setmatchedInvoicesHo] = useState([]);
+  const [unmatchedInvoicesHO, setunmatchedInvoicesHo] = useState([]);
+
+  const matchedAndUnmatched = [];
+  const matchedAndUnmatchedForHO = [];
+
   const handleButtonClick = (e) => {
     if (getName) {
       fileInputRef.current.click();
@@ -346,7 +352,7 @@ export default function ShowSyncStatus() {
   }, [getHOInvoice]);
 
   useEffect(() => {
-    if (getUnitInvoice.length === 1) {
+    if (getHOInvoice.length === 1 && report) {
       HOCompare(report);
     }
   }, [report, getHOInvoice]);
@@ -362,114 +368,159 @@ export default function ShowSyncStatus() {
   const [matchedAndUnmatchedInvoices, setMatchedAndUnmatchedInvoices] =
     useState([]);
 
-  const [inv, setInv] = useState([]);
+  // const [inv, setInv] = useState([]);
+
+  // const compare = (report) => {
+  //   try {
+  //     if (getUnitInvoice.length === 1) {
+  //       const unitInvoices = getUnitInvoice[0].cmdInvList;
+  //       setInvPaymentVrList(getUnitInvoice[0].cmdInvPaymentVrList);
+
+  //       // Clear previously stored data
+  //       setMatchedAndUnmatchedInvoices([]);
+
+  //       // Iterate through unitInvoices
+  //       const leftTableData = unitInvoices.map((unitInv) => {
+  //         const matchedInv = getHOInvoice[0].cmdHoInvList.find(
+  //           (importInv) =>
+  //             parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
+  //             importInv.PymtAmtRecd === unitInv.PymtAmtRecd
+  //           // &&
+  //           // importInv.Cust_Code === unitInv.Cust_Code
+  //         );
+
+  //         console.log("matched invvvvvvv", matchedInv);
+
+  //         // Check if the invoice is unmatched
+  //         if (!matchedInv) {
+  //           count++;
+  //         }
+  //         return {
+  //           ...unitInv,
+  //           matched: !!matchedInv,
+  //         };
+  //       });
+  //       console.log("left tabel data length", leftTableData.length);
+  //       setMatchedAndUnmatchedInvoices(leftTableData);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  //   setUnmatchedCount(count);
+  // };
 
   const compare = (report) => {
-    try {
-      if (getUnitInvoice.length === 1) {
-        const unitInvoices = getUnitInvoice[0].cmdInvList;
-        setInvPaymentVrList(getUnitInvoice[0].cmdInvPaymentVrList);
+    if (getHOInvoice.length === 1) {
+      const hoInvoices = getHOInvoice[0].cmdHoInvList;
+      setInvPaymentVrListHO(getHOInvoice[0].cmdHoInvPaymentVrList);
+      // Identify invoices in unitInvoices that are not in report.open_inv
+      hoInvoices.forEach((unitInv) => {
+        const matchedInv = getUnitInvoice[0].cmdInvList.find(
+          (importInv) =>
+            parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
+            importInv.PymtAmtRecd === unitInv.PymtAmtRecd &&
+            importInv.Cust_Code === unitInv.Cust_Code
+        );
 
-        // Clear previously stored data
-        setMatchedAndUnmatchedInvoices([]);
-
-        // Iterate through unitInvoices
-        const zx = unitInvoices.map((unitInv) => {
-          const matchedInv = getHOInvoice[0].cmdHoInvList.find(
-            (importInv) =>
-              parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
-              importInv.PymtAmtRecd === unitInv.PymtAmtRecd
-          );
-
-          // Check if the invoice is unmatched
-          if (!matchedInv) {
-            count++;
-          }
-          return {
+        if (matchedInv) {
+          // Invoice is matched, add to matchedInvoices array
+          //  matchedInvoicesHo.push({ ...unitInv, matchedInv });
+          matchedAndUnmatched.push({
             ...unitInv,
-            matched: !!matchedInv,
-          };
-        });
-        setMatchedAndUnmatchedInvoices(zx);
-      }
-    } catch (error) {
-      console.error(error);
+            matchedInv,
+            status: "matched",
+          });
+        } else {
+          // Invoice is unmatched, add to unmatchedInvoices array
+          // unmatchedInvoicesHO.push(unitInv);
+          matchedAndUnmatched.push({ ...unitInv, status: "unmatched" });
+          count++;
+          setUnmatchedCount(count);
+        }
+        setMatchedAndUnmatchedInvoices(matchedAndUnmatched);
+      });
+
+      // Now matchedInvoices contains the matched invoices along with their corresponding importInv
+
+      console.log("countttt", unmatchedCount);
+
+      // Now unmatchedInvoices contains the invoices present in unitInvoices but not in report.open_inv
+    } else {
+      console.log("there is no length");
     }
-    setUnmatchedCount(count);
   };
-  console.log("unmatchedCount count", unmatchedCount);
-
-  // const HOCompare = (report) => {
-  //   if (getHOInvoice.length === 1) {
-  //     const hoInvoices = getHOInvoice[0].cmdHoInvList;
-  //     setInvPaymentVrListHO(getHOInvoice[0].cmdHoInvPaymentVrList);
-  //     // Identify invoices in unitInvoices that are not in report.open_inv
-  //     hoInvoices.forEach((unitInv) => {
-  //       const matchedInv = getUnitInvoice[0].cmdInvList.find(
-  //         (importInv) =>
-  //           parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
-  //           importInv.PymtAmtRecd === unitInv.PymtAmtRecd
-  //       );
-
-  //       // const matchedInv = report.open_inv.find(
-  //       //   (importInv) =>
-  //       //     parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
-  //       //     importInv.PymtAmtRecd === unitInv.PymtAmtRecd
-  //       // );
-
-  //       if (matchedInv) {
-  //         // Invoice is matched, add to matchedInvoices array
-  //         matchedInvoicesHo.push({ ...unitInv, matchedInv });
-  //       } else {
-  //         // Invoice is unmatched, add to unmatchedInvoices array
-  //         unmatchedInvoicesHO.push(unitInv);
-  //       }
-  //     });
-
-  //     // Now matchedInvoices contains the matched invoices along with their corresponding importInv
-  //     console.log("matchedInvoicesHo", matchedInvoicesHo);
-
-  //     // Now unmatchedInvoices contains the invoices present in unitInvoices but not in report.open_inv
-  //     console.log("unmatchedInvoicesHO", unmatchedInvoicesHO);
-  //   } else {
-  //     console.log("there is no length");
-  //   }
-  // };
 
   const [matchedAndUnmatchedHOInvoices, setMatchedAndUnmatchedHOInvoices] =
     useState([]);
-  console.log("An getHOInvoice:", inv);
+
+  // const HOCompare = (report) => {
+  //   try {
+  //     if (getHOInvoice.length === 1) {
+  //       const hoInvoices = getHOInvoice[0].cmdHoInvList;
+  //       setInvPaymentVrListHO(getHOInvoice[0].cmdHoInvPaymentVrList);
+  //       // Identify invoices in unitInvoices that are not in report.open_inv
+  //       const matchedAndUnmatchedInvoices = hoInvoices.map((unitInv) => {
+  //         const matchedInv = report.open_inv.find(
+  //           (importInv) =>
+  //             parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
+  //             importInv.PymtAmtRecd === unitInv.PymtAmtRecd
+  //         );
+
+  //         return {
+  //           ...unitInv,
+  //           matched: !!matchedInv,
+  //         };
+  //       });
+
+  //       setMatchedAndUnmatchedHOInvoices(matchedAndUnmatchedInvoices);
+  //     } else {
+  //       console.log("there is no length");
+  //     }
+  //   } catch (error) {
+  //     console.error("An error occurred in Ho information table:", error);
+  //   }
+  // };
 
   const HOCompare = (report) => {
-    try {
-      if (getHOInvoice.length === 1) {
-        const hoInvoices = getHOInvoice[0].cmdHoInvList;
-        setInvPaymentVrListHO(getHOInvoice[0].cmdHoInvPaymentVrList);
-        // Identify invoices in unitInvoices that are not in report.open_inv
-        const matchedAndUnmatchedInvoices = hoInvoices.map((unitInv) => {
-          const matchedInv = report.open_inv.find(
+    console.log("resport inv ", report);
+    if (report.open_inv && getHOInvoice.length === 1) {
+      const hOInvoices = getHOInvoice[0].cmdHoInvList;
+      setInvPaymentVrList(getUnitInvoice[0].cmdInvPaymentVrList);
+      // Identify invoices in unitInvoices that are not in report.open_inv
+      hOInvoices.forEach((unitInv) => {
+        const matchedInv =
+          report.open_inv &&
+          report.open_inv.find(
             (importInv) =>
               parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
               importInv.PymtAmtRecd === unitInv.PymtAmtRecd
           );
+        console.log("matched HO Inv", matchedInv);
 
-          return {
+        if (matchedInv) {
+          // Invoice is matched, add to matchedInvoices array
+          matchedAndUnmatchedForHO.push({
             ...unitInv,
-            matched: !!matchedInv,
-          };
-        });
+            matchedInv,
+            status: "matched",
+          });
+        } else {
+          // Invoice is unmatched, add to unmatchedInvoices array
+          matchedAndUnmatchedForHO.push({
+            ...unitInv,
+            matchedInv,
+            status: "unmatched",
+          });
+        }
+      });
 
-        setMatchedAndUnmatchedHOInvoices(matchedAndUnmatchedInvoices);
-      } else {
-        console.log("there is no length");
-      }
-    } catch (error) {
-      console.error("An error occurred in Ho information table:", error);
+      setMatchedAndUnmatchedHOInvoices(matchedAndUnmatchedForHO);
+    } else {
+      console.log("there is no length");
     }
   };
 
   const selectedRowFun = (item, index, color) => {
-    console.log("color", color);
     let list = { ...item, index };
     setSelectRow(list);
     setSelectedRowColor(color);
@@ -477,9 +528,6 @@ export default function ShowSyncStatus() {
     if (color == "#f48483") {
       toast.error("This Inv does not exist in HO DB");
       const dcInvNo = list.DC_Inv_No;
-
-      console.log("dcNo", dcInvNo);
-      console.log("unit", getName);
 
       axios
         .put(baseURL + `/showSyncStatus/updateUnmatchedRowsOfUnit/`, {
@@ -593,7 +641,6 @@ export default function ShowSyncStatus() {
     startIndex,
     endIndex
   );
-  // const currentPageData = inv.slice(startIndex, endIndex);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -626,11 +673,11 @@ export default function ShowSyncStatus() {
     setSortConfig({ key, direction });
   };
 
-  console.log("setconfirg unit", sortConfig);
   //For unit information
   const sortedData = () => {
     console.log("key fro unit soted", key);
-    const dataCopy1 = [...currentPageData];
+    // const dataCopy1 = [...currentPageData];
+    const dataCopy1 = [...matchedAndUnmatchedInvoices];
 
     if (sortConfig.key) {
       dataCopy1.sort((a, b) => {
@@ -667,7 +714,8 @@ export default function ShowSyncStatus() {
 
   const sortedDataForHO = () => {
     console.log("key fro ho.......", key);
-    const dataCopy = [...currentPageDataHO];
+    // const dataCopy = [...currentPageDataHO];
+    const dataCopy = [...matchedAndUnmatchedHOInvoices];
 
     if (sortConfigHO.key) {
       dataCopy.sort((a, b) => {
@@ -694,8 +742,6 @@ export default function ShowSyncStatus() {
     return dataCopy;
   };
 
-  console.log("sortConfig", sortConfigHO);
-
   const handleClose = () => {
     setMailModal(false);
     setMailAlert(false);
@@ -716,6 +762,71 @@ export default function ShowSyncStatus() {
   const handleFilterClick = () => {
     // Toggle the state between showing matched and unmatched data
     setShowMatchedData((prevShowMatchedData) => !prevShowMatchedData);
+  };
+
+  //seleect all table data by check box
+  const [selectAll, setSelectAll] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const toggleSelectAll = () => {
+    setSelectAll(!selectAll);
+    if (!selectAll) {
+      //   unitOutstandingData.forEach((item, index) => {
+      //     selectedRowFun(item, index);
+      //   });
+      //   setSelectedItems([
+      //     ...unitOutstandingData.map((item, index) => ({ ...item, index })),
+      //   ]);
+
+      const selectedRows = matchedAndUnmatchedInvoices.map((item, index) => ({
+        ...item,
+        index,
+      }));
+      setSelectRow(selectedRows);
+      setSelectedItems(selectedRows);
+    } else {
+      // Deselect all rows
+      setSelectRow({});
+    }
+  };
+  useEffect(() => {
+    if (selectAll) {
+      copyToClipboard();
+    }
+  }, [selectAll]);
+
+  const copyToClipboard = () => {
+    const copyText = selectedItems
+      .map((item) => Object.values(item).join("\t"))
+      .join("\n");
+    navigator.clipboard
+      .writeText(copyText)
+      .then(() => {
+        // console.log("Copied to clipboard");
+        toast.success("Data copied to clipboard");
+      })
+      .catch((err) => {
+        // console.error("Could not copy to clipboard", err);
+        toast.error("Failed to copy data to clipboard");
+      });
+  };
+
+  const [selectAllForRightTable, setSelectAllForRightTable] = useState(false);
+  const [selectedItemsForRightTable, setSelectedItemsForRightTable] = useState(
+    []
+  );
+  const toggleSelectAllForRightTable = () => {
+    setSelectAllForRightTable(!selectAllForRightTable);
+    if (!selectAllForRightTable) {
+      const selectedRows = unitOutstandingData.map((item, index) => ({
+        ...item,
+        index,
+      }));
+      setSelectRow(selectedRows);
+      setSelectedItems(selectedRows);
+    } else {
+      // Deselect all rows
+      setSelectRow({});
+    }
   };
 
   return (
@@ -874,6 +985,13 @@ export default function ShowSyncStatus() {
                   <Table striped className="table-data border mt-1">
                     <thead className="tableHeaderBGColor">
                       <tr style={{ whiteSpace: "nowrap" }}>
+                        <th>
+                          <input
+                            type="checkbox"
+                            checked={selectAll}
+                            onChange={toggleSelectAll}
+                          />
+                        </th>
                         <th onClick={() => requestSort("DC_InvType")}>
                           Inv Type
                         </th>
@@ -897,26 +1015,54 @@ export default function ShowSyncStatus() {
                     <tbody className="tablebody">
                       {sortedData()?.map((unitInv, index) => (
                         <tr
+                          // style={{
+                          //   backgroundColor: unitInv.matched
+                          //     ? "#92ec93"
+                          //     : "#f48483",
+                          //   whiteSpace: "nowrap",
+                          // }}
                           key={index}
                           style={{
-                            backgroundColor: unitInv.matched
-                              ? "#92ec93"
-                              : "#f48483",
+                            backgroundColor:
+                              unitInv.status === "matched"
+                                ? "#92ec93"
+                                : "#f48483",
                           }}
                           onClick={() =>
                             selectedRowFun(
                               unitInv,
                               index,
-                              unitInv.matched ? "#92ec93" : "#f48483"
+                              unitInv.status === "matched"
+                                ? "#92ec93"
+                                : "#f48483"
                             )
                           }
                           className={
-                            index === selectRow?.index ? "selcted-row-clr" : ""
+                            index === selectRow?.index
+                              ? "selcted-row-clr"
+                              : "" || selectAll
+                              ? "selcted-row-clr"
+                              : index === selectRow?.index
+                              ? "selcted-row-clr"
+                              : ""
                           }
+                          // className={
+                          //   selectAll
+                          //     ? "selcted-row-clr"
+                          //     : index === selectRow?.index
+                          //     ? "selcted-row-clr"
+                          //     : ""
+                          // }
                         >
+                          <td></td>
                           <td>{unitInv.DC_InvType}</td>
                           <td>{unitInv.Inv_No}</td>
-                          <td>{formatDate(unitInv.Dc_inv_Date)}</td>
+                          {/* <td>{unitInv.DC_Date}</td> */}
+                          <td>
+                            {new Date(unitInv.DC_Date).toLocaleDateString(
+                              "en-GB"
+                            )}
+                          </td>
                           <td>{unitInv.InvTotal}</td>
                           <td>{unitInv.PymtAmtRecd}</td>
                           <td>{unitInv.Cust_Name}</td>
@@ -924,47 +1070,6 @@ export default function ShowSyncStatus() {
                         </tr>
                       ))}
                     </tbody>
-                    {/* <tbody className="tablebody">
-                      {sortedData()?.map(
-                        ({ unitInv, matchedInv, isMatched }, index) => {
-                          // Check if to display matched or unmatched data based on the state
-                          if (showMatchedData === isMatched) {
-                            return (
-                              <tr
-                                key={index}
-                                style={{
-                                  backgroundColor: isMatched
-                                    ? "#92ec93"
-                                    : "#f48483",
-                                }}
-                                onClick={() =>
-                                  selectedRowFun(
-                                    unitInv,
-                                    index,
-                                    isMatched ? "#92ec93" : "#f48483"
-                                  )
-                                }
-                                className={
-                                  index === selectRow?.index
-                                    ? "selcted-row-clr"
-                                    : ""
-                                }
-                              >
-                                <td>{unitInv.DC_InvType}</td>
-                                <td>{unitInv.Inv_No}</td>
-                                <td>{formatDate(unitInv.Dc_inv_Date)}</td>
-                                <td>{unitInv.InvTotal}</td>
-                                <td>{unitInv.PymtAmtRecd}</td>
-                                <td>{unitInv.Cust_Name}</td>
-                                <td>{unitInv.DCStatus}</td>
-                              </tr>
-                            );
-                          } else {
-                            return null; // Return null for rows that should not be displayed
-                          }
-                        }
-                      )}
-                    </tbody> */}
                   </Table>
                 </div>
 
@@ -986,6 +1091,20 @@ export default function ShowSyncStatus() {
                         <th style={{ whiteSpace: "nowrap" }}>Amt Received</th>
                         <th>Customer</th>
                         <th style={{ whiteSpace: "nowrap" }}>Inv Status</th> */}
+                        {/* <th>
+                          <input
+                            type="checkbox"
+                            checked={selectAll}
+                            onChange={toggleSelectAllForRightTable}
+                          />
+                        </th> */}
+                        <th>
+                          <input
+                            type="checkbox"
+                            checked={selectAllForRightTable}
+                            onChange={toggleSelectAllForRightTable}
+                          />
+                        </th>
 
                         <th onClick={() => requestSortHO("DC_InvType")}>
                           Inv Type
@@ -1015,11 +1134,11 @@ export default function ShowSyncStatus() {
                       {sortedDataForHO().map((item, index) => (
                         <tr
                           key={index}
-                          style={{
-                            backgroundColor: item.matched
-                              ? "#92ec93"
-                              : "#f48483",
-                          }}
+                          // style={{
+                          //   backgroundColor: item.matched
+                          //     ? "#92ec93"
+                          //     : "#f48483",
+                          // }}
                           onClick={() =>
                             selectedRowFunHO(
                               item,
@@ -1027,12 +1146,17 @@ export default function ShowSyncStatus() {
                               item.matched ? "#92ec93" : "#f48483"
                             )
                           }
+                          style={{
+                            backgroundColor:
+                              item.status === "matched" ? "#92ec93" : "#f48483",
+                          }}
                           className={
                             index === selectRowHO?.index
                               ? "selcted-row-clr"
                               : ""
                           }
                         >
+                          <td></td>
                           <td>{item.DC_InvType}</td>
                           <td>{item.Inv_No}</td>
                           <td>{formatDate(item.DC_Date)}</td>
@@ -1051,7 +1175,7 @@ export default function ShowSyncStatus() {
                 </div>
               </div>
               <div className="d-flex  " style={{ gap: "250px" }}>
-                <ReactPaginate
+                {/* <ReactPaginate
                   previousLabel={"previous"}
                   nextLabel={"next"}
                   breakLabel={"..."}
@@ -1064,9 +1188,9 @@ export default function ShowSyncStatus() {
                   containerClassName={"paginationUnit"}
                   subContainerClassName={"pages pagination"}
                   activeClassName={"active"}
-                />
+                /> */}
 
-                <ReactPaginate
+                {/* <ReactPaginate
                   previousLabel={"previous"}
                   nextLabel={"next"}
                   breakLabel={"..."}
@@ -1079,7 +1203,7 @@ export default function ShowSyncStatus() {
                   containerClassName={"paginationHO"}
                   subContainerClassName={"pages pagination"}
                   activeClassName={"active"}
-                />
+                /> */}
               </div>
               {/* Table3 and table4 */}
 
