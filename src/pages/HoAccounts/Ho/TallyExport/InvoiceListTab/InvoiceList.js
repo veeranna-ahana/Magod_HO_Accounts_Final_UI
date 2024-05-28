@@ -1055,9 +1055,12 @@ export default function InvoiceList({
 
   if (exportTally) {
     // handleExport();
-    createXmlForEachData();
+    // createXmlForEachData();
   }
 
+  useEffect(() => {
+    companyFromTally();
+  }, []);
   const [taxTable, setTaxTable] = useState();
   const tableRowSelect = (item, index) => {
     let list = { ...item, index: index };
