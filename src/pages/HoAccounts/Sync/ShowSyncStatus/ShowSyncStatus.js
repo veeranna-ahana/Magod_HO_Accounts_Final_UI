@@ -802,11 +802,11 @@ export default function ShowSyncStatus() {
       .writeText(copyText)
       .then(() => {
         // console.log("Copied to clipboard");
-        toast.success("Data copied to clipboard");
+        // toast.success("Data copied to clipboard");
       })
       .catch((err) => {
         // console.error("Could not copy to clipboard", err);
-        toast.error("Failed to copy data to clipboard");
+        // toast.error("Failed to copy data to clipboard");
       });
   };
 
@@ -817,17 +817,39 @@ export default function ShowSyncStatus() {
   const toggleSelectAllForRightTable = () => {
     setSelectAllForRightTable(!selectAllForRightTable);
     if (!selectAllForRightTable) {
-      const selectedRows = unitOutstandingData.map((item, index) => ({
+      const selectedRows = matchedAndUnmatchedHOInvoices.map((item, index) => ({
         ...item,
         index,
       }));
-      setSelectRow(selectedRows);
-      setSelectedItems(selectedRows);
+      setSelectRowHO(selectedRows);
+      setSelectedItemsForRightTable(selectedRows);
     } else {
       // Deselect all rows
-      setSelectRow({});
+      setSelectRowHO({});
     }
   };
+
+  const copyToClipboardRight_Table = () => {
+    const copyText = selectedItems
+      .map((item) => Object.values(item).join("\t"))
+      .join("\n");
+    navigator.clipboard
+      .writeText(copyText)
+      .then(() => {
+        // console.log("Copied to clipboard");
+        toast.success("Data copied to clipboard");
+      })
+      .catch((err) => {
+        // console.error("Could not copy to clipboard", err);
+        //toast.error("Failed to copy data to clipboard");
+      });
+  };
+
+  useEffect(() => {
+    if (selectAllForRightTable) {
+      copyToClipboardRight_Table();
+    }
+  }, [selectAllForRightTable]);
 
   return (
     <div style={{ height: "85vh", padding: "10px", overflowY: "scroll" }}>
@@ -1153,8 +1175,21 @@ export default function ShowSyncStatus() {
                           className={
                             index === selectRowHO?.index
                               ? "selcted-row-clr"
+                              : "" || selectAllForRightTable
+                              ? "selcted-row-clr"
+                              : index === selectRowHO?.index
+                              ? "selcted-row-clr"
                               : ""
                           }
+                          // className={
+                          //   index === selectRow?.index
+                          //     ? "selcted-row-clr"
+                          //     : "" || selectAll
+                          //     ? "selcted-row-clr"
+                          //     : index === selectRow?.index
+                          //     ? "selcted-row-clr"
+                          //     : ""
+                          // }
                         >
                           <td></td>
                           <td>{item.DC_InvType}</td>
