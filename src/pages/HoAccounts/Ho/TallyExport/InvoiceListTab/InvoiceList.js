@@ -35,19 +35,6 @@ export default function InvoiceList({
     }
   }, [selectedDate, exportTally, selectedUnitName]);
 
-  // useEffect(() => {
-  //   if (selectedDate && selectedUnitName && flag) {
-  //     const toastId = toast.success(" Loading...");
-  //     const interval = setInterval(() => {
-  //       toast.update(toastId, { progress: toast.progress + 1 });
-  //     }, 4000); // Update every second
-  //     setTimeout(() => {
-  //       clearInterval(interval);
-  //       toast.dismiss(toastId);
-  //     }, 15000);
-  //   }
-  // }, [selectedDate, flag, selectedUnitName]);
-
   const invoiceListSubmit = () => {
     axios
       .get(baseURL + "/tallyExport/getInvoiceData", {

@@ -226,7 +226,8 @@ export default function UnitDetails() {
     try {
       const response = await axios.get(baseURL + "/unitlist/getUnitData");
       if (response.data.Status === "Success") {
-        // console.log("dataaaa", response.data.Result);
+        console.log("dataaaa", response.data.Result);
+
         setGetUnit(response.data.Result);
       }
     } catch (err) {
@@ -356,6 +357,7 @@ export default function UnitDetails() {
     }
     return dataCopy;
   };
+
   return (
     <>
       {
@@ -382,6 +384,7 @@ export default function UnitDetails() {
 
       <div className="row">
         <h4 className="title">Unit Details</h4>
+        {/* <img src="https://i0.wp.com/picjumbo.com/wp-content/uploads/beautiful-green-field-scenery-free-photo.jpg?w=2210&quality=70" /> */}
       </div>
 
       <div className="row mb-2">
@@ -463,6 +466,17 @@ export default function UnitDetails() {
                     >
                       <td>{item.UnitID} </td>
                       <td>{item.UnitName} </td>
+                      {/* <td>
+                        {item.Logo && (
+                          <img
+                            src={`data:image/png;base64,${arrayBufferToBase64(
+                              item.Logo
+                            )}`}
+                            alt="Logo"
+                            style={{ maxWidth: "60px" }}
+                          />
+                        )}
+                      </td> */}
                     </tr>
                   </>
                 );
