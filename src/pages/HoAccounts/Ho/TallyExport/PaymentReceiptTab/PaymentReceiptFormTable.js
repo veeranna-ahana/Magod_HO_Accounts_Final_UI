@@ -23,12 +23,20 @@ export default function PaymentReceiptFormTable({
   const [companyAndGuid, setCompanyAndGuid] = useState([]);
   const [cmpName, setCmpName] = useState([]);
 
+  // useEffect(() => {
+  //   setExportTally(false);
+  //   if (selectedDate && selectedUnitName) {
+  //     PaymentReceiptSubmit();
+  //   }
+  // }, [selectedDate, exportTally, selectedUnitName]);
   useEffect(() => {
+    setPaymentReceiptDetails([]);
     setExportTally(false);
-    if (selectedDate && selectedUnitName) {
+
+    if (flag) {
       PaymentReceiptSubmit();
     }
-  }, [selectedDate, exportTally, selectedUnitName]);
+  }, [selectedDate, selectedUnitName, flag]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,11 +75,11 @@ export default function PaymentReceiptFormTable({
         } // Pass selectedDate as a query parameter
       )
       .then((res) => {
-        console.log("Paymnet Receipnt", res.data.Result[0]);
+        console.log("Paymnet Receipnt", res.data.Result);
         if (res.data.Result.length > 0) {
           setPaymentReceiptDetails(res.data.Result);
         } else {
-          setPaymentReceiptDetails([]);
+          //setPaymentReceiptDetails([]);
         }
       })
       .catch((err) => {
@@ -282,11 +290,15 @@ export default function PaymentReceiptFormTable({
 
     const formattedDate = `${day}_${month}_${year}`;
 
+    const formattedDate2 = selectedDate
+      ? selectedDate.split("-").reverse().join("_")
+      : "";
+
     const blob = new Blob([xml], { type: "application/xml" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `Jigani_Receipt_Vouchers_${formattedDate}.xml`;
+    a.download = `Jigani_Receipt_Vouchers_${formattedDate2}.xml`;
     a.click();
     window.URL.revokeObjectURL(url);
 
@@ -294,7 +306,7 @@ export default function PaymentReceiptFormTable({
     formData.append(
       "xmlFile",
       blob,
-      `Jigani_Receipt_Vouchers_${formattedDate}.xml`
+      `Jigani_Receipt_Vouchers_${formattedDate2}.xml`
     );
 
     //await exportPaymentReceipts(formData);
@@ -628,6 +640,11 @@ export default function PaymentReceiptFormTable({
 
             {
               <tbody className="tablebody">
+                {sortedData().length === 0 && (
+                  <tr style={{ textAlign: "center" }}>
+                    <td colSpan="11">No data found!</td>
+                  </tr>
+                )}
                 {flag &&
                   sortedData().map((item, key) => {
                     return (
@@ -774,44 +791,45 @@ export default function PaymentReceiptFormTable({
               </thead>
 
               <tbody className="tablebody">
-                {sortedDataTax().map((item, key) => {
-                  return (
-                    <tr
-                      style={{ whiteSpace: "nowrap" }}
-                      onClick={() => tableRowSelect(item, key)}
-                      className={
-                        key === taxTable?.index ? "selcted-row-clr" : ""
-                      }
-                    >
-                      <td>{item.RefNo}</td>
-                      <td>{item.Inv_Type}</td>
+                {paymentReceiptDetails.length > 0 &&
+                  sortedDataTax().map((item, key) => {
+                    return (
+                      <tr
+                        style={{ whiteSpace: "nowrap" }}
+                        onClick={() => tableRowSelect(item, key)}
+                        className={
+                          key === taxTable?.index ? "selcted-row-clr" : ""
+                        }
+                      >
+                        <td>{item.RefNo}</td>
+                        <td>{item.Inv_Type}</td>
 
-                      <td>
-                        {new Date(item.Inv_date).toLocaleDateString("en-GB")}
-                      </td>
-                      <td>{item.Inv_Amount}</td>
-                      <td>{item.Receive_Now}</td>
-                      <td>{item.Id}</td>
-                      <td>{item.PvrId}</td>
-                      <td>{item.Unitname}</td>
-                      <td>{item.RecdPVID}</td>
-                      <td></td>
-                      <td>{item.Unit_UId}</td>
-                      <td>{item.HOPrvId}</td>
-                      <td>{item.RecdPvSrl}</td>
-                      <td>{}</td>
-                      <td>{item.Dc_inv_no}</td>
-                      <td>{item.Inv_No}</td>
-                      <td>{item.Inv_Type}</td>
-                      <td>{item.Amt_received}</td>
-                      <td>{<input type="checkBox" />}</td>
-                      <td>{<input type="checkBox" />}</td>
-                      <td>{item.voucher_type}</td>
-                      <td>{item.PreFix}</td>
-                      <td>{item.LedgerName}</td>
-                    </tr>
-                  );
-                })}
+                        <td>
+                          {new Date(item.Inv_date).toLocaleDateString("en-GB")}
+                        </td>
+                        <td>{item.Inv_Amount}</td>
+                        <td>{item.Receive_Now}</td>
+                        <td>{item.Id}</td>
+                        <td>{item.PvrId}</td>
+                        <td>{item.Unitname}</td>
+                        <td>{item.RecdPVID}</td>
+                        <td></td>
+                        <td>{item.Unit_UId}</td>
+                        <td>{item.HOPrvId}</td>
+                        <td>{item.RecdPvSrl}</td>
+                        <td>{}</td>
+                        <td>{item.Dc_inv_no}</td>
+                        <td>{item.Inv_No}</td>
+                        <td>{item.Inv_Type}</td>
+                        <td>{item.Amt_received}</td>
+                        <td>{<input type="checkBox" />}</td>
+                        <td>{<input type="checkBox" />}</td>
+                        <td>{item.voucher_type}</td>
+                        <td>{item.PreFix}</td>
+                        <td>{item.LedgerName}</td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </Table>
           </div>

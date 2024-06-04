@@ -313,7 +313,10 @@ export default function PdfAdjustment({ data }) {
         <View style={styles.mrgnbttm}>
           <Text style={{ marginLeft: "65px" }}>
             <Text style={{ fontFamily: "Helvetica-Bold" }}>Date : </Text>
-            {currentDate}
+            {/* {currentDate} */}
+            {data.receipt_data.HoRefDate
+              ? data.receipt_data.HoRefDate
+              : currentDate}
           </Text>
           <Text style={{ marginLeft: "130px" }}>
             <Text style={{ fontFamily: "Helvetica-Bold" }}>Vide : </Text>{" "}
@@ -408,7 +411,10 @@ export default function PdfAdjustment({ data }) {
           <View style={styles.bttmgap}>
             <Text style={{ marginLeft: "65px" }}>
               <Text style={{ fontFamily: "Helvetica-Bold" }}>Date : </Text>
-              {currentDate}
+              {/* {currentDate} */}
+              {data.receipt_data.HoRefDate
+                ? data.receipt_data.HoRefDate
+                : currentDate}
             </Text>
           </View>
 
