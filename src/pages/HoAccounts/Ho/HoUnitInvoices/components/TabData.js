@@ -162,7 +162,7 @@ export default function TabData() {
     const selectedCustomer = selected[0];
 
     setSelectUnit(selected);
-    setUnit(selected[0].UnitName);
+    setUnit(selected[0]?.UnitName);
 
     setSelectedUnitName(selected);
   };
@@ -338,7 +338,7 @@ export default function TabData() {
                 name="flexRadioDefaultA1"
                 value="Profile"
                 onChange={handleRadioChange}
-                disabled={selectedDCType == "ALL"}
+                disabled={selectedDCType === "ALL"}
                 checked={selectedDCType === "ALL" ? false : flag === "Profile"}
               />
               <label

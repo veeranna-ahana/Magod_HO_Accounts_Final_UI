@@ -26,8 +26,6 @@ export default function CreateNewForm() {
 
   let sum = 0;
 
-  console.log("fixed onaccountttttttttttttt", fixedOnaccount);
-
   const [sumofReceive, setSumofReceive] = useState();
 
   const [hoprvid, setHoprvid] = useState(0);
@@ -62,7 +60,8 @@ export default function CreateNewForm() {
       RecdPVID: "",
       Recd_PVNo: "Draft",
       HO_PrvId: "",
-      HoRefDate: new Date().toLocaleDateString("en-GB").split("/").join("-"),
+      // HoRefDate: new Date().toLocaleDateString("en-GB").split("/").join("-"),
+      HoRefDate: adjustmentRows ? adjustmentRows.Formatted_Recd_PV_Date : "",
 
       HORefNo: "Draft",
       HORef: "Draft",
@@ -1438,6 +1437,7 @@ export default function CreateNewForm() {
     }
     return dataCopy;
   };
+
   return (
     <>
       {pdfVoucher && (
@@ -1488,7 +1488,11 @@ export default function CreateNewForm() {
 
         <div className="d-flex col-md-3" style={{ gap: "60px" }}>
           <label className="form-label">Date</label>
-          <input class="in-field" value={inputValue} />
+          <input
+            class="in-field"
+            // value={inputValue}
+            value={rvData.postData.HoRefDate}
+          />
         </div>
 
         <div className="d-flex col-md-3" style={{ gap: "10px" }}>
