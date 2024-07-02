@@ -69,10 +69,9 @@ export default function InvoiceSummary({ getInvoiceValues }) {
     <div>
       <div
         style={{
-          height: "260px",
+          height: "380px",
           overflowY: "scroll",
           overflowX: "scroll",
-          marginTop: "20px",
         }}
       >
         <Table striped className="table-data border" style={{ border: "1px" }}>
