@@ -55,7 +55,8 @@ export default function Draft_List() {
       navigate("/HOAccounts/HO/HOPRV/CreateNew", {
         state: {
           HOPrvId: selectRow.HOPrvId,
-          unitname: selectRow.Unitname // assuming you have unitname variable defined
+          unitname: selectRow.Unitname, // assuming you have unitname variable defined
+          date: selectRow.HoRefDate,
         },
       });
     } else {

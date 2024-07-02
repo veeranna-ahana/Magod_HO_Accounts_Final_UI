@@ -15,11 +15,14 @@ export default function OpenNavigatorForPRV() {
   const location = useLocation();
 
   // const rowData = location.state ? location.state : "";
-  const { HOPrvId, unitname } = location.state ? location.state : {};
+  const { HOPrvId, unitname, date } = location.state ? location.state : {};
   const rowData = HOPrvId ? HOPrvId : "";
   const unitFromDraft = unitname ? unitname : "";
+  const voucherDate = date ? date : "";
 
-  console.log("row dataaaa", rowData, unitname);
+  const vdate = new Date(voucherDate).toLocaleDateString("en-GB");
+
+  console.log("row dataaaa", rowData, unitname, voucherDate, vdate);
 
   const [hoprvid, setHoprvid] = useState(0);
   const [getUnit, setGetUnit] = useState("");
@@ -65,6 +68,7 @@ export default function OpenNavigatorForPRV() {
       PVSrlID: "",
       InvUpdated: 0,
       Sync_Hold: 0,
+      vdate: vdate,
     },
 
     data: {
@@ -656,7 +660,11 @@ export default function OpenNavigatorForPRV() {
 
         <div className="d-flex col-md-2" style={{ gap: "60px" }}>
           <label className="form-label">Date</label>
-          <input className="in-field" value={inputValue} />
+          <input
+            className="in-field"
+            value={vdate}
+            // value={{ new Date(voucherDate).toLocaleDateString("en-GB") }}
+          />
         </div>
 
         <div className="d-flex col-md-3" style={{ gap: "10px" }}>

@@ -316,7 +316,7 @@ export default function PdfAdjustment({ data }) {
             {/* {currentDate} */}
             {data.receipt_data.HoRefDate
               ? data.receipt_data.HoRefDate
-              : currentDate}
+              : data.receipt_data.vdate}
           </Text>
           <Text style={{ marginLeft: "130px" }}>
             <Text style={{ fontFamily: "Helvetica-Bold" }}>Vide : </Text>{" "}
@@ -414,7 +414,7 @@ export default function PdfAdjustment({ data }) {
               {/* {currentDate} */}
               {data.receipt_data.HoRefDate
                 ? data.receipt_data.HoRefDate
-                : currentDate}
+                : data.receipt_data.vdate}
             </Text>
           </View>
 

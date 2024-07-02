@@ -56,6 +56,7 @@ export default function PRV_List() {
         state: {
           HOPrvId: selectRow.HOPrvId,
           unitname: selectRow.Unitname, // assuming you have unitname variable defined
+          date: selectRow.HoRefDate,
         },
       });
     } else {
