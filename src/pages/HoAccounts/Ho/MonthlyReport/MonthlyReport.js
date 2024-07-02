@@ -403,7 +403,7 @@ export default function MonthlyReport() {
       </div> */}
 
       <div>
-        <Tabs style={{ display: "flex", fontSize: "10.7px" }}>
+        <Tabs className="mb-1" style={{ display: "flex", fontSize: "10.7px" }}>
           <Tab eventKey="invoiceSummary" title="Invoice Summary">
             <InvoiceSummary getInvoiceValues={getInvoiceValues} />
           </Tab>

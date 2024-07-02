@@ -59,11 +59,10 @@ export default function CollectionSummary({ getCollectionValues }) {
     <div>
       <div
         style={{
-          height: "260px",
+          height: "380px",
           width: "400px",
           overflowY: "scroll",
           overflowX: "scroll",
-          marginTop: "20px",
         }}
       >
         <Table striped className="table-data border" style={{ border: "1px" }}>
