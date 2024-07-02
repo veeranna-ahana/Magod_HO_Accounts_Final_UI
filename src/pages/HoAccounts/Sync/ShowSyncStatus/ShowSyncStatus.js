@@ -411,11 +411,11 @@ export default function ShowSyncStatus() {
 
   const compare = (report) => {
     if (getHOInvoice.length === 1) {
-      const hoInvoices = getHOInvoice[0].cmdHoInvList;
-      setInvPaymentVrListHO(getHOInvoice[0].cmdHoInvPaymentVrList);
+      const hoInvoices = getHOInvoice[0]?.cmdHoInvList;
+      setInvPaymentVrListHO(getHOInvoice[0]?.cmdHoInvPaymentVrList );
       // Identify invoices in unitInvoices that are not in report.open_inv
       hoInvoices.forEach((unitInv) => {
-        const matchedInv = getUnitInvoice[0].cmdInvList.find(
+        const matchedInv = getUnitInvoice[0]?.cmdInvList.find(
           (importInv) =>
             parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
             importInv.PymtAmtRecd === unitInv.PymtAmtRecd &&
@@ -484,8 +484,8 @@ export default function ShowSyncStatus() {
   const HOCompare = (report) => {
     console.log("resport inv ", report);
     if (report.open_inv && getHOInvoice.length === 1) {
-      const hOInvoices = getHOInvoice[0].cmdHoInvList;
-      setInvPaymentVrList(getUnitInvoice[0].cmdInvPaymentVrList);
+      const hOInvoices = getHOInvoice[0]?.cmdHoInvList;
+      setInvPaymentVrList(getUnitInvoice[0]?.cmdInvPaymentVrList);
       // Identify invoices in unitInvoices that are not in report.open_inv
       hOInvoices.forEach((unitInv) => {
         const matchedInv =
@@ -495,7 +495,7 @@ export default function ShowSyncStatus() {
               parseInt(importInv.DC_Inv_No) === parseInt(unitInv.DC_Inv_No) &&
               importInv.PymtAmtRecd === unitInv.PymtAmtRecd
           );
-        console.log("matched HO Inv", matchedInv);
+        //   console.log("matched HO Inv", matchedInv);
 
         if (matchedInv) {
           // Invoice is matched, add to matchedInvoices array
@@ -547,7 +547,7 @@ export default function ShowSyncStatus() {
   //Unit paymentVr
   const selectedPaymentVr = [];
   for (const paymentVr of invPaymentVrList) {
-    if (paymentVr.dc_inv_no == selectRow.DC_Inv_No) {
+    if (paymentVr.dc_inv_no === selectRow.DC_Inv_No) {
       console.log("unit dc no", paymentVr.dc_inv_no, selectRow.DC_Inv_No);
       selectedPaymentVr.push(paymentVr);
       console.log("unit second table", selectedPaymentVr);

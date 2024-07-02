@@ -14,11 +14,13 @@ export default function NewForm() {
   const location = useLocation();
 
   // const rowData = location.state ? location.state : "";
-  const { HOPrvId, unitname } = location.state ? location.state : {};
+  const { HOPrvId, unitname, date } = location.state ? location.state : {};
   const rowData = HOPrvId ? HOPrvId : "";
   const unitFromDraft = unitname ? unitname : "";
+  const voucherDate = date ? date : "";
 
-  console.log("row dataaaa", rowData, unitname);
+  console.log("row dataaaa", rowData, unitname, voucherDate);
+  const vdate = new Date(voucherDate).toLocaleDateString("en-GB");
 
   const [hoprvid, setHoprvid] = useState(0);
   const [getUnit, setGetUnit] = useState("");
@@ -37,6 +39,32 @@ export default function NewForm() {
   const [deleteOverAllData, setDeleteOverAllData] = useState(false);
   const [sumofReceive, setSumofReceive] = useState();
   let sum = 0;
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  // Create a new Date object
+  const currentDate = new Date();
+
+  // Get the various components of the date (day, month, year)
+  const day = currentDate.getDate();
+  const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January)
+  const year = currentDate.getFullYear();
+
+  // Format day, month, and year as two-digit strings
+  const formattedDay = day < 10 ? `0${day}` : day;
+  const formattedMonth = month < 10 ? `0${month}` : month;
+
+  // Create the formatted date string
+  const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
+
+  // Initialize a state variable to hold the input value
+  const [inputValue, setInputValue] = useState(formattedDate);
 
   const [rvData, setRvData] = useState({
     apiData: null,
@@ -62,6 +90,7 @@ export default function NewForm() {
       PVSrlID: "",
       InvUpdated: 0,
       Sync_Hold: 0,
+      vdate: rowData ? vdate : inputValue,
     },
 
     data: {
@@ -108,32 +137,6 @@ export default function NewForm() {
       rowDataFetch();
     }
   }, []);
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
-  // Create a new Date object
-  const currentDate = new Date();
-
-  // Get the various components of the date (day, month, year)
-  const day = currentDate.getDate();
-  const month = currentDate.getMonth() + 1; // Months are zero-based (0 = January)
-  const year = currentDate.getFullYear();
-
-  // Format day, month, and year as two-digit strings
-  const formattedDay = day < 10 ? `0${day}` : day;
-  const formattedMonth = month < 10 ? `0${month}` : month;
-
-  // Create the formatted date string
-  const formattedDate = `${formattedDay}/${formattedMonth}/${year}`;
-
-  // Initialize a state variable to hold the input value
-  const [inputValue, setInputValue] = useState(formattedDate);
 
   const handlePostModalClose = () => {
     setShowPostModal(false);
@@ -1207,7 +1210,12 @@ export default function NewForm() {
 
         <div className="d-flex col-md-2" style={{ gap: "60px" }}>
           <label className="form-label">Date</label>
-          <input className="in-field" value={inputValue} />
+          <input
+            className="in-field"
+            // value={inputValue}
+            value={rowData ? vdate : inputValue}
+            disabled
+          />
         </div>
 
         <div className="d-flex col-md-3" style={{ gap: "10px" }}>

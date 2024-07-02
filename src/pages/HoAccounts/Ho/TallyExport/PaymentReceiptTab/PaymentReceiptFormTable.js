@@ -60,7 +60,7 @@ export default function PaymentReceiptFormTable({
       }
     };
 
-    fetchData(); // Call the async function here
+    //fetchData(); // Call the async function here
   }, [selectedUnitName]);
 
   const PaymentReceiptSubmit = () => {

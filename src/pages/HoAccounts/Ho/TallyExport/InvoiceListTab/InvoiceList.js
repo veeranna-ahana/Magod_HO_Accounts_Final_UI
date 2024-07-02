@@ -680,21 +680,21 @@ export default function InvoiceList({
               let xmlVrAction, xmlVrtype, Narration, InvNo;
 
               switch (voucher.DC_InvType) {
-                case "SERVICE":
-                  xmlVrAction = `<VOUCHER REMOTEID=${voucher.PreFix} ${voucher.DC_Inv_No} VCHTYPE='Service' ACTION='Create'>`;
+                case "Service":
+                  xmlVrAction = `REMOTEID='${voucher.PreFix}${voucher.DC_Inv_No}' VCHTYPE='Service' ACTION='Create'`;
                   xmlVrtype = "Service";
                   Narration = `Our WO No: ${voucher.OrderNo} Packing Note No: ${voucher.DC_No}/ ${voucher.DC_Fin_Year}`;
                   InvNo = `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`;
                   break;
                 case "CombinedBill":
-                  xmlVrAction = `<VOUCHER REMOTEID='${voucher.PreFix}${voucher.DC_Inv_No}' VCHTYPE='CombinedBill' ACTION='Create'>`;
+                  xmlVrAction = `REMOTEID='${voucher.PreFix}${voucher.DC_Inv_No}' VCHTYPE='CombinedBill' ACTION='Create'`;
                   xmlVrtype = "CombinedBill";
                   Narration =
                     "Being Combined Bill for many Excise and Service invoices";
                   InvNo = `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`;
                   break;
                 default:
-                  xmlVrAction = `<VOUCHER REMOTEID=${voucher.PreFix}${voucher.DC_Inv_No} VCHTYPE='Sales' ACTION='Create'>`;
+                  xmlVrAction = `REMOTEID='${voucher.PreFix}${voucher.DC_Inv_No}' VCHTYPE='Sales' ACTION='Create'`;
                   xmlVrtype = "Sales";
                   Narration = `Our WO No: ${voucher.OrderNo} Packing Note No: ${voucher.DC_No}/ ${voucher.DC_Fin_Year}`;
                   InvNo = `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`;
@@ -756,12 +756,17 @@ export default function InvoiceList({
               const baseVoucher = {
                 _attributes: {
                   REMOTEID: `${voucher.PreFix}${voucher.DC_Inv_No}`,
-                  VCHTYPE: voucher.DC_InvType,
+                  VCHTYPE:
+                    voucher.DC_InvType === "Job Work"
+                      ? "Sales"
+                      : voucher.DC_InvType,
                   ACTION: "Create",
+                  // xmlVrAction,
                 },
                 DATE: voucher.Inv_Date.replace(/-/g, ""),
                 GUID: voucher.DC_Inv_No,
                 NARRATION: Narration,
+
                 VOUCHERTYPENAME: xmlVrtype,
                 VOUCHERNUMBER: InvNo,
                 REFERENCE: voucher.PO_No,
@@ -839,17 +844,19 @@ export default function InvoiceList({
     //createXmlForEachData;
     // exportInvoices(xml);
 
-    const cm = await companyFromTally();
-    if (cm === "companyExist") {
-      // createXmlForEachData();
-    }
+    // const cm = await companyFromTally();
+    // if (cm === "companyExist") {
+    //   // createXmlForEachData();
+    // } else {
+    //   alert("Company does not exist");
+    // }
   };
 
   //create  xml file for each row of invoicelistdata
   const createXmlForEachData = async () => {
     // Filter invoiceListData based on the condition voucher.DC_InvType === 'Sales'
     const filteredInvoices = invoiceListData.filter(
-      (voucher) => voucher.DC_InvType === "Job Work"
+      (voucher) => voucher.DC_InvType === "Sales"
     );
 
     const xmlResults = filteredInvoices.map((voucher) => {
@@ -1296,7 +1303,7 @@ export default function InvoiceList({
   }
 
   useEffect(() => {
-    companyFromTally();
+    //companyFromTally();
   }, []);
   const [taxTable, setTaxTable] = useState();
   const tableRowSelect = (item, index) => {
