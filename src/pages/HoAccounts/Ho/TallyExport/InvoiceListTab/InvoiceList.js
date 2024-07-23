@@ -159,13 +159,6 @@ export default function InvoiceList({
     return dateString;
   };
 
-  // useEffect(() => {
-
-  //   const timer = setTimeout(() => {
-  //     toast.success("Data being populated");
-  //   }, 4000); // Adjust the time delay (in milliseconds) as needed
-  // }, [flag]);
-
   useEffect(() => {
     if (selectedUnitName && selectedDate) {
       fetchAllTaxData();
@@ -448,6 +441,7 @@ export default function InvoiceList({
     // exportInvoices(xml);
 
     const cm = await companyFromTally();
+    console.log("cmppppp", cm);
     if (cm === "companyExist") {
       createXmlForEachData();
     } else {
@@ -455,6 +449,7 @@ export default function InvoiceList({
     }
   };
 
+  console.log("ccmmmmmmmmmm", cmpName);
   //create  xml file for each row of invoicelistdata
   const createXmlForEachData = async () => {
     // Filter invoiceListData based on the condition voucher.DC_InvType === 'Sales'
