@@ -104,7 +104,7 @@ export default function InvoiceList({
     if (companiesfromtally.data.company === "companyExist") {
       return companiesfromtally.data.company;
     } else if (companiesfromtally.data.company === "companyNot") {
-      toast.error(`Company Account Name and GUID Mismatch for ${cmpName}`);
+      //toast.error(`Company Account Name and GUID Mismatch for ${cmpName}`);
     }
 
     //return companiesfromtally;
@@ -897,7 +897,7 @@ export default function InvoiceList({
 
   if (exportTally) {
     handleExport();
-    // createXmlForEachData();
+    createXmlForEachData();
   }
 
   useEffect(() => {
