@@ -524,8 +524,7 @@ export default function PaymentReceiptFormTable({
     }
   };
   if (exportTally) {
-    handleExportPayment();
-    //createXmlForEachPaymentReceipt();
+    // handleExportPayment();
   }
 
   const [taxTable, setTaxTable] = useState();

@@ -24,15 +24,6 @@ export default function InvoiceList({
   const [selectedRow, setSelectedRow] = useState(null);
   // const [dummyArray] = useState([2147346988, 1234567890, 2147346982]);
   const [dummyArray] = useState([]);
-  console.log("flagggggg", flag);
-
-  // useEffect(() => {
-  //   setExportTally(false);
-
-  //   if (selectedDate && selectedUnitName) {
-  //     invoiceListSubmit();
-  //   }
-  // }, [selectedDate, exportTally, selectedUnitName]);
 
   useEffect(() => {
     setInvoiceListData([]);
@@ -65,7 +56,7 @@ export default function InvoiceList({
       });
   };
 
-  //get company namer and GUID
+  //get company name and GUID
 
   useEffect(() => {
     const fetchData = async () => {
@@ -419,14 +410,6 @@ export default function InvoiceList({
   const handleExport = async () => {
     const xml = tableToXml();
 
-    console.log("xml fileeeeeeeeeee", selectedDate);
-
-    // const currentDate = new Date();
-    // const day = currentDate.getDate().toString().padStart(2, "0");
-    // const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
-    // const year = currentDate.getFullYear();
-
-    // const formattedDate = `${day}_${month}_${year}`;
     const formattedDate2 = selectedDate
       ? selectedDate.split("-").reverse().join("_")
       : "";
@@ -439,12 +422,10 @@ export default function InvoiceList({
     a.click();
     window.URL.revokeObjectURL(url);
 
-    // exportInvoices(xml);
-
     const cm = await companyFromTally();
-    console.log("cmppppp", cm);
+
     if (cm === "companyExist") {
-      createXmlForEachData();
+      await createXmlForEachData();
     } else {
       alert("Company does not exist");
     }
@@ -651,8 +632,9 @@ export default function InvoiceList({
               REQUESTDESC: {
                 REPORTNAME: { _text: "Vouchers" },
                 STATICVARIABLES: {
-                  //SVCURRENTCOMPANY: { _text: cmpName },
-                  SVCURRENTCOMPANY: { _text: "Magod_Trial" },
+                  SVCURRENTCOMPANY: { _text: cmpName },
+                  // SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+                  //SVCURRENTCOMPANY: { _text: "Magod_trail" },
                 },
               },
               TALLYMESSAGE: {
@@ -714,15 +696,12 @@ export default function InvoiceList({
       // Handle error
     }
   };
-
-  if (exportTally) {
-    handleExport();
-    createXmlForEachData();
-  }
-
   useEffect(() => {
-    companyFromTally();
-  }, []);
+    if (exportTally) {
+      handleExport();
+    }
+  }, [exportTally]);
+
   const [taxTable, setTaxTable] = useState();
   const tableRowSelect = (item, index) => {
     let list = { ...item, index: index };
