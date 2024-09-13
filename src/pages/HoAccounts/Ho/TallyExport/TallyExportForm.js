@@ -26,7 +26,8 @@ export default function TallyExportForm() {
   // console.log("selcted date", selectedDate);
 
   const tallyExportSubmit = () => {
-    setExportTally(true);
+    // setExportTally(true);
+    setExportTally(!exportTally);
   };
 
   const navigate = useNavigate();
