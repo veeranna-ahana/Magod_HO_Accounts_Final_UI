@@ -35,7 +35,7 @@ export default function InvoiceList({
   }, [selectedDate, selectedUnitName, flag]);
 
   const invoiceListSubmit = () => {
-    toast.success("Loading...");
+    // toast.success("Loading...");
     axios
       .get(baseURL + "/tallyExport/getInvoiceData", {
         params: {
@@ -49,10 +49,9 @@ export default function InvoiceList({
         } else {
           setInvoiceListData([]);
         }
-        // console.log("inv ", res.data.Result);
       })
       .catch((err) => {
-        console.log("err", err);
+        // console.log("err", err);
       });
   };
 
@@ -86,22 +85,24 @@ export default function InvoiceList({
   //fetch the company from tally software
 
   const companyFromTally = async () => {
-    const companiesfromtally = await axios.post(
-      baseURL + "/tallyExport/getCompanyFromTally",
-      { cmp: cmpName }
-    );
+    try {
+      const companiesfromtally = await axios.post(
+        baseURL + "/tallyExport/getCompanyFromTally",
+        { cmp: cmpName }
+      );
 
-    console.log("cmp resultttt", companiesfromtally.data);
-    if (companiesfromtally.data.company === "companyExist") {
-      return companiesfromtally.data.company;
-    } else if (companiesfromtally.data.company === "companyNot") {
-      //toast.error(`Company Account Name and GUID Mismatch for ${cmpName}`);
+      console.log("cmp resultttt", companiesfromtally.data);
+      if (companiesfromtally.data.company === "companyExist") {
+        return companiesfromtally.data.company;
+      } else if (companiesfromtally.data.company === "companyNot") {
+        return companiesfromtally.data.company;
+      }
+    } catch (error) {
+      console.error("Error in companyFromTallyy:", error.response.data.message);
+      return error.response.data.message;
+      toast.error("Turn on Tally server");
     }
-
-    //return companiesfromtally;
   };
-
-  //console.log("com", companyAndGuid[0].Tally_account_Name);
 
   const invoiceTaxDetails = (dcNo) => {
     console.log("dc noo", dcNo);
@@ -408,30 +409,35 @@ export default function InvoiceList({
   };
 
   const handleExport = async () => {
-    const xml = tableToXml();
+    try {
+      const xml = tableToXml();
 
-    const formattedDate2 = selectedDate
-      ? selectedDate.split("-").reverse().join("_")
-      : "";
+      const formattedDate2 = selectedDate
+        ? selectedDate.split("-").reverse().join("_")
+        : "";
 
-    const blob = new Blob([xml], { type: "application/xml" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Jigani_Inv_Vouchers_${formattedDate2}.xml`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+      const blob = new Blob([xml], { type: "application/xml" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Jigani_Inv_Vouchers_${formattedDate2}.xml`;
+      a.click();
+      window.URL.revokeObjectURL(url);
 
-    const cm = await companyFromTally();
+      const cm = await companyFromTally();
 
-    if (cm === "companyExist") {
-      await createXmlForEachData();
-    } else {
-      alert("Company does not exist");
+      if (cm === "companyExist") {
+        await createXmlForEachData();
+      } else if (cm === "Tally_server_off") {
+        toast.warn("Turn on tally server");
+      } else if (cm === "companyNot") {
+        toast.warn("Company does not exist");
+      }
+    } catch (error) {
+      alert(`Error in handleExport: ${error.message}`);
     }
   };
 
-  console.log("ccmmmmmmmmmm", cmpName);
   //create  xml file for each row of invoicelistdata
   const createXmlForEachData = async () => {
     // Filter invoiceListData based on the condition voucher.DC_InvType === 'Sales'
@@ -445,7 +451,6 @@ export default function InvoiceList({
     });
 
     const concatenatedXml = xmlResults.join("");
-    // console.log("connnnnnnnxml,", concatenatedXml);
 
     await exportInvoices(concatenatedXml);
 
@@ -632,9 +637,9 @@ export default function InvoiceList({
               REQUESTDESC: {
                 REPORTNAME: { _text: "Vouchers" },
                 STATICVARIABLES: {
-                  SVCURRENTCOMPANY: { _text: cmpName },
+                  // SVCURRENTCOMPANY: { _text: cmpName },
                   // SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
-                  //SVCURRENTCOMPANY: { _text: "Magod_trail" },
+                  SVCURRENTCOMPANY: { _text: "Magod_Trail" },
                 },
               },
               TALLYMESSAGE: {
@@ -656,17 +661,13 @@ export default function InvoiceList({
 
   const guidsFromBackend = [];
   const exportInvoices = async (xml) => {
-    console.log("concanted xml", xml);
     const tallyUrl = "http://localhost:9000";
 
     try {
-      console.log("tally export11");
-
       const response = await axios.post(baseURL + "/tallyExport/exporttally", {
         xml: xml,
       });
 
-      console.log("response from tally", response);
       if (response.data.message === "Exception") {
         console.error("Failed to send XML data to Tally.");
       } else if (response.data.company === "companyNot") {

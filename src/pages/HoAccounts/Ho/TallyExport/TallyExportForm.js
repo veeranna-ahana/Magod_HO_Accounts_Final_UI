@@ -6,7 +6,7 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import axios from "axios";
 import { baseURL } from "../../../../api/baseUrl";
 
-export default function TallyExportForm() {
+export default function TallyExportForm({ handleExport }) {
   const [selectedDate, setSelectedDate] = useState();
   //const {setTallyDate}=useGlobalContext();
   const [flag, setFlag] = useState(false);
@@ -25,8 +25,7 @@ export default function TallyExportForm() {
   };
   // console.log("selcted date", selectedDate);
 
-  const tallyExportSubmit = () => {
-    // setExportTally(true);
+  const tallyExportSubmit = async () => {
     setExportTally(!exportTally);
   };
 
