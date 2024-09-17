@@ -22,8 +22,8 @@ export default function InvoiceList({
   const [cmpName, setCmpName] = useState([]);
 
   const [selectedRow, setSelectedRow] = useState(null);
-  // const [dummyArray] = useState([2147346988, 1234567890, 2147346982]);
-  const [dummyArray] = useState([]);
+  //const dummyArray = [2147388451, 2147388456, 2147388459, 2147388460];
+  const [dummyArray, setDummyArray] = useState([]);
 
   useEffect(() => {
     setInvoiceListData([]);
@@ -83,6 +83,7 @@ export default function InvoiceList({
   }, [selectedUnitName]);
 
   //fetch the company from tally software
+  console.log("cmpName ------", cmpName);
 
   const companyFromTally = async () => {
     try {
@@ -219,8 +220,8 @@ export default function InvoiceList({
             REQUESTDESC: {
               REPORTNAME: { _text: "Vouchers" },
               STATICVARIABLES: {
-                // SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
-                SVCURRENTCOMPANY: { _text: "Magod_Trial" },
+                SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+                // SVCURRENTCOMPANY: { _text: "Magod_Trail" },
               },
             },
             TALLYMESSAGE: invoiceListData.map((voucher, index) => {
@@ -438,38 +439,95 @@ export default function InvoiceList({
     }
   };
 
-  //create  xml file for each row of invoicelistdata
   const createXmlForEachData = async () => {
-    // Filter invoiceListData based on the condition voucher.DC_InvType === 'Sales'
-    const filteredInvoices = invoiceListData.filter(
+    // Filter invoiceListData based on the condition voucher.DC_InvType
+    const filteredSalesInvoices = invoiceListData.filter(
       (voucher) => voucher.DC_InvType === "Sales"
     );
 
-    const xmlResults = filteredInvoices.map((voucher) => {
-      return createXml([voucher]);
-      // Assuming createXml function accepts an array
+    const filteredServiceInvoices = invoiceListData.filter(
+      (voucher) => voucher.DC_InvType === "Service"
+    );
+
+    // Create XML for Sales invoices
+    const xmlResultsSales = filteredSalesInvoices.map((voucher) => {
+      // Create XML for each voucher
+      const xml = createXml([voucher]);
+
+      // Ensure xml is a string
+      if (Array.isArray(xml)) {
+        console.error("Error: XML data is an array. Converting to string.");
+        return xml[0] || ""; // Assuming the array has one item
+      }
+
+      const xmlString = typeof xml === "string" ? xml : JSON.stringify(xml);
+
+      // Remove newline characters and extra spaces
+      const formattedXmlData = xmlString.replace(/[\n\r]/g, "").trim();
+
+      return formattedXmlData;
     });
 
-    const concatenatedXml = xmlResults.join("");
+    // Create XML for Service invoices
+    const xmlResultsService = filteredServiceInvoices.map((voucher) => {
+      // Create XML for each voucher
+      const xml = createXml([voucher]);
 
-    await exportInvoices(concatenatedXml);
+      // Ensure xml is a string
+      if (Array.isArray(xml)) {
+        console.error("Error: XML data is an array. Converting to string.");
+        return xml[0] || ""; // Assuming the array has one item
+      }
 
-    // filtered service
+      const xmlString = typeof xml === "string" ? xml : JSON.stringify(xml);
 
-    // const filteredInvoicesService = invoiceListData.filter(
-    //   (voucher) => voucher.DC_InvType === "Service"
-    // );
+      // Remove newline characters and extra spaces
+      const formattedXmlData = xmlString.replace(/[\n\r]/g, "").trim();
 
-    // const xmlResultsService = filteredInvoicesService.map((voucher) => {
-    //   const xmlres = createXml([voucher]);
+      return formattedXmlData;
+    });
 
-    //   const concatenatedXml = xmlres.join("");
-    //   console.log("xmlllllllllllllllllll service ", concatenatedXml);
-    //   exportInvoices(concatenatedXml);
+    // Combine all XMLs into a single array
+    const allXmlResults = [...xmlResultsSales, ...xmlResultsService];
 
-    //   return createXml([voucher]);
-    //   // Assuming createXml function accepts an array
-    // });
+    console.log("Sending XML data individually to backend...");
+
+    // Use forEach to send each XML individually to the backend
+    allXmlResults.forEach(async (xmlData, index) => {
+      try {
+        // Ensure xmlData is a string
+        if (typeof xmlData === "string") {
+          // Remove additional unwanted characters and trim
+          const formattedXmlData = xmlData.replace(/[\n\r]/g, "").trim();
+
+          // Log the formatted XML data
+          console.log(
+            "Formatted XML data being sent:",
+            formattedXmlData,
+            index
+          );
+
+          // Check if formattedXmlData is empty or invalid
+          if (formattedXmlData) {
+            // Send each XML string to the backend one by one
+            const response = await exportInvoices(formattedXmlData);
+
+            console.log(`Response for invoice ${index + 1}:`, response);
+          } else {
+            console.error(
+              `Error: Formatted XML data is empty for invoice ${index + 1}`
+            );
+          }
+        } else {
+          console.error(
+            `Error: xmlData is not a string for invoice ${index + 1}`,
+            xmlData
+          );
+        }
+      } catch (error) {
+        console.error(`Error exporting invoice ${index + 1}:`, error);
+      }
+    });
   };
 
   const createXml = (filteredInvoices) => {
@@ -508,29 +566,13 @@ export default function InvoiceList({
             .map((item) => ({
               LEDGERNAME: item.LedgerName,
               GSTCLASS: "",
-              ISDEEMEDPOSITIVE: "Yes",
+              ISDEEMEDPOSITIVE: "No",
               LEDGERFROMITEM: "No",
               REMOVEZEROENTRIES: "No",
               ISPARTYLEDGER: "Yes",
               AMOUNT: item.Net_Total,
             }))
         : [];
-
-      // const taxData = taxDataForXML.filter(
-      //   (tax) => tax.Dc_inv_No === voucher.DC_Inv_No
-      // );
-      // const ledgerEntriesForTax =
-      //   taxData.length > 0
-      //     ? taxDataForXML.map((tax) => ({
-      //         LEDGERNAME: tax.AcctHead,
-      //         GSTCLASS: "",
-      //         ISDEEMEDPOSITIVE: "No",
-      //         LEDGERFROMITEM: "No",
-      //         REMOVEZEROENTRIES: "No",
-      //         ISPARTYLEDGER: "Yes",
-      //         AMOUNT: tax.TaxAmt,
-      //       }))
-      //     : [];
 
       const taxData = taxDataForXML.length > 0 ? taxDataForXML : []; // Ensure taxData is an array
 
@@ -539,10 +581,10 @@ export default function InvoiceList({
         .map((tax) => ({
           LEDGERNAME: tax.AcctHead,
           GSTCLASS: "",
-          ISDEEMEDPOSITIVE: "Yes",
+          ISDEEMEDPOSITIVE: "No",
           LEDGERFROMITEM: "No",
           REMOVEZEROENTRIES: "No",
-          ISPARTYLEDGER: "Yes",
+          ISPARTYLEDGER: "No",
           AMOUNT: tax.TaxAmt,
         }));
 
@@ -680,13 +722,16 @@ export default function InvoiceList({
 
         response.data.guids.forEach((guid) => {
           const matchingInvoice = invoiceListData.find(
-            (invoice) => invoice.DC_inv_no === guid
+            (invoice) => invoice.DC_Inv_No === Number(guid)
           );
+          console.log("guid 686:", guid, matchingInvoice);
+          setDummyArray((prev) => [...prev, Number(guid)]);
+          console.log("dummy array 222222222:", dummyArray);
           if (matchingInvoice) {
             // Invoice is already present
-            alert(`Invoice ${guid} is already present.`);
+            toast.warn(`Invoice ${guid} is already present.`);
           } else {
-            // alert("export succesfully");
+            //toast.success("export succesfully");
           }
         });
       } else {
@@ -794,6 +839,8 @@ export default function InvoiceList({
     return dataCopyReceipt;
   };
 
+  console.log("dummy array and their length, ", dummyArray, dummyArray.length);
+
   return (
     <>
       <div className="d-flex">
@@ -833,19 +880,18 @@ export default function InvoiceList({
                       }
                       // style={{
                       //   whiteSpace: "nowrap",
-                      //   backgroundColor: dummyArray.includes(item.DC_Inv_No)
-                      //     ? "#FF7F50"
-                      //     : "",
+                      //   backgroundColor:
+                      //     dummyArray.length > 0 // Check if dummyArray is not empty
+                      //       ? dummyArray.includes(item.DC_Inv_No) // Check if item.DC_Inv_No is in dummyArray
+                      //         ? "#ADD8E6" // If included, set background color to coral #FF7F50
+                      //         : "#FF7F50" // If not included, set background color to purple #ADD8E6
+                      //       : "#FF7F50", // If dummyArray is empty, set default background color to white #FF7F50
                       // }}
-
                       style={{
                         whiteSpace: "nowrap",
-                        backgroundColor:
-                          dummyArray.length > 0 // Check if dummyArray is not empty
-                            ? dummyArray.includes(item.DC_Inv_No) // Check if item.DC_Inv_No is in dummyArray
-                              ? "#FF7F50" // If included, set background color to coral
-                              : "" // If not included, set background color to purple
-                            : "#FF7F50", // If dummyArray is empty, set default background color to white
+                        backgroundColor: dummyArray.includes(item.DC_Inv_No) // Check if item exists in dummyArray
+                          ? "#ADD8E6" // Light blue if found in dummyArray
+                          : "#FF7F50", // Coral color if not found
                       }}
                     >
                       <td>{<input type="checkBox" disabled />}</td>
@@ -858,6 +904,7 @@ export default function InvoiceList({
                       <td>{item.TallyRef}</td>
                       <td>{item.Cust_Code}</td>
                       <td>{<input type="checkBox" disabled />}</td>
+                      <td>{typeof item.DC_Inv_No}</td>
                     </tr>
                   );
                 })}
