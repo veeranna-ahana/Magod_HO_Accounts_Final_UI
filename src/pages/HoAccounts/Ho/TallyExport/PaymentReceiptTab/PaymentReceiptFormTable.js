@@ -15,8 +15,8 @@ export default function PaymentReceiptFormTable({
   selectedUnitName,
 }) {
   const [selectedRow, setSelectedRow] = useState(null);
-  // const [dummyArray] = useState([35120]);
-  const [dummyArray] = useState([]);
+
+  const [dummyArray, setDummyArray] = useState([]);
   const [paymentReceiptDetails, setPaymentReceiptDetails] = useState([]);
   const [payment, setPayment] = useState([]);
 
@@ -48,7 +48,10 @@ export default function PaymentReceiptFormTable({
               selectedUnitName: selectedUnitName?.UnitName,
             }
           );
-          console.log("company", company.data.Result[0].Tally_account_Name);
+          console.log(
+            "company FROM  my database",
+            company.data.Result[0].Tally_account_Name
+          );
 
           if (company.data.Status === "Success") {
             setCmpName(company.data.Result[0].Tally_account_Name);
@@ -63,6 +66,26 @@ export default function PaymentReceiptFormTable({
     //fetchData(); // Call the async function here
   }, [selectedUnitName]);
 
+  //check comapny does exit or not in tally
+  const companyFromTally = async () => {
+    try {
+      const companiesfromtally = await axios.post(
+        baseURL + "/tallyExport/getCompanyFromTally",
+        { cmp: cmpName }
+      );
+
+      console.log("cmp resultttt", companiesfromtally.data);
+      if (companiesfromtally.data.company === "companyExist") {
+        return companiesfromtally.data.company;
+      } else if (companiesfromtally.data.company === "companyNot") {
+        return companiesfromtally.data.company;
+      }
+    } catch (error) {
+      console.error("Error in companyFromTallyy:", error.response.data.message);
+      return error.response.data.message;
+      toast.error("Turn on Tally server");
+    }
+  };
   const PaymentReceiptSubmit = () => {
     axios
       .get(
@@ -172,6 +195,7 @@ export default function PaymentReceiptFormTable({
               REPORTNAME: { _text: "Vouchers" },
               STATICVARIABLES: {
                 SVCURRENTCOMPANY: { _text: cmpName },
+                //SVCURRENTCOMPANY: { _text: "Magod_Trail" },
               },
             },
             TALLYMESSAGE: filterPaymentReceipts.map((voucher) => {
@@ -237,7 +261,7 @@ export default function PaymentReceiptFormTable({
                   ALTERID: voucher.RecdPVID,
                   EXCISEOPENING: "No",
                   ISCANCELLED: "No",
-                  HASCASHFLOW: "No",
+                  HASCASHFLOW: "Yes",
                   ISPOSTDATED: "No",
                   USETRACKINGNUMBER: "No",
                   ISINVOICE: "No",
@@ -251,7 +275,7 @@ export default function PaymentReceiptFormTable({
                     {
                       LEDGERNAME: voucher.CustName,
                       GSTCLASS: "",
-                      ISDEEMEDPOSITIVE: "Yes",
+                      ISDEEMEDPOSITIVE: "No",
                       LEDGERFROMITEM: "No",
                       REMOVEZEROENTRIES: "No",
                       ISPARTYLEDGER: "Yes",
@@ -281,37 +305,49 @@ export default function PaymentReceiptFormTable({
   };
 
   const handleExportPayment = async () => {
-    const xml = tableToXml();
+    try {
+      const xml = tableToXml();
 
-    const currentDate = new Date();
-    const day = currentDate.getDate().toString().padStart(2, "0");
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
-    const year = currentDate.getFullYear();
+      const currentDate = new Date();
+      const day = currentDate.getDate().toString().padStart(2, "0");
+      const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+      const year = currentDate.getFullYear();
 
-    const formattedDate = `${day}_${month}_${year}`;
+      const formattedDate = `${day}_${month}_${year}`;
 
-    const formattedDate2 = selectedDate
-      ? selectedDate.split("-").reverse().join("_")
-      : "";
+      const formattedDate2 = selectedDate
+        ? selectedDate.split("-").reverse().join("_")
+        : "";
 
-    const blob = new Blob([xml], { type: "application/xml" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Jigani_Receipt_Vouchers_${formattedDate2}.xml`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+      const blob = new Blob([xml], { type: "application/xml" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Jigani_Receipt_Vouchers_${formattedDate2}.xml`;
+      a.click();
+      window.URL.revokeObjectURL(url);
 
-    const formData = new FormData();
-    formData.append(
-      "xmlFile",
-      blob,
-      `Jigani_Receipt_Vouchers_${formattedDate2}.xml`
-    );
+      const formData = new FormData();
+      formData.append(
+        "xmlFile",
+        blob,
+        `Jigani_Receipt_Vouchers_${formattedDate2}.xml`
+      );
 
-    //await exportPaymentReceipts(formData);
+      const cm = await companyFromTally();
 
-    //    await   exportPaymentReceipts(xml);
+      console.log("company does not exit or not ", cm);
+
+      if (cm === "companyExist") {
+        await createXmlForEachPaymentReceipt();
+      } else if (cm === "Tally_server_off") {
+        toast.warn("Turn on tally server");
+      } else if (cm === "companyNot") {
+        //toast.warn("Company does not exist");
+      }
+    } catch (error) {
+      alert(`Error in handleExport: ${error.message}`);
+    }
   };
 
   //creating xml for each payment receipt
@@ -323,6 +359,8 @@ export default function PaymentReceiptFormTable({
     const xmlResults = filterPaymentReceipts.map((pymnt) => {
       const xmlres = createXmlForPymnt([pymnt]); // Assuming createXml function accepts an array
       const concatenatedXml = xmlres.join("");
+
+      console.log("xml for payment receipts ", concatenatedXml);
 
       exportPaymentReceipts(concatenatedXml);
     });
@@ -359,7 +397,9 @@ export default function PaymentReceiptFormTable({
               REQUESTDESC: {
                 REPORTNAME: { _text: "Vouchers" },
                 STATICVARIABLES: {
-                  SVCURRENTCOMPANY: { _text: cmpName },
+                  // SVCURRENTCOMPANY: { _text: cmpName },
+                  SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+                  // SVCURRENTCOMPANY: { _text: "Magod_Trail" },
                 },
               },
               TALLYMESSAGE: {
@@ -391,7 +431,7 @@ export default function PaymentReceiptFormTable({
                   ALTERID: voucher.RecdPVID,
                   EXCISEOPENING: "No",
                   ISCANCELLED: "No",
-                  HASCASHFLOW: "No",
+                  HASCASHFLOW: "Yes",
                   ISPOSTDATED: "No",
                   USETRACKINGNUMBER: "No",
                   ISINVOICE: "No",
@@ -405,7 +445,7 @@ export default function PaymentReceiptFormTable({
                     {
                       LEDGERNAME: voucher.CustName,
                       GSTCLASS: "",
-                      ISDEEMEDPOSITIVE: "Yes",
+                      ISDEEMEDPOSITIVE: "No",
                       LEDGERFROMITEM: "No",
                       REMOVEZEROENTRIES: "No",
                       ISPARTYLEDGER: "Yes",
@@ -435,65 +475,6 @@ export default function PaymentReceiptFormTable({
     return xmlArray;
   };
 
-  // const [response, setResponse] = useState(null);
-  // const exportPaymentReceipts = async (formData) => {
-  //     try {
-  //         console.log("form data xml", formData);
-  //         // const backendResponse = await fetch(baseURL + '/tallyExport/exporttally', {
-  //         //     method: 'POST',
-  //         // body: formData,
-  //         // });
-  //         if (formData.has('xmlFile') && formData.get('xmlFile').type === 'application/xml') {
-  //             const backendResponse = await fetch(baseURL + '/tallyExport/exporttally', {
-  //                 method: 'POST',
-  //                 body: formData,
-  //             });
-
-  //         const result = await backendResponse.text(); // Read response as text
-  //         setResponse(result);
-  //         }
-  //         else{
-  //             console.log("not xml");
-  //         }
-  //     } catch (error) {
-  //         console.error('Error sending XML data to Tally:', error);
-  //         // Handle error
-  //     }
-  // };
-
-  const [response, setResponse] = useState(null);
-
-  // const exportPaymentReceipts = async (formData) => {
-  //   alert("payment");
-  //   try {
-  //     if (
-  //       formData.has("xmlFile") &&
-  //       formData.get("xmlFile").type === "application/xml"
-  //     ) {
-  //       console.log("Sending XML data to Tally...");
-
-  //       const backendResponse = await fetch(
-  //         baseURL + "/tallyExport/exporttallyForPaymentReceipts",
-  //         {
-  //           method: "POST",
-  //           body: formData,
-  //         }
-  //       );
-
-  //       const result = await backendResponse.text(); // Read response as text
-  //       setResponse(result);
-
-  //       console.log("Tally server response:", result);
-  //     } else {
-  //       console.log("File is not XML or missing.");
-  //       // Handle this case, e.g., show a user-friendly message
-  //     }
-  //   } catch (error) {
-  //     console.error("Error sending XML data to Tally:", error);
-  //     // Handle error, e.g., show an error message to the user
-  //   }
-  // };
-
   const exportPaymentReceipts = async (formData) => {
     try {
       if (formData) {
@@ -513,6 +494,30 @@ export default function PaymentReceiptFormTable({
           // Handle the GUID array as needed, such as displaying it in the UI
 
           // Compare GUIDs with invoiceListData
+
+          response.data.guids.forEach((guid) => {
+            const matchingInvoice = paymentReceiptDetails.find(
+              (pay) => pay.RecdPVID === Number(guid)
+            );
+            console.log("guid 686:", guid, matchingInvoice.RecdPVID);
+            setDummyArray((prev) => {
+              if (!prev.includes(matchingInvoice.RecdPVID)) {
+                // Only push if RecdPVID is not already present
+                return [...prev, matchingInvoice.RecdPVID];
+              }
+              return prev; // Return unchanged array if already present
+            });
+            console.log(
+              "dummy array 222222222 for payment receipts:",
+              dummyArray
+            );
+            if (matchingInvoice) {
+              // Invoice is already present
+              toast.warn(`Payment ${guid} is already present.`);
+            } else {
+              //toast.success("export succesfully");
+            }
+          });
         }
       } else {
         console.log("File is not XML or missing.");
@@ -523,9 +528,11 @@ export default function PaymentReceiptFormTable({
       // Handle error, e.g., show an error message to the user
     }
   };
-  if (exportTally) {
-    // handleExportPayment();
-  }
+  useEffect(() => {
+    if (exportTally) {
+      handleExportPayment();
+    }
+  }, [exportTally]);
 
   const [taxTable, setTaxTable] = useState();
   const tableRowSelect = (item, index) => {
@@ -658,12 +665,9 @@ export default function PaymentReceiptFormTable({
                         }
                         style={{
                           whiteSpace: "nowrap",
-                          backgroundColor:
-                            dummyArray.length > 0 // Check if dummyArray is not empty
-                              ? dummyArray.includes(item.RecdPVID) // Check if item.DC_Inv_No is in dummyArray
-                                ? "#FF7F50" // If included, set background color to coral
-                                : "" // If not included, set background color to purple
-                              : "#FF7F50", // If dummyArray is empty, set default background color to white
+                          backgroundColor: dummyArray.includes(item.RecdPVID) // Check if item exists in dummyArray
+                            ? "#ADD8E6" // Light blue if found in dummyArray
+                            : "#FF7F50", // Coral color if not found
                         }}
                       >
                         <td>{item.Recd_PVNo}</td>

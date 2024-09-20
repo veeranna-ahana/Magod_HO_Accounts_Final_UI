@@ -6,11 +6,19 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import axios from "axios";
 import { baseURL } from "../../../../api/baseUrl";
 
-export default function TallyExportForm({ handleExport }) {
+import Tabs from "react-bootstrap/Tabs";
+import Tab from "react-bootstrap/Tab";
+import InvoiceList from "./InvoiceListTab/InvoiceList";
+import PaymentReceiptFormTable from "./PaymentReceiptTab/PaymentReceiptFormTable";
+import HOPaymentReceipt from "./HOPaymentReceiptTab/HOPaymentReceipt";
+
+export default function TallyExportForm({}) {
   const [selectedDate, setSelectedDate] = useState();
   //const {setTallyDate}=useGlobalContext();
   const [flag, setFlag] = useState(false);
   const [exportTally, setExportTally] = useState(false);
+
+  const [key, setKey] = useState("Inv");
 
   const handleChange = (e) => {
     setSelectedDate(e.target.value);
@@ -124,83 +132,48 @@ export default function TallyExportForm({ handleExport }) {
         </div>
       </div>
 
-      {/* <div className="row mb-3">
-        <div className="col-md-12">
-          <div className="mt-2">
-            <div className="row">
-              <div className=" row col-md-6">
-                <label
-                  className="form-label col-md-2"
-                  style={{ whiteSpace: "nowrap" }}
-                >
-                  {" "}
-                  Unit Name{" "}
-                </label>
-                <div className="col-md-3 mt-2 ms-3">
-                  <Typeahead
-                    id="basic-example"
-                    labelKey={(option) =>
-                      option && option.UnitName
-                        ? option.UnitName.toString()
-                        : ""
-                    }
-                    options={unitdata}
-                    placeholder="Select Unit"
-                    onChange={handleUnitSelect}
-                    selected={selectedUnitName}
-                  />
-                </div>
-
-                <label
-                  className="form-label col-md-3 "
-                  style={{ whiteSpace: "nowrap" }}
-                >
-                  {" "}
-                  Report Date
-                </label>
-                <input
-                  type="date"
-                  className="col-md-3 mb-3"
-                  value={selectedDate}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <button
-                className="button-style  group-button col-md-2 "
-                onClick={onLoadDataClick}
-                style={{ width: "140px" }}
-              >
-                Load Data
-              </button>
-
-              <button
-                className="button-style  group-button col-md-2"
-                style={{ width: "140px" }}
-                onClick={tallyExportSubmit}
-              >
-                Export To Tally
-              </button>
-              <button
-                className="button-style  group-button col-md-2"
-                style={{ width: "130px" }}
-                onClick={(e) => navigate("/HOAccounts")}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      </div> */}
-
-      <TallyExportTabs
+      {/* <TallyExportTabs
         selectedDate={selectedDate}
         flag={flag}
         setFlag={setFlag}
         exportTally={exportTally}
         setExportTally={setExportTally}
         selectedUnitName={selectedUnitName[0]}
-      />
+      /> */}
+      <div className="row">
+        <Tabs
+          id="controlled-tab-example"
+          activeKey={key}
+          onSelect={(k) => setKey(k)}
+          className="mb-2 tab_font"
+        >
+          <Tab eventKey="Inv" title="Invoices List">
+            <InvoiceList
+              selectedDate={selectedDate}
+              flag={flag}
+              setFlag={setFlag}
+              exportTally={exportTally}
+              setExportTally={setExportTally}
+              selectedUnitName={selectedUnitName[0]}
+            />
+          </Tab>
+
+          <Tab eventKey="PR" title="Payment Receipt Details">
+            <PaymentReceiptFormTable
+              selectedDate={selectedDate}
+              flag={flag}
+              setFlag={setFlag}
+              exportTally={exportTally}
+              setExportTally={setExportTally}
+              selectedUnitName={selectedUnitName[0]}
+            />
+          </Tab>
+
+          <Tab eventKey="HOR" title=" HO Receipt Vouchers">
+            <HOPaymentReceipt selectedDate={selectedDate} />
+          </Tab>
+        </Tabs>
+      </div>
     </div>
   );
 }
