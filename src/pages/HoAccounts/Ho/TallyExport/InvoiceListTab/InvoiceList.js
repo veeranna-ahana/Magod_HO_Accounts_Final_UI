@@ -101,7 +101,6 @@ export default function InvoiceList({
     } catch (error) {
       console.error("Error in companyFromTallyy:", error.response.data.message);
       return error.response.data.message;
-      toast.error("Turn on Tally server");
     }
   };
 
@@ -220,8 +219,8 @@ export default function InvoiceList({
             REQUESTDESC: {
               REPORTNAME: { _text: "Vouchers" },
               STATICVARIABLES: {
-                SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
-                // SVCURRENTCOMPANY: { _text: "Magod_Trail" },
+                //SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+                SVCURRENTCOMPANY: { _text: "Magod_Trail" },
               },
             },
             TALLYMESSAGE: invoiceListData.map((voucher, index) => {
@@ -260,7 +259,7 @@ export default function InvoiceList({
                     .map((item) => ({
                       LEDGERNAME: item.LedgerName,
                       GSTCLASS: "",
-                      ISDEEMEDPOSITIVE: "Yes",
+                      ISDEEMEDPOSITIVE: "No",
                       LEDGERFROMITEM: "No",
                       REMOVEZEROENTRIES: "No",
                       ISPARTYLEDGER: "Yes",
@@ -299,7 +298,7 @@ export default function InvoiceList({
                 .map((tax) => ({
                   LEDGERNAME: tax.AcctHead,
                   GSTCLASS: "",
-                  ISDEEMEDPOSITIVE: "Yes",
+                  ISDEEMEDPOSITIVE: "No",
                   LEDGERFROMITEM: "No",
                   REMOVEZEROENTRIES: "No",
                   ISPARTYLEDGER: "Yes",
@@ -427,6 +426,8 @@ export default function InvoiceList({
 
       const cm = await companyFromTally();
 
+      console.log("company does not exit or not ", cm);
+
       if (cm === "companyExist") {
         await createXmlForEachData();
       } else if (cm === "Tally_server_off") {
@@ -447,6 +448,10 @@ export default function InvoiceList({
 
     const filteredServiceInvoices = invoiceListData.filter(
       (voucher) => voucher.DC_InvType === "Service"
+    );
+
+    const filteredJob_WorkInvoices = invoiceListData.filter(
+      (voucher) => voucher.DC_InvType === "Job Work"
     );
 
     // Create XML for Sales invoices
@@ -487,8 +492,31 @@ export default function InvoiceList({
       return formattedXmlData;
     });
 
+    // Create XML for Job Work invoices
+    const xmlResultsJobWork = filteredJob_WorkInvoices.map((voucher) => {
+      // Create XML for each voucher
+      const xml = createXml([voucher]);
+
+      // Ensure xml is a string
+      if (Array.isArray(xml)) {
+        console.error("Error: XML data is an array. Converting to string.");
+        return xml[0] || ""; // Assuming the array has one item
+      }
+
+      const xmlString = typeof xml === "string" ? xml : JSON.stringify(xml);
+
+      // Remove newline characters and extra spaces
+      const formattedXmlData = xmlString.replace(/[\n\r]/g, "").trim();
+
+      return formattedXmlData;
+    });
+
     // Combine all XMLs into a single array
-    const allXmlResults = [...xmlResultsSales, ...xmlResultsService];
+    const allXmlResults = [
+      ...xmlResultsSales,
+      ...xmlResultsService,
+      ...xmlResultsJobWork,
+    ];
 
     console.log("Sending XML data individually to backend...");
 
@@ -500,13 +528,7 @@ export default function InvoiceList({
           // Remove additional unwanted characters and trim
           const formattedXmlData = xmlData.replace(/[\n\r]/g, "").trim();
 
-          // Log the formatted XML data
-          console.log(
-            "Formatted XML data being sent:",
-            formattedXmlData,
-            index
-          );
-
+          console.log("formatted xml data serviceee ", formattedXmlData);
           // Check if formattedXmlData is empty or invalid
           if (formattedXmlData) {
             // Send each XML string to the backend one by one
@@ -566,7 +588,7 @@ export default function InvoiceList({
             .map((item) => ({
               LEDGERNAME: item.LedgerName,
               GSTCLASS: "",
-              ISDEEMEDPOSITIVE: "No",
+              ISDEEMEDPOSITIVE: "Yes",
               LEDGERFROMITEM: "No",
               REMOVEZEROENTRIES: "No",
               ISPARTYLEDGER: "Yes",
@@ -581,10 +603,10 @@ export default function InvoiceList({
         .map((tax) => ({
           LEDGERNAME: tax.AcctHead,
           GSTCLASS: "",
-          ISDEEMEDPOSITIVE: "No",
+          ISDEEMEDPOSITIVE: "Yes",
           LEDGERFROMITEM: "No",
           REMOVEZEROENTRIES: "No",
-          ISPARTYLEDGER: "No",
+          ISPARTYLEDGER: "Yes",
           AMOUNT: tax.TaxAmt,
         }));
 
@@ -629,13 +651,15 @@ export default function InvoiceList({
       const baseVoucher = {
         _attributes: {
           REMOTEID: `${voucher.PreFix}${voucher.DC_Inv_No}`,
-          VCHTYPE: voucher.DC_InvType,
+          VCHTYPE:
+            voucher.DC_InvType === "Job Work" ? "Sales" : voucher.DC_InvType,
           ACTION: "Create",
         },
         DATE: voucher.Inv_Date.replace(/-/g, ""),
         GUID: voucher.DC_Inv_No,
         NARRATION: `Our WO No: ${voucher.OrderNo} Packing Note No: ${voucher.DC_No}/ ${voucher.DC_Fin_Year}`,
-        VOUCHERTYPENAME: voucher.DC_InvType,
+        VOUCHERTYPENAME:
+          voucher.DC_InvType === "Job Work" ? "Sales" : voucher.DC_InvType,
         VOUCHERNUMBER: `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`,
         REFERENCE: voucher.PO_No,
         PARTYLEDGERNAME: voucher.Cust_Name,
@@ -652,7 +676,7 @@ export default function InvoiceList({
         USEFORGAINLOSS: "No",
         USEFORGODOWNTRANSFER: "No",
         USEFORCOMPOUND: "No",
-        ALTERID: index + 1,
+        ALTERID: 2,
         EXCISEOPENING: "No",
         ISCANCELLED: "No",
         HASCASHFLOW: "No",
@@ -680,7 +704,7 @@ export default function InvoiceList({
                 REPORTNAME: { _text: "Vouchers" },
                 STATICVARIABLES: {
                   // SVCURRENTCOMPANY: { _text: cmpName },
-                  // SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+                  //SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
                   SVCURRENTCOMPANY: { _text: "Magod_Trail" },
                 },
               },
@@ -724,8 +748,15 @@ export default function InvoiceList({
           const matchingInvoice = invoiceListData.find(
             (invoice) => invoice.DC_Inv_No === Number(guid)
           );
-          console.log("guid 686:", guid, matchingInvoice);
-          setDummyArray((prev) => [...prev, Number(guid)]);
+          console.log("guid 686:", guid, matchingInvoice.DC_Inv_No);
+          setDummyArray((prev) => [...prev, matchingInvoice.DC_Inv_No]);
+          // setDummyArray((prev) => {
+          //   if (!prev.includes(matchingInvoice.DC_Inv_No)) {
+          //     // Only push if RecdPVID is not already present
+          //     return [...prev, matchingInvoice.DC_Inv_No];
+          //   }
+          //   return prev; // Return unchanged array if already present
+          // });
           console.log("dummy array 222222222:", dummyArray);
           if (matchingInvoice) {
             // Invoice is already present
@@ -878,15 +909,6 @@ export default function InvoiceList({
                       className={
                         key === selectRow?.index ? "selcted-row-clr" : ""
                       }
-                      // style={{
-                      //   whiteSpace: "nowrap",
-                      //   backgroundColor:
-                      //     dummyArray.length > 0 // Check if dummyArray is not empty
-                      //       ? dummyArray.includes(item.DC_Inv_No) // Check if item.DC_Inv_No is in dummyArray
-                      //         ? "#ADD8E6" // If included, set background color to coral #FF7F50
-                      //         : "#FF7F50" // If not included, set background color to purple #ADD8E6
-                      //       : "#FF7F50", // If dummyArray is empty, set default background color to white #FF7F50
-                      // }}
                       style={{
                         whiteSpace: "nowrap",
                         backgroundColor: dummyArray.includes(item.DC_Inv_No) // Check if item exists in dummyArray
