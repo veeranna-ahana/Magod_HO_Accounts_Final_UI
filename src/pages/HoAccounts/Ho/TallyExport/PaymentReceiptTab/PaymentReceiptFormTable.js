@@ -10,9 +10,11 @@ export default function PaymentReceiptFormTable({
   selectedDate,
   setFlag,
   flag,
-  exportTally,
-  setExportTally,
+
   selectedUnitName,
+
+  setChild,
+  child,
 }) {
   const [selectedRow, setSelectedRow] = useState(null);
 
@@ -23,15 +25,8 @@ export default function PaymentReceiptFormTable({
   const [companyAndGuid, setCompanyAndGuid] = useState([]);
   const [cmpName, setCmpName] = useState([]);
 
-  // useEffect(() => {
-  //   setExportTally(false);
-  //   if (selectedDate && selectedUnitName) {
-  //     PaymentReceiptSubmit();
-  //   }
-  // }, [selectedDate, exportTally, selectedUnitName]);
   useEffect(() => {
     setPaymentReceiptDetails([]);
-    setExportTally(false);
 
     if (flag) {
       PaymentReceiptSubmit();
@@ -196,6 +191,7 @@ export default function PaymentReceiptFormTable({
               STATICVARIABLES: {
                 SVCURRENTCOMPANY: { _text: cmpName },
                 //SVCURRENTCOMPANY: { _text: "Magod_Trail" },
+                SVCURRENTCOMPANY: { _text: "Magod Laser_Ahana 1" },
               },
             },
             TALLYMESSAGE: filterPaymentReceipts.map((voucher) => {
@@ -208,29 +204,6 @@ export default function PaymentReceiptFormTable({
                     AMOUNT: item.Receive_Now,
                   };
                 });
-
-              // const taxData = paymentXML.filter((item) => {
-              //   console.log(
-              //     "Inv pvno",
-
-              //     voucher.Inv_Type,
-              //     item.Inv_Type
-              //   );
-
-              //   item.Recd_PVNo === voucher.Recd_PVNo;
-              // });
-              // console.log("paymnenttttt ", taxData, "----??");
-
-              // const billAllocationsList = taxData
-              //   ? taxData.map((item) => ({
-              //       NAME: `${item.PreFix} / ${item.RefNo}`,
-              //       BILLTYPE: "Agst Ref",
-              //       AMOUNT: item.Receive_Now, // Replace with the actual property from taxInvoiceData
-              //       // Other properties for tax entry
-              //     }))
-              //   : [];
-
-              console.log("bill ", billAllocationsList, "----??");
 
               return {
                 _attributes: { "xmlns:UDF": "TallyUDF" },
@@ -345,6 +318,8 @@ export default function PaymentReceiptFormTable({
       } else if (cm === "companyNot") {
         //toast.warn("Company does not exist");
       }
+
+      setChild(false);
     } catch (error) {
       alert(`Error in handleExport: ${error.message}`);
     }
@@ -398,8 +373,9 @@ export default function PaymentReceiptFormTable({
                 REPORTNAME: { _text: "Vouchers" },
                 STATICVARIABLES: {
                   // SVCURRENTCOMPANY: { _text: cmpName },
-                  SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+                  // SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
                   // SVCURRENTCOMPANY: { _text: "Magod_Trail" },
+                  SVCURRENTCOMPANY: { _text: "Magod Laser_Ahana 1" },
                 },
               },
               TALLYMESSAGE: {
@@ -529,10 +505,10 @@ export default function PaymentReceiptFormTable({
     }
   };
   useEffect(() => {
-    if (exportTally) {
+    if (child) {
       handleExportPayment();
     }
-  }, [exportTally]);
+  }, [child]);
 
   const [taxTable, setTaxTable] = useState();
   const tableRowSelect = (item, index) => {

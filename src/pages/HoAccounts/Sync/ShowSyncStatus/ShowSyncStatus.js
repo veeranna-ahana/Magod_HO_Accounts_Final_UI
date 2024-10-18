@@ -412,7 +412,7 @@ export default function ShowSyncStatus() {
   const compare = (report) => {
     if (getHOInvoice.length === 1) {
       const hoInvoices = getHOInvoice[0]?.cmdHoInvList;
-      setInvPaymentVrListHO(getHOInvoice[0]?.cmdHoInvPaymentVrList );
+      setInvPaymentVrListHO(getHOInvoice[0]?.cmdHoInvPaymentVrList);
       // Identify invoices in unitInvoices that are not in report.open_inv
       hoInvoices.forEach((unitInv) => {
         const matchedInv = getUnitInvoice[0]?.cmdInvList.find(
