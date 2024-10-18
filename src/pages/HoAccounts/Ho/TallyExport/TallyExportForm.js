@@ -33,8 +33,12 @@ export default function TallyExportForm({}) {
   };
   // console.log("selcted date", selectedDate);
 
+  const [childDownloadFunction, setChildDownloadFunction] = useState(false);
+  const [child, setChild] = useState(false);
+
   const tallyExportSubmit = async () => {
-    setExportTally(!exportTally);
+    setChildDownloadFunction(true);
+    setChild(true);
   };
 
   const navigate = useNavigate();
@@ -155,6 +159,8 @@ export default function TallyExportForm({}) {
               exportTally={exportTally}
               setExportTally={setExportTally}
               selectedUnitName={selectedUnitName[0]}
+              setChildDownloadFunction={setChildDownloadFunction}
+              childDownloadFunction={childDownloadFunction}
             />
           </Tab>
 
@@ -166,6 +172,9 @@ export default function TallyExportForm({}) {
               exportTally={exportTally}
               setExportTally={setExportTally}
               selectedUnitName={selectedUnitName[0]}
+              setDownloadFunction={setChildDownloadFunction}
+              child={child}
+              setChild={setChild}
             />
           </Tab>
 

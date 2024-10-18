@@ -11,9 +11,11 @@ export default function InvoiceList({
   selectedDate,
   setFlag,
   flag,
-  exportTally,
-  setExportTally,
+
   selectedUnitName,
+
+  setChildDownloadFunction,
+  childDownloadFunction,
 }) {
   const [invoiceListData, setInvoiceListData] = useState([]);
   const [taxInvoiceData, setTaxInvoiceData] = useState([]);
@@ -27,7 +29,6 @@ export default function InvoiceList({
 
   useEffect(() => {
     setInvoiceListData([]);
-    setExportTally(false);
 
     if (flag) {
       invoiceListSubmit();
@@ -35,7 +36,7 @@ export default function InvoiceList({
   }, [selectedDate, selectedUnitName, flag]);
 
   const invoiceListSubmit = () => {
-    // toast.success("Loading...");
+    toast.success("Loading...");
     axios
       .get(baseURL + "/tallyExport/getInvoiceData", {
         params: {
@@ -208,6 +209,8 @@ export default function InvoiceList({
     }
   }, [invoiceListData, flag]);
 
+  console.log("invoce list data yyyyyyyyyy ", invoiceListData);
+
   const tableToXml = () => {
     const xmlData = {
       ENVELOPE: {
@@ -305,17 +308,17 @@ export default function InvoiceList({
                   AMOUNT: tax.TaxAmt,
                 }));
 
-              const includeDelChg = parseInt(voucher.Del_chg) > 0;
+              const includeDelChg = parseInt(voucher.Del_Chg) > 0;
               const allLedgerEntriesDelChg = includeDelChg
                 ? [
                     {
                       LEDGERNAME: "Transport Charges",
-                      GSTCLASS: voucher.Del_chg,
+                      GSTCLASS: voucher.Del_Chg,
                       ISDEEMEDPOSITIVE: "Yes",
                       LEDGERFROMITEM: "No",
                       REMOVEZEROENTRIES: "No",
                       ISPARTYLEDGER: "Yes",
-                      AMOUNT: voucher.Del_chg,
+                      AMOUNT: voucher.Del_Chg,
                     },
                   ]
                 : [];
@@ -347,7 +350,7 @@ export default function InvoiceList({
                 _attributes: {
                   REMOTEID: `${voucher.PreFix}${voucher.DC_Inv_No}`,
                   VCHTYPE:
-                    voucher.DC_InvType === "Job Work"
+                    voucher.DC_InvType === "Job Work" || "Misc Sales"
                       ? "Sales"
                       : voucher.DC_InvType,
                   ACTION: "Create",
@@ -435,6 +438,7 @@ export default function InvoiceList({
       } else if (cm === "companyNot") {
         toast.warn("Company does not exist");
       }
+      setChildDownloadFunction(false);
     } catch (error) {
       alert(`Error in handleExport: ${error.message}`);
     }
@@ -443,7 +447,7 @@ export default function InvoiceList({
   const createXmlForEachData = async () => {
     // Filter invoiceListData based on the condition voucher.DC_InvType
     const filteredSalesInvoices = invoiceListData.filter(
-      (voucher) => voucher.DC_InvType === "Sales"
+      (voucher) => voucher.DC_InvType === "Sales" || "Misc Sales"
     );
 
     const filteredServiceInvoices = invoiceListData.filter(
@@ -469,6 +473,7 @@ export default function InvoiceList({
 
       // Remove newline characters and extra spaces
       const formattedXmlData = xmlString.replace(/[\n\r]/g, "").trim();
+      console.log("formated xml for misc ", formattedXmlData);
 
       return formattedXmlData;
     });
@@ -588,7 +593,7 @@ export default function InvoiceList({
             .map((item) => ({
               LEDGERNAME: item.LedgerName,
               GSTCLASS: "",
-              ISDEEMEDPOSITIVE: "Yes",
+              ISDEEMEDPOSITIVE: "No",
               LEDGERFROMITEM: "No",
               REMOVEZEROENTRIES: "No",
               ISPARTYLEDGER: "Yes",
@@ -603,24 +608,24 @@ export default function InvoiceList({
         .map((tax) => ({
           LEDGERNAME: tax.AcctHead,
           GSTCLASS: "",
-          ISDEEMEDPOSITIVE: "Yes",
+          ISDEEMEDPOSITIVE: "No",
           LEDGERFROMITEM: "No",
           REMOVEZEROENTRIES: "No",
           ISPARTYLEDGER: "Yes",
           AMOUNT: tax.TaxAmt,
         }));
 
-      const includeDelChg = parseInt(voucher.Del_chg) > 0;
+      const includeDelChg = parseInt(voucher.Del_Chg) > 0;
       const allLedgerEntriesDelChg = includeDelChg
         ? [
             {
               LEDGERNAME: "Transport Charges",
-              GSTCLASS: voucher.Del_chg,
+              GSTCLASS: voucher.Del_Chg,
               ISDEEMEDPOSITIVE: "Yes",
               LEDGERFROMITEM: "No",
               REMOVEZEROENTRIES: "No",
               ISPARTYLEDGER: "Yes",
-              AMOUNT: voucher.Del_chg,
+              AMOUNT: voucher.Del_Chg,
             },
           ]
         : [];
@@ -652,14 +657,18 @@ export default function InvoiceList({
         _attributes: {
           REMOTEID: `${voucher.PreFix}${voucher.DC_Inv_No}`,
           VCHTYPE:
-            voucher.DC_InvType === "Job Work" ? "Sales" : voucher.DC_InvType,
+            voucher.DC_InvType === "Job Work" || "Misc Sales"
+              ? "Sales"
+              : voucher.DC_InvType,
           ACTION: "Create",
         },
         DATE: voucher.Inv_Date.replace(/-/g, ""),
         GUID: voucher.DC_Inv_No,
         NARRATION: `Our WO No: ${voucher.OrderNo} Packing Note No: ${voucher.DC_No}/ ${voucher.DC_Fin_Year}`,
         VOUCHERTYPENAME:
-          voucher.DC_InvType === "Job Work" ? "Sales" : voucher.DC_InvType,
+          voucher.DC_InvType === "Job Work" || "Misc Sales"
+            ? "Sales"
+            : voucher.DC_InvType,
         VOUCHERNUMBER: `${voucher.PreFix} /${voucher.Inv_No} / ${voucher.Inv_Fin_Year}`,
         REFERENCE: voucher.PO_No,
         PARTYLEDGERNAME: voucher.Cust_Name,
@@ -704,8 +713,9 @@ export default function InvoiceList({
                 REPORTNAME: { _text: "Vouchers" },
                 STATICVARIABLES: {
                   // SVCURRENTCOMPANY: { _text: cmpName },
-                  //SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
-                  SVCURRENTCOMPANY: { _text: "Magod_Trail" },
+                  // SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+                  SVCURRENTCOMPANY: { _text: "Magod Laser_Ahana 1" },
+                  // SVCURRENTCOMPANY: { _text: "Magod_Trail" },
                 },
               },
               TALLYMESSAGE: {
@@ -734,39 +744,61 @@ export default function InvoiceList({
         xml: xml,
       });
 
-      if (response.data.message === "Exception") {
-        console.error("Failed to send XML data to Tally.");
-      } else if (response.data.company === "companyNot") {
+      if (response.data.company === "companyNot") {
         toast.error(`Company Account Name and GUID Mismatch for ${cmpName}`);
-      } else if (response.data.guids && response.data.guids.length > 0) {
-        console.log("Received GUIDs:", response.data.guids);
-        // Handle the GUID array as needed, such as displaying it in the UI
+      } else if (response.data.message === "alter") {
+        if (response.data.guids && response.data.guids.length > 0) {
+          console.log("Received GUIDs:", response.data.guids);
+          // Handle the GUID array as needed, such as displaying it in the UI
 
-        // Compare GUIDs with invoiceListData
+          // Compare GUIDs with invoiceListData
 
-        response.data.guids.forEach((guid) => {
-          const matchingInvoice = invoiceListData.find(
-            (invoice) => invoice.DC_Inv_No === Number(guid)
-          );
-          console.log("guid 686:", guid, matchingInvoice.DC_Inv_No);
-          setDummyArray((prev) => [...prev, matchingInvoice.DC_Inv_No]);
-          // setDummyArray((prev) => {
-          //   if (!prev.includes(matchingInvoice.DC_Inv_No)) {
-          //     // Only push if RecdPVID is not already present
-          //     return [...prev, matchingInvoice.DC_Inv_No];
-          //   }
-          //   return prev; // Return unchanged array if already present
-          // });
-          console.log("dummy array 222222222:", dummyArray);
-          if (matchingInvoice) {
-            // Invoice is already present
-            toast.warn(`Invoice ${guid} is already present.`);
-          } else {
-            //toast.success("export succesfully");
-          }
-        });
-      } else {
-        console.log("XML data successfully sent to Tally.");
+          response.data.guids.forEach((guid) => {
+            const matchingInvoice = invoiceListData.find(
+              (invoice) => invoice.DC_Inv_No === Number(guid)
+            );
+            console.log("guid 686:", guid, matchingInvoice.DC_Inv_No);
+
+            setDummyArray((prev) => {
+              if (!prev.includes(matchingInvoice.DC_Inv_No)) {
+                // Only push if RecdPVID is not already present
+                return [...prev, matchingInvoice.DC_Inv_No];
+              }
+              return prev; // Return unchanged array if already present
+            });
+            console.log("dummy array altered 222222222:", dummyArray);
+            if (matchingInvoice) {
+              // Invoice is already present
+              toast.warn(`Invoice ${guid} is already present.`);
+            } else {
+              toast.success("Export succesfully");
+            }
+          });
+        }
+      } else if (response.data.message === "create") {
+        if (response.data.guids && response.data.guids.length > 0) {
+          response.data.guids.forEach((guid) => {
+            const matchingInvoice = invoiceListData.find(
+              (invoice) => invoice.DC_Inv_No === Number(guid)
+            );
+
+            setDummyArray((prev) => {
+              if (!prev.includes(matchingInvoice.DC_Inv_No)) {
+                // Only push if RecdPVID is not already present
+                return [...prev, matchingInvoice.DC_Inv_No];
+              }
+              return prev; // Return unchanged array if already present
+            });
+            console.log("dummy array 222222222:", dummyArray);
+            if (matchingInvoice) {
+              toast.warn(`Invoice ${guid} is Created.`);
+            } else {
+              toast.success("Export succesfully");
+            }
+          });
+        }
+      } else if (response.data.message === "Exception") {
+        console.log("message ===Exception ");
       }
     } catch (error) {
       console.error("Error sending XML data to Tally:", error);
@@ -774,10 +806,10 @@ export default function InvoiceList({
     }
   };
   useEffect(() => {
-    if (exportTally) {
+    if (childDownloadFunction) {
       handleExport();
     }
-  }, [exportTally]);
+  }, [childDownloadFunction]);
 
   const [taxTable, setTaxTable] = useState();
   const tableRowSelect = (item, index) => {
@@ -1118,7 +1150,12 @@ export default function InvoiceList({
                   Deliver Charges
                 </label>
 
-                <input class="in-field" type="text" placeholder="" />
+                <input
+                  class="in-field"
+                  type="text"
+                  placeholder=""
+                  value={selectRow.Del_Chg}
+                />
               </div>
 
               <div className="d-flex" style={{ gap: "83px" }}>

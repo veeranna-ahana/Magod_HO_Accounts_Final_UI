@@ -22,27 +22,7 @@ const {
 const { endpoints } = require("../../api/constants");
 
 function MailModal({ mailModal, setMailModal, xmlFile }) {
-  // const [searchParams] = useSearchParams();
-
-  // let history = useHistory();
-  // let [formMessageBody, setFormMessageBody] = useState("");
-  // let [formSubject, setFormSubject] = useState("");
   const isFirstClickRef = useRef(true);
-
-  console.log("xml file", xmlFile);
-
-  //   useEffect(() => {
-  //     console.log(searchParams.get("mlbody"));
-  //     // setFormMessageBody(searchParams.get("mlbody"));
-  //     document.getElementById("formMessageBody").value = Buffer.from(
-  //       searchParams.get("mlbody"),
-  //       "base64"
-  //     ).toString("ascii");
-  //     document.getElementById("formSubject").value = Buffer.from(
-  //       searchParams.get("mlsubjct"),
-  //       "base64"
-  //     ).toString("ascii");
-  //   }, []);
 
   const sendmaildetails = async (e) => {
     e.preventDefault();
@@ -62,11 +42,8 @@ function MailModal({ mailModal, setMailModal, xmlFile }) {
     formData.append("subjectLine", subject);
     formData.append("mailBody", mailbody);
     formData.append("file", files[0]);
-    // formData.append("file", xmlFile, xmlFile.name);
 
     formData.append("fromAddress", from);
-
-    console.log("form datra", formData);
 
     postRequestFormData(endpoints.sendAttachmentMails, formData, (data) => {
       if (data != null) {
@@ -92,15 +69,10 @@ function MailModal({ mailModal, setMailModal, xmlFile }) {
   let closesendmail = () => {
     setMailModal(false);
     if (isFirstClickRef.current) {
-      //   toast.success("Closing Email..", {
-      //     autoClose: 2000,
-
-      //   });
       isFirstClickRef.current = false;
     }
 
     setTimeout(() => {
-      // window.location.href = "/Customer/CustomerInvoiceAndPayments";
       window.close();
     }, 3000);
   };
@@ -128,18 +100,13 @@ function MailModal({ mailModal, setMailModal, xmlFile }) {
                   onSubmit={sendmaildetails}
                   autoComplete="off"
                 >
-                  {/* <Row>
-                                        <Form.Label style={{ width: '100px', height: '30px', fontFamily: 'Roboto', fontSize: '14px' }}>From</Form.Label>
-                                        <Form.Control type="text" controlId="fromaddress" value={fromaddress} style={{ width: '200px', height: '30px', fontFamily: 'Roboto', fontSize: '14px' }} />
-                                    </Row> */}
-
                   <Form.Group className=" row" controlId="from">
                     <div
                       className=" d-flex col-md-8 mt-2"
                       style={{ gap: "65px" }}
                     >
                       <label className="form-label">From</label>
-                      <Form.Control type="text" required id="fromInput" />
+                      <Form.Control type="text" id="fromInput" />
                     </div>
                   </Form.Group>
                   <Form.Group className=" row" controlId="formToAddress">
