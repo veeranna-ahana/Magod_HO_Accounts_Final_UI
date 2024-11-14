@@ -27,10 +27,17 @@ export default function InvoiceList({
   //const dummyArray = [2147388451, 2147388456, 2147388459, 2147388460];
   const [dummyArray, setDummyArray] = useState([]);
 
+  // useEffect(() => {
+  //   setInvoiceListData([]);
+
+  //   if (flag) {
+  //     invoiceListSubmit();
+  //   }
+  // }, [selectedDate, selectedUnitName, flag]);
   useEffect(() => {
     setInvoiceListData([]);
 
-    if (flag) {
+    if (flag && selectedDate && selectedUnitName) {
       invoiceListSubmit();
     }
   }, [selectedDate, selectedUnitName, flag]);
@@ -749,9 +756,6 @@ export default function InvoiceList({
       } else if (response.data.message === "alter") {
         if (response.data.guids && response.data.guids.length > 0) {
           console.log("Received GUIDs:", response.data.guids);
-          // Handle the GUID array as needed, such as displaying it in the UI
-
-          // Compare GUIDs with invoiceListData
 
           response.data.guids.forEach((guid) => {
             const matchingInvoice = invoiceListData.find(
@@ -791,7 +795,7 @@ export default function InvoiceList({
             });
             console.log("dummy array 222222222:", dummyArray);
             if (matchingInvoice) {
-              toast.warn(`Invoice ${guid} is Created.`);
+              toast.success(`Invoice ${guid} is Created.`);
             } else {
               toast.success("Export succesfully");
             }

@@ -461,39 +461,66 @@ export default function PaymentReceiptFormTable({
           }
         );
 
-        if (response.data.message === "Exception") {
-          console.error("Failed to send XML data to Tally.");
-        } else if (response.data.company === "companyNot") {
+        if (response.data.company === "companyNot") {
           toast.error(`Company Account Name and GUID Mismatch for ${cmpName}`);
-        } else if (response.data.guids && response.data.guids.length > 0) {
-          console.log(" payment Received GUIDs:", response.data.guids);
-          // Handle the GUID array as needed, such as displaying it in the UI
+        } else if (response.data.message === "alter") {
+          if (response.data.guids && response.data.guids.length > 0) {
+            console.log(" payment Received GUIDs:", response.data.guids);
 
-          // Compare GUIDs with invoiceListData
-
-          response.data.guids.forEach((guid) => {
-            const matchingInvoice = paymentReceiptDetails.find(
-              (pay) => pay.RecdPVID === Number(guid)
-            );
-            console.log("guid 686:", guid, matchingInvoice.RecdPVID);
-            setDummyArray((prev) => {
-              if (!prev.includes(matchingInvoice.RecdPVID)) {
-                // Only push if RecdPVID is not already present
-                return [...prev, matchingInvoice.RecdPVID];
+            response.data.guids.forEach((guid) => {
+              const matchingInvoice = paymentReceiptDetails.find(
+                (pay) => pay.RecdPVID === Number(guid)
+              );
+              console.log("guid 686:", guid, matchingInvoice.RecdPVID);
+              setDummyArray((prev) => {
+                if (!prev.includes(matchingInvoice.RecdPVID)) {
+                  // Only push if RecdPVID is not already present
+                  return [...prev, matchingInvoice.RecdPVID];
+                }
+                return prev; // Return unchanged array if already present
+              });
+              console.log(
+                "dummy array 222222222 for payment receipts:",
+                dummyArray
+              );
+              if (matchingInvoice) {
+                // Invoice is already present
+                toast.warn(`Payment ${guid} is already present.`);
+              } else {
+                //toast.success("export succesfully");
               }
-              return prev; // Return unchanged array if already present
             });
-            console.log(
-              "dummy array 222222222 for payment receipts:",
-              dummyArray
-            );
-            if (matchingInvoice) {
-              // Invoice is already present
-              toast.warn(`Payment ${guid} is already present.`);
-            } else {
-              //toast.success("export succesfully");
-            }
-          });
+          }
+        } else if (response.data.message === "create") {
+          if (response.data.guids && response.data.guids.length > 0) {
+            console.log(" payment Received GUIDs:", response.data.guids);
+
+            response.data.guids.forEach((guid) => {
+              const matchingInvoice = paymentReceiptDetails.find(
+                (pay) => pay.RecdPVID === Number(guid)
+              );
+              console.log("guid 686:", guid, matchingInvoice.RecdPVID);
+              setDummyArray((prev) => {
+                if (!prev.includes(matchingInvoice.RecdPVID)) {
+                  // Only push if RecdPVID is not already present
+                  return [...prev, matchingInvoice.RecdPVID];
+                }
+                return prev; // Return unchanged array if already present
+              });
+              console.log(
+                "dummy array 222222222 for payment receipts:",
+                dummyArray
+              );
+              if (matchingInvoice) {
+                // Invoice is already present
+                toast.success(`Payment ${guid} is created succefully`);
+              } else {
+                //toast.success("export succesfully");
+              }
+            });
+          }
+        } else if (response.data.message === "Exception") {
+          console.log("message ===Exception ");
         }
       } else {
         console.log("File is not XML or missing.");

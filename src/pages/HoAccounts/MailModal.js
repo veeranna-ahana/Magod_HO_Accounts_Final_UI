@@ -14,15 +14,13 @@ import axios from "axios";
 import { baseURL } from "../../api/baseUrl";
 import Modal from "react-bootstrap/Modal";
 
-const {
-  // getRequest,
-  // postRequest,
-  postRequestFormData,
-} = require("../../api/apiinstance");
+const { postRequestFormData } = require("../../api/apiinstance");
 const { endpoints } = require("../../api/constants");
 
 function MailModal({ mailModal, setMailModal, xmlFile }) {
   const isFirstClickRef = useRef(true);
+
+  console.log("xml file", xmlFile);
 
   const sendmaildetails = async (e) => {
     e.preventDefault();
@@ -45,12 +43,15 @@ function MailModal({ mailModal, setMailModal, xmlFile }) {
 
     formData.append("fromAddress", from);
 
+    console.log("form datra", formData);
+    setMailModal(false);
+
     postRequestFormData(endpoints.sendAttachmentMails, formData, (data) => {
+      setMailModal(false);
       if (data != null) {
         if (isFirstClickRef.current) {
           toast.success("Email Sent Successfully..", {
             autoClose: 2000,
-            // Timeout in milliseconds (e.g., 3000ms = 3 seconds)
           });
           isFirstClickRef.current = false;
         }
@@ -61,9 +62,6 @@ function MailModal({ mailModal, setMailModal, xmlFile }) {
         }, 3000);
       }
     });
-
-    setMailModal(false);
-    toast.success("Mail sent Successfully");
   };
 
   let closesendmail = () => {
@@ -77,7 +75,6 @@ function MailModal({ mailModal, setMailModal, xmlFile }) {
     }, 3000);
   };
 
-  // const [mailModal, setMailModal] = useState(false)
   const sendModalopen = () => {
     setMailModal(true);
   };
@@ -88,13 +85,12 @@ function MailModal({ mailModal, setMailModal, xmlFile }) {
     <>
       <Modal show={mailModal} size="lg" onHide={handleClose}>
         <ModalHeader closeButton>
-          <ModalTitle style={{ fontSize: "14px" }}>Send Quotation</ModalTitle>
+          <ModalTitle style={{ fontSize: "14px" }}>Send Mail</ModalTitle>
         </ModalHeader>
         <ModalBody>
           <div className="form-style">
             <Col xs={12}>
               <div className="addquotecard">
-                {/* <button onClick={sendModalopen}>open </button> */}
                 <Form
                   style={{ padding: "0px 10px" }}
                   onSubmit={sendmaildetails}
@@ -106,7 +102,11 @@ function MailModal({ mailModal, setMailModal, xmlFile }) {
                       style={{ gap: "65px" }}
                     >
                       <label className="form-label">From</label>
-                      <Form.Control type="text" id="fromInput" />
+                      <Form.Control
+                        type="text"
+                        id="fromInput"
+                        style={{ fontSize: "12px" }}
+                      />
                     </div>
                   </Form.Group>
                   <Form.Group className=" row" controlId="formToAddress">
@@ -115,7 +115,11 @@ function MailModal({ mailModal, setMailModal, xmlFile }) {
                       style={{ gap: "80px" }}
                     >
                       <label className="form-label">To</label>
-                      <Form.Control type="text" required />
+                      <Form.Control
+                        type="text"
+                        required
+                        style={{ fontSize: "12px" }}
+                      />
                     </div>
                   </Form.Group>
 
@@ -125,7 +129,7 @@ function MailModal({ mailModal, setMailModal, xmlFile }) {
                       style={{ gap: "80px" }}
                     >
                       <label className="form-label">CC</label>
-                      <Form.Control type="text" />
+                      <Form.Control type="text" style={{ fontSize: "12px" }} />
                     </div>
                   </Form.Group>
                   <Form.Group as={Row} controlId="attachments">
@@ -143,7 +147,7 @@ function MailModal({ mailModal, setMailModal, xmlFile }) {
                       style={{ gap: "50px" }}
                     >
                       <label className="form-label">Subject</label>
-                      <Form.Control type="text" />
+                      <Form.Control type="text" style={{ fontSize: "12px" }} />
                     </div>
                   </Form.Group>
                   <Form.Group as={Row} controlId="formMessageBody">
@@ -155,28 +159,29 @@ function MailModal({ mailModal, setMailModal, xmlFile }) {
                       <Form.Control
                         as="textarea"
                         rows={50}
-                        style={{ height: "130px", overflowY: "scroll" }}
+                        style={{
+                          height: "130px",
+                          overflowY: "scroll",
+                          fontSize: "12px",
+                        }}
                       />
                     </div>
                   </Form.Group>
 
-                  <Form.Group className="row justify-content-center mt-3 mb-5">
-                    <button
-                      type="submit"
-                      className="button-style"
-                      style={{ width: "120px" }}
-                    >
-                      Send Mail
-                    </button>
-                    <button
-                      type="button"
-                      className="button-style"
-                      id="close"
-                      onClick={closesendmail}
-                      style={{ width: "110px" }}
-                    >
-                      Close
-                    </button>
+                  <Form.Group className="row mt-3 mb-5">
+                    <div style={{ marginLeft: "200px" }}>
+                      <button type="submit" className="button-style">
+                        Send Mail
+                      </button>
+                      <button
+                        type="button"
+                        className="button-style"
+                        id="close"
+                        onClick={closesendmail}
+                      >
+                        Close
+                      </button>
+                    </div>
                   </Form.Group>
                 </Form>
               </div>

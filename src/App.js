@@ -76,9 +76,9 @@ function App() {
 
             <Route path="Sync">
               <Route index={true} element={<HoAccounts />} />
-              <Route path="AccountSync" element={<AccountSync/>} />
-              <Route path="FromUnitSync" element={<SyncUnit/>} />
-              <Route path="FromUnitUpdate" element={<UnitUpdate/>} />
+              <Route path="AccountSync" element={<AccountSync />} />
+              <Route path="FromUnitSync" element={<SyncUnit />} />
+              <Route path="FromUnitUpdate" element={<UnitUpdate />} />
               <Route path="SyncExport" element={<Sync />} />
               <Route path="ShowSync" element={<SyncCall />} />
             </Route>
@@ -88,8 +88,6 @@ function App() {
               <Route path="VendorList" element={<VendorList />} />
               <Route path="PurchaseList" element={<PurchaseInvoiceList />} />
             </Route>
-
-            {/* <Route path="TallyExport" element={<TallyExportForm/>} /> */}
           </Route>
         </Route>
       </Routes>

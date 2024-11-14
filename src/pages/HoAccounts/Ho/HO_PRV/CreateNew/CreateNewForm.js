@@ -17,7 +17,7 @@ export default function CreateNewForm() {
   let onAccountValue1 = adjustmentRows
     ? parseInt(adjustmentRows.On_account)
     : 0;
-  console.log("adj unit", adjustmentRows);
+
   const adj_unitname = adj_unit;
 
   let fixedOnaccount = adjustmentRows
@@ -38,7 +38,7 @@ export default function CreateNewForm() {
   const [getCustNames, setGetCustNames] = useState([]);
   const [selectedOption, setSelectedOption] = useState([]);
   const [selectedCustOption, setSelectedCustOption] = useState([]);
-  const [unitName, setUnitName] = useState("Jigani");
+  // const [unitName, setUnitName] = useState("Jigani");
   const [showPostModal, setShowPostModal] = useState(false);
 
   const [pdfVoucher, setPdfVoucher] = useState(false);
@@ -123,7 +123,7 @@ export default function CreateNewForm() {
     );
 
     const insertedRecord = response.data.insertedRecord;
-    // console.log("inserrecord", insertedRecord);
+
     getleftandRightTabledata(
       insertedRecord[0].Cust_code,
       insertedRecord[0].HOPrvId
@@ -150,13 +150,11 @@ export default function CreateNewForm() {
       const resp = await axios.post(baseURL + "/createnew/getleftTable", {
         receipt_id: hoprvID,
       });
-      console.log("left table daat", resp);
 
       try {
         const response = await axios.get(
           baseURL + `/createnew/ho_openInvoicesADJUST?customercode=${cust_code}`
         );
-        //console.log("open inv ", response);
 
         setRvData((prevRvData) => ({
           ...prevRvData,
@@ -168,12 +166,8 @@ export default function CreateNewForm() {
           },
           //  firstTableArray:resp.data.Result
         }));
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+      } catch (error) {}
+    } catch (error) {}
   };
 
   const formatDate = (dateString) => {
@@ -213,9 +207,7 @@ export default function CreateNewForm() {
       .then((res) => {
         setGetUnitNames(res.data);
       })
-      .catch((err) => {
-        console.log("err in table", err);
-      });
+      .catch((err) => {});
   };
 
   const handleCustomerNames = () => {
@@ -224,9 +216,7 @@ export default function CreateNewForm() {
       .then((res) => {
         setGetCustNames(res.data);
       })
-      .catch((err) => {
-        console.log("err in table", err);
-      });
+      .catch((err) => {});
   };
 
   const handleSelectUnit = (selected) => {
@@ -259,11 +249,6 @@ export default function CreateNewForm() {
           }
         );
 
-        console.log("hoprvIdResponse", hoprvIdResponse.data[0]?.HOPrvId);
-        console.log("Amount", hoprvIdResponse.data[0]?.Amount);
-
-        console.log("hoprvIdResponse", hoprvIdResponse.data[0]);
-
         // Update state based on API responses
         setRvData((prevRvData) => ({
           ...prevRvData,
@@ -277,9 +262,7 @@ export default function CreateNewForm() {
             // Amount: hoprvIdResponse.data[0]?.Amount || 0,
           },
         }));
-      } catch (error) {
-        console.log("Error in API request", error);
-      }
+      } catch (error) {}
     }
   };
 
@@ -347,7 +330,7 @@ export default function CreateNewForm() {
       );
 
       if (sumofRecv > val) {
-        toast.error("Cannot Receive More than On_account Amount22");
+        toast.error("Cannot Receive More than On_account Amount");
         stopExecution = true;
         return;
       }
@@ -373,8 +356,6 @@ export default function CreateNewForm() {
           }
         );
 
-        console.log("Insert Response", insertResponse.data.data.insertId);
-
         if (insertResponse.data.success) {
           toast.success("Data inserted successfully!");
 
@@ -389,8 +370,6 @@ export default function CreateNewForm() {
           toast.error("Failed to insert data. Please try again.");
         }
       } else {
-        console.log("Amount  else:", rvData.postData.Cust_code);
-
         //  const unitToStore = getUnit === ' ' ? rvData.postData.UnitName : getUnit;
         const custCodetostore =
           getCustCode === "" ? rvData.postData.Cust_code : getCustCode;
@@ -408,7 +387,6 @@ export default function CreateNewForm() {
             Amount: rvData.postData.Amount,
           }
         );
-        console.log("Update Response", updateResponse.data);
 
         if (updateResponse.data.success) {
           toast.success("Data updated successfully!");
@@ -427,6 +405,8 @@ export default function CreateNewForm() {
         }
         //update on account value in magod_hq_mis.unit_payment_recd_voucher_register
 
+        console.log("update onaccount in hnadleSave only ", onAccountValue22);
+
         const updateOnaccount = await axios.put(
           baseURL + "/createnew/updateOnaccountValue",
           {
@@ -434,12 +414,129 @@ export default function CreateNewForm() {
             id: id,
           }
         );
-
-        console.log("dfghj", updateOnaccount.data);
       }
-    } catch (error) {
-      console.error("Error in save API request", error);
-    }
+    } catch (error) {}
+  };
+
+  const handleSaveOnAccountUpdate = async () => {
+    let val =
+      onAccountValue1 === 0 ||
+      onAccountValue22 === 0 ||
+      onAccountValue1 !== fixedOnaccount
+        ? fixedOnaccount
+        : onAccountValue1;
+    let stopExecution = false;
+
+    try {
+      if (rvData.data.receipt_details) {
+        rvData.data.receipt_details.forEach((selectedRow) => {
+          if (stopExecution) return;
+          // Your code logic for each item goes here
+          if (parseFloat(selectedRow.Receive_Now) < 0) {
+            toast.error("Incorrect Value");
+            return;
+          }
+
+          const formattedValue = parseFloat(selectedRow.Receive_Now || 0);
+          const invoiceAmount = parseFloat(selectedRow.Inv_Amount || 0);
+          const amountReceived = parseFloat(selectedRow.Amt_received || 0);
+
+          if (formattedValue > invoiceAmount - amountReceived) {
+            toast.error("Cannot Receive More than Invoice Amount");
+            stopExecution = true; // Set flag to true to stop execution
+
+            return;
+          } else if (formattedValue > val) {
+            toast.error("Cannot Receive More than On_account Amount");
+            stopExecution = true;
+            return;
+          }
+        });
+      }
+
+      if (stopExecution) return;
+
+      if (!rvData.postData.TxnType) {
+        // toast.error("Please Select TxnType.");
+        return;
+      }
+
+      if (!rvData.postData.Description) {
+        // toast.error("Add Description for Voucher");
+        return;
+      }
+
+      if (!rvData.postData.Amount) {
+        // toast.error("Please provide valid Amount.");
+        return;
+      }
+
+      const sumofRecv = rvData.data.receipt_details.reduce(
+        (sum, obj) => sum + parseFloat(obj.Receive_Now),
+        0
+      );
+
+      if (sumofRecv > val) {
+        toast.error("Cannot Receive More than On_account Amount22");
+        stopExecution = true;
+        return;
+      }
+
+      // If HO_PrvId is not present, it's an insert operation
+      if (!rvData.postData.HO_PrvId) {
+        const unitToStore =
+          getUnit === " " ? rvData.postData.UnitName : getUnit;
+        const custCodetostore =
+          getCustCode === "" ? rvData.postData.Cust_code : getCustCode;
+        const custnametostore =
+          getCustomer === "" ? rvData.postData.CustName : getCustCode;
+      } else {
+        //  const unitToStore = getUnit === ' ' ? rvData.postData.UnitName : getUnit;
+        const custCodetostore =
+          getCustCode === "" ? rvData.postData.Cust_code : getCustCode;
+        const custnametostore =
+          getCustomer === "" ? rvData.postData.CustName : getCustCode;
+        const updateResponse = await axios.post(
+          baseURL + "/hoCreateNew/updateData",
+          {
+            unit: adj_unitname,
+            HO_PrvId: rvData.postData.HO_PrvId,
+            custCode: custCodetostore,
+            custName: custnametostore,
+            txnType: rvData.postData.TxnType,
+            description: rvData.postData.Description,
+            Amount: rvData.postData.Amount,
+          }
+        );
+
+        if (updateResponse.data.success) {
+          // toast.success("Data updated successfully!");
+        } else {
+          toast.error("Failed to update data. Please try again.");
+        }
+
+        //update the Receive_Now amount
+        if (rvData.data.receipt_details.length > 0) {
+          const updateReceive_Now = await axios.put(
+            baseURL + "/createnew/updateReceiveNowAmount",
+            {
+              receipt_details: rvData.data.receipt_details,
+            }
+          );
+        }
+        //update on account value in magod_hq_mis.unit_payment_recd_voucher_register
+
+        console.log("update onaccount in hnadleSave only ", onAccountValue22);
+
+        const updateOnaccount = await axios.put(
+          baseURL + "/createnew/updateOnaccountValue",
+          {
+            on_account: onAccountValue22,
+            id: id,
+          }
+        );
+      }
+    } catch (error) {}
   };
 
   const handleTxnTYpeChange = (event) => {
@@ -530,14 +627,6 @@ export default function CreateNewForm() {
       if (stopExecution) return;
       sum = sumOfReceive_Now + onAccountValue22;
 
-      console.log(
-        "onaccount value aftr delete",
-        sumOfReceive_Now,
-        sum,
-        onAccountValue22,
-        onAccountValue1
-      );
-
       axios
         .delete(
           baseURL + "/createnew/deleteleft",
@@ -552,8 +641,6 @@ export default function CreateNewForm() {
           }
         )
         .then((resp) => {
-          console.log("Response data:", resp.data);
-
           if (resp.data?.Status === "Success") {
             setRvData((prevData) => ({
               ...prevData,
@@ -570,9 +657,7 @@ export default function CreateNewForm() {
             navigate("/HOAccounts/HO/RvAdjustment");
           }
         })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+        .catch((error) => {});
     } else {
       axios
         .delete(
@@ -588,8 +673,6 @@ export default function CreateNewForm() {
           }
         )
         .then((resp) => {
-          console.log("Response data:", resp.data);
-
           if (resp.data?.Status === "Success") {
             setRvData((prevData) => ({
               ...prevData,
@@ -606,16 +689,52 @@ export default function CreateNewForm() {
             navigate("/HOAccounts/HO/RvAdjustment");
           }
         })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+        .catch((error) => {});
     }
   };
 
   const addInvoice = async () => {
-    console.log("updated on account value", onAccountValue22);
-    console.log("intial onaccount value", onAccountValue1);
     onAccountValue = onAccountValue22;
+
+    /////////
+
+    let stopExecution = false;
+
+    if (rvData.data.receipt_details) {
+      let val =
+        onAccountValue1 === 0 ||
+        onAccountValue22 === 0 ||
+        onAccountValue1 !== fixedOnaccount
+          ? fixedOnaccount
+          : onAccountValue1;
+      rvData.data.receipt_details.forEach((selectedRow) => {
+        if (stopExecution) return;
+        // Your code logic for each item goes here
+        if (parseFloat(selectedRow.Receive_Now) < 0) {
+          toast.error("Incorrect Value");
+          return;
+        }
+
+        const formattedValue = parseFloat(selectedRow.Receive_Now || 0);
+        const invoiceAmount = parseFloat(selectedRow.Inv_Amount || 0);
+        const amountReceived = parseFloat(selectedRow.Amt_received || 0);
+
+        if (formattedValue > invoiceAmount - amountReceived) {
+          toast.error("Cannot Receive More than Invoice Amount");
+          stopExecution = true; // Set flag to true to stop execution
+
+          return;
+        } else if (formattedValue > val) {
+          toast.error("Cannot Receive More than On_account Amount");
+          stopExecution = true;
+          return;
+        }
+      });
+    }
+
+    if (stopExecution) return;
+    //////
+
     try {
       const selectedRows = rvData.secondTableArray;
 
@@ -624,9 +743,9 @@ export default function CreateNewForm() {
         return;
       }
       // Extract On Account value from rvData.postData
-
+      let insufficientAmountDisplayed = false;
       const rowsToAdd = [];
-      let stopExecution = false;
+      let stopExecution = 0;
 
       for (const row of selectedRows) {
         // Check if the row is not already in receipt_details
@@ -634,52 +753,54 @@ export default function CreateNewForm() {
           (existingRow) => existingRow.Dc_inv_no === row.DC_Inv_No
         );
 
-        console.log("onacc", onAccountValue);
-        //  console.log("onmaccount11", onAccountValue)
-
-        // If the row is not already added, add it to rowsToAdd
         if (!isRowAlreadyAdded) {
           const diff = parseInt(row.GrandTotal) - parseInt(row.PymtAmtRecd);
-          console.log("difference", diff);
 
           if (onAccountValue <= 0) {
-            console.log("onacc1111111111111111", onAccountValue);
-            toast.error("Don't have sufficient Amount to Adjust");
-            // stopExecution = true;
-            // return;
+            stopExecution++;
+            // toast.error("Don't have sufficient Amount to Adjust");
           } else if (onAccountValue < diff) {
-            console.log("onacc222222222222", onAccountValue);
-
             // If onAccountValue is less than the difference, set Receive to onAccountValue
             rowsToAdd.push({ ...row, Receive: onAccountValue });
             onAccountValue =
               onAccountValue - (diff >= onAccountValue ? onAccountValue : diff);
           } else {
             // Otherwise, set Receive to the difference
+
             rowsToAdd.push({ ...row, Receive: diff });
             onAccountValue =
               onAccountValue - (diff >= onAccountValue ? onAccountValue : diff);
           }
 
-          console.log("onmaccount123", onAccountValue);
           setOnAccountValue(onAccountValue);
           // Moved here to log updated value
         }
       }
-      if (rowsToAdd.length === 0) {
+      // if (isRowAlreadyAdded ) {
+      //   toast.error("Invoice already exists");
+      //   return;
+      // }
+
+      if (stopExecution > 0) {
+        toast.error("Don't have sufficient Amount to Adjust");
+      }
+      const allInvoicesExist = selectedRows.every((row) =>
+        rvData.data.receipt_details.some(
+          (existingRow) => existingRow.Dc_inv_no === row.DC_Inv_No
+        )
+      );
+      if (allInvoicesExist) {
+        // Display the toast only if all selected rows already exist
         toast.error("Invoice already exists");
         return;
       }
 
-      console.log("reow data adjustment", rowsToAdd);
       const response = await axios.post(baseURL + "/hoCreateNew/addInvoice", {
         selectedRows: rowsToAdd,
         HO_PrvId: rvData.postData.HO_PrvId,
 
         unit: getUnit,
       });
-
-      console.log("respnse data add", response.data);
 
       const totalReceiveNow = response.data.reduce(
         (total, item) => total + parseFloat(item.Receive_Now || 0),
@@ -742,10 +863,8 @@ export default function CreateNewForm() {
         }
       );
 
-      console.log("update onaccount value in addinvoice", updateOnaccount);
       return response.data;
     } catch (error) {
-      console.error("Error adding rows to voucher:", error);
       throw error;
     }
   };
@@ -762,21 +881,25 @@ export default function CreateNewForm() {
           : parseInt(item.Receive_Now, 10) || 0),
       0
     );
-    let a =
+    let amt =
       parseInt(rvData.postData.Amount) > 0
         ? parseInt(rvData.postData.Amount)
         : 0;
-    let w = parseInt(onAccountValue1) + a;
+    let w = parseInt(onAccountValue1) + amt;
 
     rvData.data.receipt_details.forEach((item) => {
-      console.log("dc inv no", item.Dc_inv_no);
-      console.log("onaccount value", onAccountValue1);
       if (item.Dc_inv_no === rowData.Dc_inv_no) {
         // setOnAccountValue(onAccountValue1 - totalReceiveNow)
+        console.log(
+          "fixedOnaccount - totalReceiveNow",
+          fixedOnaccount - totalReceiveNow
+        );
         setOnAccountValue(fixedOnaccount - totalReceiveNow);
-      } else {
-        setOnAccountValue(w - totalReceiveNow);
       }
+      //  else {
+      //   console.log("w - totalReceiveNow", w - totalReceiveNow);
+      //   // setOnAccountValue(w - totalReceiveNow);
+      // }
     });
 
     const updateAmount = await axios.post(
@@ -804,8 +927,6 @@ export default function CreateNewForm() {
 
     rvData.firstTableArray = [];
   };
-
-  console.log("handle change onccount value", onAccountValue22);
 
   //update the Receive_now value when onchange
   useEffect(() => {
@@ -883,17 +1004,10 @@ export default function CreateNewForm() {
     }
   };
 
-  console.log(
-    "ho prv iddddddd",
-    rvData.postData.HO_PrvId,
-    rvData.postData.CustName
-  );
   const hprvd = rvData.postData.HO_PrvId;
   const cu = rvData.postData.CustName;
-  console.log("after cancel post ", hprvd, cu);
 
   const cancelllationSubmit = async () => {
-    console.log("rece now sum cancel ()", sumofReceive);
     const cancelData = await axios.post(baseURL + "/createNew/cancelUpdate", {
       HO_PrvId: rvData.postData.HO_PrvId,
 
@@ -901,8 +1015,6 @@ export default function CreateNewForm() {
       totalReceiveNow: sumofReceive,
       id: id,
     });
-
-    console.log("data after cancel ", cancelData.data.StatusCancel);
 
     setRvData((prevRvData) => ({
       ...prevRvData,
@@ -915,30 +1027,84 @@ export default function CreateNewForm() {
   };
 
   useEffect(() => {
-    const sumofRecv = rvData.data.receipt_details.reduce(
-      (sum, obj) => sum + parseFloat(obj.Receive_Now),
-      0
-    );
+    let stopExecution = false;
 
-    if (sumofRecv <= onAccountValue1) {
-      const updateOnaccount = axios.put(
-        baseURL + "/createnew/updateOnaccountValue",
-        {
-          on_account: onAccountValue22,
-          id: id,
+    if (rvData.data && rvData.data.receipt_details) {
+      const sumofRecv = rvData.data.receipt_details.reduce((sum, obj) => {
+        const formattedValue = parseFloat(obj.Receive_Now || 0);
+        const invoiceAmount = parseFloat(obj.Inv_Amount || 0);
+        const amountReceived = parseFloat(obj.Amt_received || 0);
+
+        // Check if Receive_Now is invalid or exceeds invoice amount
+        if (formattedValue < 0) {
+          toast.warn("Incorrect Value");
+          stopExecution = true;
+          return sum;
         }
-      );
+        if (formattedValue > invoiceAmount - amountReceived) {
+          // toast.warn("Cannot Receive More than Invoice Amount");
+          stopExecution = true;
+          return sum;
+        }
+        return sum + formattedValue;
+      }, 0);
+
+      // Only proceed to update if there were no issues (stopExecution is false)
+      if (!stopExecution && sumofRecv <= onAccountValue1) {
+        console.log(
+          "onaccount in useEffect receive now ",
+          onAccountValue22,
+          "sumRecv",
+          sumofRecv,
+          "onAccountValue1",
+          onAccountValue1
+        );
+        const updateOnAccountValue = async () => {
+          try {
+            await axios.put(baseURL + "/createnew/updateOnaccountValue", {
+              on_account: onAccountValue22, // Using sumofRecv directly
+              id: id,
+            });
+            console.log("Database updated successfully.");
+          } catch (error) {
+            console.error("Error updating database:", error);
+          }
+        };
+
+        updateOnAccountValue(); // Call the async function once
+      }
     }
-  }, [rvData.receipt_details, rvData.firstTableArray]);
+  }, [rvData.data.receipt_details, onAccountValue22, id]);
 
-  let totalamnt = 0;
+  // useEffect(() => {
+  //   const updateOnAccountValue = async () => {
+  //     const sumofRecv = rvData.data.receipt_details.reduce(
+  //       (sum, obj) => sum + parseFloat(obj.Receive_Now),
+  //       0
+  //     );
+  //     console.log(
+  //       "onaccount in useEffect receive now ",
+  //       onAccountValue22,
+  //       "sumRecv",
+  //       sumofRecv,
+  //       "onAccountValue1",
+  //       onAccountValue1
+  //     );
 
-  console.log(
-    "outside  ....onaccot22",
-    onAccountValue22,
-    "onacount1111",
-    onAccountValue1
-  );
+  //     if (sumofRecv <= onAccountValue1) {
+  //       try {
+  //         await axios.put(baseURL + "/createnew/updateOnaccountValue", {
+  //           on_account: onAccountValue22,
+  //           id: id,
+  //         });
+  //       } catch (error) {
+  //         console.error("Error updating database: ", error);
+  //       }
+  //     }
+  //   };
+
+  //   updateOnAccountValue();
+  // }, [rvData.data.receipt_details, onAccountValue22]);
 
   const removeInvoice = async () => {
     // let val=onAccountValue22===0 || onAccountValue1==0 ? fixedOnaccount  : onAccountValue1
@@ -950,14 +1116,6 @@ export default function CreateNewForm() {
         : onAccountValue1;
     let stopExecution = false;
 
-    console.log(
-      "onaccot22",
-      onAccountValue22,
-      "onacount1111",
-      onAccountValue1,
-      "Val",
-      val
-    );
     try {
       const isAnyEmptyReceiveNow = rvData.firstTableArray.some(
         (row) => row.Receive_Now === ""
@@ -1008,6 +1166,12 @@ export default function CreateNewForm() {
       const receiveNowValue = parseFloat(selectedRow.Receive_Now || 0);
       const invamount = parseFloat(rvData.firstTableArray[0].Inv_Amount || 0);
 
+      const receviedCoulumn = parseFloat(
+        rvData.firstTableArray[0].Amt_received
+      );
+
+      console.log("received column ", receviedCoulumn);
+
       let totalReceiveNow = rvData.firstTableArray.reduce(
         (sum, obj) => sum + parseFloat(obj.Receive_Now),
         0
@@ -1020,6 +1184,7 @@ export default function CreateNewForm() {
       }
 
       // setAmnt(totalReceiveNow)
+
       const response = await axios.post(
         baseURL + "/hoCreateNew/removeInvoice",
         {
@@ -1027,6 +1192,8 @@ export default function CreateNewForm() {
           HO_PrvId: rvData.postData.HO_PrvId,
         }
       );
+
+      console.log("response from remove invoice", response.data);
 
       // Convert On_account to a number, round it to 2 decimal places, then parse it back to a number
       const roundedReceiveNow = parseFloat(
@@ -1063,89 +1230,50 @@ export default function CreateNewForm() {
         },
       }));
 
+      let totalamnt = 0;
       if (totalReceiveNow <= val) {
         if (totalReceiveNow === invamount) {
-          let totalamnt = totalReceiveNow + onAccountValue22;
+          totalamnt = totalReceiveNow + onAccountValue22;
 
           setOnAccountValue(totalamnt);
         } else if (
           totalReceiveNow < invamount &&
           invamount !== onAccountValue1
         ) {
-          setOnAccountValue(receiveNowValue + onAccountValue22);
+          console.log(
+            "recev now and onaccnt22",
+            receiveNowValue + onAccountValue22
+          );
+          totalamnt = receiveNowValue + onAccountValue22;
+
+          setOnAccountValue(totalamnt);
         } else if (totalReceiveNow < invamount) {
-          let totalamnt = totalReceiveNow + onAccountValue22;
+          totalamnt = totalReceiveNow + onAccountValue22;
+
           setOnAccountValue(totalamnt);
         } else {
-          let totalamnt = invamount + onAccountValue22;
+          totalamnt = invamount - receviedCoulumn + onAccountValue22;
           setOnAccountValue(totalamnt);
         }
       }
 
-      // if (totalReceiveNow <= val) {
-      //   if (totalReceiveNow === invamount) {
-      //     let totalamnt = totalReceiveNow + onAccountValue22
-
-      //     setOnAccountValue(totalamnt)
-      //   }
-
-      //   else if (totalReceiveNow < invamount && invamount !== val) {
-
-      //     setOnAccountValue(receiveNowValue + onAccountValue22)
-      //   }
-      //   else if (totalReceiveNow < invamount) {
-
-      //     let totalamnt = (totalReceiveNow) + onAccountValue22
-      //     setOnAccountValue(totalamnt)
-      //   }
-      //   else {
-
-      //     let totalamnt = (invamount) + onAccountValue22
-      //     setOnAccountValue(totalamnt)
-      //   }
-
-      // }
-
-      // if (totalReceiveNow <= fixedOnaccount) {
-      //   if (totalReceiveNow === invamount) {
-      //     let totalamnt = totalReceiveNow + onAccountValue22
-
-      //     setOnAccountValue(totalamnt)
-      //   }
-
-      //   else if (totalReceiveNow < invamount && invamount !== fixedOnaccount) {
-
-      //     console.log("recenowwwwwwwwwwwwwwwwwwwwwwww", receiveNowValue, val);
-      //     setOnAccountValue(receiveNowValue + onAccountValue22)
-      //   }
-      //   else if (totalReceiveNow < invamount) {
-
-      //     let totalamnt = (totalReceiveNow) + onAccountValue22
-      //     setOnAccountValue(totalamnt)
-      //   }
-      //   else {
-
-      //     let totalamnt = (invamount) + onAccountValue22
-      //     setOnAccountValue(totalamnt)
-      //   }
-
-      // }
-      console.log("total onaccount inside method", onAccountValue22);
       // set(amnttt)
+      console.log("onaccount value after remove invoice ", onAccountValue22);
+      console.log(" totalamnt 222", totalamnt);
+      console.log("totalreceive now----", totalReceiveNow);
+      console.log("invAmount-----", invamount);
 
       const updateOnaccount = await axios.put(
         baseURL + "/createnew/updateOnaccountValue",
         {
-          on_account: onAccountValue22,
+          // on_account: onAccountValue22,
+          on_account: totalamnt,
+
           id: id,
         }
       );
-    } catch (error) {
-      console.error("Error removing voucher:", error);
-    }
+    } catch (error) {}
   };
-
-  console.log("total onaccount valuw2", onAccountValue22);
 
   const getDCNo = async () => {
     const srlType = "HO PaymentRV";
@@ -1161,11 +1289,7 @@ export default function CreateNewForm() {
         ResetValue: ResetValue,
         VoucherNoLength: VoucherNoLength,
       });
-
-      console.log("getDCNo Responseeeeeeeeeeeeee", response.data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    } catch (error) {}
   };
 
   const postInvoice = () => {
@@ -1230,8 +1354,6 @@ export default function CreateNewForm() {
     }
   };
 
-  console.log("rectttttttttt", rvData.data.receipt_details);
-
   const handlePostYes = async () => {
     let val =
       onAccountValue1 === 0 ||
@@ -1239,7 +1361,6 @@ export default function CreateNewForm() {
       onAccountValue1 !== fixedOnaccount
         ? fixedOnaccount
         : onAccountValue1;
-    console.log("rece now sum post yes", sumofReceive);
 
     setShowPostModal(false);
     let stopExecution = false;
@@ -1287,8 +1408,6 @@ export default function CreateNewForm() {
         id: id,
       });
 
-      console.log("PostInvoice Response", response.data);
-
       // Update receipt_details and On_account after removing voucher
       setRvData((prevRvData) => ({
         ...prevRvData,
@@ -1311,9 +1430,7 @@ export default function CreateNewForm() {
         firstTableArray: [],
         secondTableArray: [],
       }));
-    } catch (error) {
-      console.error("Error removing voucher post button:", error);
-    }
+    } catch (error) {}
   };
 
   function formatAmount(amount) {
@@ -1327,7 +1444,6 @@ export default function CreateNewForm() {
   }
 
   const PaymentReceipts = useCallback((e) => {
-    console.log("Selected value:", e.target.value);
     const { name, value } = e.target;
 
     setRvData((prevRvData) => ({
@@ -1338,8 +1454,6 @@ export default function CreateNewForm() {
       },
     }));
   }, []);
-
-  console.log("firstTableArray", rvData.firstTableArray);
 
   //store your postdata into  receipt_data
   useEffect(() => {
@@ -1360,8 +1474,6 @@ export default function CreateNewForm() {
   const handleReasonChange = (event) => {
     const newValue = event.target.value;
     setReason(event.target.value);
-    // Do something with the new value, such as storing it in state
-    console.log("New value of the textarea:", newValue);
   };
 
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
@@ -1373,7 +1485,6 @@ export default function CreateNewForm() {
     setSortConfig({ key, direction });
   };
 
-  console.log("sort congig ", sortConfig);
   const sortedData = () => {
     const dataCopy = [...rvData.data.receipt_details];
 
@@ -1412,7 +1523,6 @@ export default function CreateNewForm() {
     setSortConfigForInv({ key, direction });
   };
 
-  console.log("sort congig for open invoice", sortConfigForInv);
   const sortedDataForInv = () => {
     const dataCopy = [...rvData.data.inv_data];
 

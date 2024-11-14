@@ -11,6 +11,7 @@ import Tab from "react-bootstrap/Tab";
 import InvoiceList from "./InvoiceListTab/InvoiceList";
 import PaymentReceiptFormTable from "./PaymentReceiptTab/PaymentReceiptFormTable";
 import HOPaymentReceipt from "./HOPaymentReceiptTab/HOPaymentReceipt";
+import { toast } from "react-toastify";
 
 export default function TallyExportForm({}) {
   const [selectedDate, setSelectedDate] = useState();
@@ -27,8 +28,10 @@ export default function TallyExportForm({}) {
   };
 
   const onLoadDataClick = () => {
-    if (selectedUnitName) {
+    if (selectedUnitName[0] && selectedDate) {
       setFlag(true);
+    } else {
+      toast.warn("Select date and unit ");
     }
   };
   // console.log("selcted date", selectedDate);
