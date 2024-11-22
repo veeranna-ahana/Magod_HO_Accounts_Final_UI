@@ -755,7 +755,7 @@ export default function InvoiceList({
         toast.error(`Company Account Name and GUID Mismatch for ${cmpName}`);
       } else if (response.data.message === "alter") {
         if (response.data.guids && response.data.guids.length > 0) {
-          console.log("Received GUIDs:", response.data.guids);
+          console.log("Received GUIDs for Alter:", response.data.guids);
 
           response.data.guids.forEach((guid) => {
             const matchingInvoice = invoiceListData.find(
@@ -793,7 +793,7 @@ export default function InvoiceList({
               }
               return prev; // Return unchanged array if already present
             });
-            console.log("dummy array 222222222:", dummyArray);
+            console.log("Received GUIDs for create:", response.data.guids);
             if (matchingInvoice) {
               toast.success(`Invoice ${guid} is Created.`);
             } else {

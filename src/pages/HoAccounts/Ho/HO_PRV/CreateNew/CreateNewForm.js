@@ -996,11 +996,13 @@ export default function CreateNewForm() {
   };
 
   const cancelYes = () => {
-    if (reason.length > 15) {
+    const trimmedReason = reason.trim(); // Remove leading and trailing whitespace
+
+    if (trimmedReason.length > 15) {
       setCancelPopup(false);
       cancelllationSubmit();
     } else {
-      toast.error("Need more than 15 chracters");
+      toast.error("Reason must have more than 15 valid characters.");
     }
   };
 
@@ -1615,6 +1617,7 @@ export default function CreateNewForm() {
             id="TxnType"
             onChange={PaymentReceipts}
             value={rvData.postData.TxnType}
+            disabled
           >
             <option value="">Select</option>
             <option value="Bank">Bank</option>
@@ -1668,6 +1671,7 @@ export default function CreateNewForm() {
             name="HORefNo"
             onChange={PaymentReceipts}
             value={rvData.postData.HORefNo}
+            disabled
           />
         </div>
 
@@ -1676,7 +1680,7 @@ export default function CreateNewForm() {
           <input
             class="in-field"
             name="Status"
-            onChange={PaymentReceipts}
+            //  onChange={PaymentReceipts}
             disabled={
               rvData && rvData.postData.Status !== "Draft"
                 ? rvData.postData.Status

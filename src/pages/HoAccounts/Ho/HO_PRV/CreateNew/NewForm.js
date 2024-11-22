@@ -183,7 +183,8 @@ export default function NewForm() {
 
     let cust = selectedCustomer.Cust_Code;
 
-    console.log("cust code", selectedCustomer);
+    console.log("cust code  and getUnit", selectedCustomer);
+    console.log("getUnit", getUnit);
 
     setRvData((prevState) => ({
       ...prevState,
@@ -195,7 +196,7 @@ export default function NewForm() {
       },
     }));
 
-    if (selected.length > 0) {
+    if (selected.length > 0 && getUnit) {
       try {
         const invoicesResponse = await axios.get(
           baseURL +
@@ -405,8 +406,14 @@ export default function NewForm() {
       return;
     }
 
-    if (rvData.postData.CustName === "" || rvData.postData.TxnType === "") {
-      toast.error("Customer Name and Transaction type can not be empty");
+    if (
+      rvData.postData.CustName === "" ||
+      rvData.postData.TxnType === "" ||
+      rvData.postData.Description === ""
+    ) {
+      toast.warn(
+        "Customer Name ,Description and Transaction type can not be empty"
+      );
     } else {
       try {
         const response = await axios.post(
@@ -547,7 +554,7 @@ export default function NewForm() {
 
   const addRowData = async () => {
     if (!rvData.postData.HO_PrvId) {
-      toast.error("Save the Details");
+      toast.warn("Save the Details");
       return;
     }
 
@@ -1255,7 +1262,9 @@ export default function NewForm() {
             onChange={handleSelectCustomer}
             selected={selectedCustOption}
             disabled={
-              rowData || rvData.postData.Status != "Draft"
+              rvData.data.inv_data?.length > 0 ||
+              rowData ||
+              rvData.postData.Status != "Draft"
                 ? rvData.postData.Status
                 : ""
             }
@@ -1345,7 +1354,7 @@ export default function NewForm() {
           <input
             className="in-field"
             name="Status"
-            onChange={PaymentReceipts}
+            // onChange={PaymentReceipts}
             disabled={
               rvData && rvData.postData.Status !== "Draft"
                 ? rvData.postData.Status
