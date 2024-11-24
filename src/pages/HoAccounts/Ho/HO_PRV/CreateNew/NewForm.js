@@ -507,9 +507,9 @@ export default function NewForm() {
     }
   };
 
-  const handleTxnTYpeChange = (event) => {
-    setSelectedTxntType(event.target.value);
-  };
+  // const handleTxnTYpeChange = (event) => {
+  //   setSelectedTxntType(event.target.value);
+  // };
 
   const handleCheckboxChangeSecondTable = (event, rowData) => {
     const isChecked = event.target.checked;

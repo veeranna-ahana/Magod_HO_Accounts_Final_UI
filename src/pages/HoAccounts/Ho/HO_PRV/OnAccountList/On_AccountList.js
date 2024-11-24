@@ -216,31 +216,9 @@ export default function On_AccountList() {
         </div>
       </div>
 
-      {/* <div className="row col-md-12 col-sm-12">
-        <div className="col-md-2 mt-2" style={{ whiteSpace: "nowrap" }}></div>
-
-        <button
-          className="button-style group-button"
-          onClick={openVoucherButton}
-        >
-          Open Voucher
-        </button>
-
-        <div className="d-flex col-md-2" style={{ gap: "10px" }}></div>
-
-        <button
-          className="button-style group-button"
-          onClick={(e) => navigate("/HOAccounts")}
-        >
-          Close
-        </button>
-      </div> */}
-
-      {/* <PaymentTable/> */}
-
       <div
         className="mt-2"
-        style={{ overflowY: "scroll", overflowX: "scroll", height: "300px" }}
+        style={{ overflowY: "scroll", overflowX: "scroll", height: "350px" }}
       >
         <Table striped className="table-data border">
           <thead className="tableHeaderBGColor">
