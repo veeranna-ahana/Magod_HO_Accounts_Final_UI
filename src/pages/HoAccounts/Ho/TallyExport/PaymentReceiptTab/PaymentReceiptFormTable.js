@@ -513,7 +513,7 @@ export default function PaymentReceiptFormTable({
               );
               if (matchingInvoice) {
                 // Invoice is already present
-                toast.success(`Payment ${guid} is created succefully`);
+                //toast.success(`Payment ${guid} is created succefully`);
               } else {
                 //toast.success("export succesfully");
               }
