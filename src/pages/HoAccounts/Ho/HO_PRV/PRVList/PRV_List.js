@@ -170,10 +170,10 @@ export default function PRV_List() {
         <Table striped className="table-data border">
           <thead className="tableHeaderBGColor">
             <tr style={{ whiteSpace: "nowrap" }}>
-              <th>HO Ref</th>
+              <th onClick={() => requestSort("HORef")}>HO Ref</th>
               <th onClick={() => requestSort("HoRefDate")}>Date</th>
 
-              <th>Unitname</th>
+              <th onClick={() => requestSort("Unitname")}>Unitname</th>
               <th onClick={() => requestSort("CustName")}>Customer</th>
               <th
                 onClick={() => requestSort("Amount")}
@@ -181,7 +181,7 @@ export default function PRV_List() {
               >
                 Amount
               </th>
-              <th>Description</th>
+              <th onClick={() => requestSort("Description")}>Description</th>
               <th>Status</th>
             </tr>
           </thead>

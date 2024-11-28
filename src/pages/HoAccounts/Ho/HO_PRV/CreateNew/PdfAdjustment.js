@@ -211,7 +211,12 @@ const styles = StyleSheet.create({
 });
 
 export default function PdfAdjustment({ data }) {
-  console.log(">>>>>>>pdf", data.receipt_data);
+  console.log(
+    ">>>>>>>pdf  recept data",
+    data.receipt_data.Unitname,
+    data.receipt_data.HoRefDate
+  );
+  console.log("> data", data.receipt_data);
 
   const [currentDate, setCurrentDate] = useState("");
   // const [totalReceiveNow, setTotalReceiveNow] = useState(0);
@@ -292,7 +297,7 @@ export default function PdfAdjustment({ data }) {
 
         <View style={styles.mrgnbttm}>
           <Text style={{ marginLeft: "70px" }}>
-            Unit : <Text>{data.receipt_details[0]?.Unitname}</Text>
+            Unit : <Text>{data.receipt_data.Unitname}</Text>
           </Text>
           <Text style={{ marginLeft: "130px" }}>
             <Text style={{ fontFamily: "Helvetica-Bold", width: "100px" }}>
@@ -392,7 +397,7 @@ export default function PdfAdjustment({ data }) {
         <View>
           <View style={styles.bttmgap}>
             <Text style={{ marginLeft: "70px" }}>
-              Unit : <Text>{data.receipt_details[0]?.Unitname}</Text>
+              Unit : <Text>{data.receipt_data.Unitname}</Text>
             </Text>
           </View>
 
@@ -480,6 +485,7 @@ export default function PdfAdjustment({ data }) {
   const itemsPerPageForOtherPages = 15;
   return (
     <>
+      
       <Document>
         {data.receipt_details.map((pageData, pageIndex) => {
           const startItem = pageIndex * itemsPerPageForOtherPages;

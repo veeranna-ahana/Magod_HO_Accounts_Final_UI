@@ -141,9 +141,9 @@ export default function RvAdjustmentForm() {
         CustCode: selectedCustCode,
         id: id,
         adjustmentRows: selectRow,
-        adj_unit: selectedUnitName.UnitName,
+        adj_unit: selectRow.Unitname,
       };
-      console.log("select rowwwww", select);
+      console.log("select rowwwww", state, selectRow.Unitname);
       navigate("/HOAccounts/HO/HOPRV/Adjustment", { state: state });
     } else {
       toast.warn(" SelectRow ");

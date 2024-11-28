@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
 
 export default function PDFReceipts({ data, selectRow }) {
   console.log("pdf voucher", selectRow.Recd_PV_Date);
-  console.log(">>>>>>>", data[0].Formatted_Inv_date);
+  // console.log(">>>>>>>", data[0].Formatted_Inv_date);
 
   const [currentDate, setCurrentDate] = useState("");
   // const [totalReceiveNow, setTotalReceiveNow] = useState(0);
@@ -307,7 +307,9 @@ export default function PDFReceipts({ data, selectRow }) {
         </View>
 
         <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "70px" }}>Unit :</Text>
+          <Text style={{ marginLeft: "70px" }}>
+            Unit :<Text>{selectRow.Unitname}</Text>
+          </Text>
           <Text style={{ marginLeft: "130px" }}>
             <Text style={{ fontFamily: "Helvetica-Bold" }}>Received From:</Text>
             {selectRow.CustName} ({selectRow.Cust_code})

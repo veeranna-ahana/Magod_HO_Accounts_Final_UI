@@ -17,8 +17,6 @@ export default function On_AccountList() {
   const [selectUnit, setSelectUnit] = useState([]);
   const [getName, setGetName] = useState("");
 
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
-
   const handleUnitSelect = (selected) => {
     const selectedCustomer = selected[0];
     setSelectUnit(selected); // Update selected option state
@@ -102,7 +100,7 @@ export default function On_AccountList() {
   const groupedArray = Object.values(groupedData);
 
   console.log(groupedArray, "hjjhjkjk");
-  const itemsPerPage = 10; // Number of items per page
+  const itemsPerPage = 12; // Number of items per page
   const [currentPage, setCurrentPage] = useState(0);
 
   // Calculate the start and end indices for the current page
@@ -144,29 +142,78 @@ export default function On_AccountList() {
     }
   };
 
-  // const requestSort = (key) => {
-  //   let direction = "asc";
-  //   if (sortConfig.key === key && sortConfig.direction === "asc") {
-  //     direction = "desc";
-  //   }
-  //   setSortConfig({ key, direction });
-  // };
+  //sorting ascending descending
 
-  // const sortedData = () => {
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: "ascending",
+  });
 
-  //   if (sortConfig.key) {
-  //     filtered.sort((a, b) => {
-  //       if (a[sortConfig.key] < b[sortConfig.key]) {
-  //         return sortConfig.direction === "asc" ? -1 : 1;
-  //       }
-  //       if (a[sortConfig.key] > b[sortConfig.key]) {
-  //         return sortConfig.direction === "asc" ? 1 : -1;
-  //       }
-  //       return 0;
-  //     });
-  //   }
+  // Sorting function
+  const sortedData = [...currentPageData].sort((a, b) => {
+    if (!sortConfig.key) return 0; // No sorting applied initially
 
-  // };
+    const aValue = a[sortConfig.key];
+    const bValue = b[sortConfig.key];
+
+    if (aValue < bValue) {
+      return sortConfig.direction === "ascending" ? -1 : 1;
+    }
+    if (aValue > bValue) {
+      return sortConfig.direction === "ascending" ? 1 : -1;
+    }
+    return 0;
+  });
+
+  // Function to handle column header click for sorting
+  const handleSort = (key) => {
+    setSortConfig((prevConfig) => ({
+      key,
+      direction:
+        prevConfig.key === key && prevConfig.direction === "ascending"
+          ? "descending"
+          : "ascending",
+    }));
+  };
+
+  //ascending and descending for expanded group
+  const [expandedSortConfig, setExpandedSortConfig] = useState({
+    key: null,
+    direction: "ascending",
+  });
+
+  const sortExpandedGroupItems = (items) => {
+    if (!expandedSortConfig.key) return items;
+    return [...items].sort((a, b) => {
+      let aValue = a[expandedSortConfig.key];
+      let bValue = b[expandedSortConfig.key];
+
+      if (
+        expandedSortConfig.key === "Amount" ||
+        expandedSortConfig.key === "On_account"
+      ) {
+        aValue = parseFloat(aValue);
+        bValue = parseFloat(bValue);
+      }
+      if (aValue < bValue) {
+        return expandedSortConfig.direction === "ascending" ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return expandedSortConfig.direction === "ascending" ? 1 : -1;
+      }
+      return 0;
+    });
+  };
+
+  const handleExpandedSort = (key) => {
+    setExpandedSortConfig((prevConfig) => ({
+      key,
+      direction:
+        prevConfig.key === key && prevConfig.direction === "ascending"
+          ? "descending"
+          : "ascending",
+    }));
+  };
 
   return (
     <>
@@ -224,15 +271,39 @@ export default function On_AccountList() {
           <thead className="tableHeaderBGColor">
             <tr>
               <th></th>
-              <th>Cust Code</th>
-              <th>Customer</th>
-              <th style={{ textAlign: "right" }}>OnAccount Amount</th>
+              <th onClick={() => handleSort("custCode")}>
+                Cust Code{" "}
+                {sortConfig.key === "custCode"
+                  ? sortConfig.direction === "ascending"
+                    ? ""
+                    : ""
+                  : ""}
+              </th>
+              <th onClick={() => handleSort("custName")}>
+                Customer{" "}
+                {sortConfig.key === "custName"
+                  ? sortConfig.direction === "ascending"
+                    ? ""
+                    : ""
+                  : ""}
+              </th>
+              <th
+                style={{ textAlign: "right" }}
+                onClick={() => handleSort("totalOnAccount")}
+              >
+                OnAccountAmount
+                {sortConfig.key === "totalOnAccount"
+                  ? sortConfig.direction === "ascending"
+                    ? ""
+                    : ""
+                  : ""}
+              </th>
               <th></th>
             </tr>
           </thead>
 
           <tbody className="tablebody">
-            {currentPageData.map((group, index) => (
+            {sortedData.map((group, index) => (
               <React.Fragment key={index}>
                 <tr>
                   <td
@@ -253,12 +324,42 @@ export default function On_AccountList() {
                     <tr style={{ backgroundColor: "AliceBlue" }}>
                       <th></th>
                       <th></th>
-                      <th>RV No</th>
-                      <th style={{ textAlign: "right" }}>Amount</th>
-                      <th style={{ textAlign: "right" }}>OnAccount</th>
+                      <th
+                        onClick={() => handleExpandedSort("RecdPVID")}
+                        style={{ cursor: "pointer" }}
+                      >
+                        RV No{" "}
+                        {expandedSortConfig.key === "RecdPVID"
+                          ? expandedSortConfig.direction === "ascending"
+                            ? ""
+                            : ""
+                          : ""}
+                      </th>
+                      <th
+                        onClick={() => handleExpandedSort("Amount")}
+                        style={{ textAlign: "right", cursor: "pointer" }}
+                      >
+                        Amount{" "}
+                        {expandedSortConfig.key === "Amount"
+                          ? expandedSortConfig.direction === "ascending"
+                            ? ""
+                            : ""
+                          : ""}
+                      </th>
+                      <th
+                        onClick={() => handleExpandedSort("On_account")}
+                        style={{ textAlign: "right", cursor: "pointer" }}
+                      >
+                        OnAccount{" "}
+                        {expandedSortConfig.key === "On_account"
+                          ? expandedSortConfig.direction === "ascending"
+                            ? ""
+                            : ""
+                          : ""}
+                      </th>
                       {/* Add more header columns as needed */}
                     </tr>
-                    {group.items.map((item, key) => (
+                    {sortExpandedGroupItems(group.items).map((item, key) => (
                       <tr
                         // key={itemIndex}
                         style={{ whiteSpace: "nowrap" }}
