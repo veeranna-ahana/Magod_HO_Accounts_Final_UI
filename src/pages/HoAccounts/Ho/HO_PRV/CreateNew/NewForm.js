@@ -16,7 +16,7 @@ export default function NewForm() {
   // const rowData = location.state ? location.state : "";
   const { HOPrvId, unitname, date } = location.state ? location.state : {};
   const rowData = HOPrvId ? HOPrvId : "";
-  const unitFromDraft = unitname ? unitname : "";
+  const unitFromDraft = unitname || "";
   const voucherDate = date ? date : "";
 
   console.log("row dataaaa", rowData, unitname, voucherDate);
@@ -31,6 +31,7 @@ export default function NewForm() {
   const [getUnitNames, setGetUnitNames] = useState([]);
   const [getCustNames, setGetCustNames] = useState([]);
   const [selectedOption, setSelectedOption] = useState([]);
+
   const [selectedCustOption, setSelectedCustOption] = useState([]);
   const [unitName, setUnitName] = useState("Jigani");
   const [showPostModal, setShowPostModal] = useState(false);
@@ -115,6 +116,8 @@ export default function NewForm() {
     selectedCustomer: "",
   };
 
+  console.log("input date and vdate ", inputValue, vdate);
+
   const deletecall = () => {
     if (rvData.postData.CustName) {
       setDeleteOverAllData(true);
@@ -170,8 +173,10 @@ export default function NewForm() {
   const handleSelectUnit = (selected) => {
     const selectedCustomer = selected[0];
     setSelectedOption(selected); // Update selected option state
+
     setGetUnit(selectedCustomer ? selectedCustomer.UnitName : ""); // Update selected name
   };
+  console.log("selected option in crete nw ", selectedOption);
 
   const [cust, setCust] = useState();
 
@@ -182,9 +187,6 @@ export default function NewForm() {
     setGetCustCode(selectedCustomer ? selectedCustomer.Cust_Code : ""); // Update selected Code
 
     let cust = selectedCustomer.Cust_Code;
-
-    console.log("cust code  and getUnit", selectedCustomer);
-    console.log("getUnit", getUnit);
 
     setRvData((prevState) => ({
       ...prevState,
@@ -320,9 +322,12 @@ export default function NewForm() {
             },
           }));
 
+          console.log("unit from row data ", response.data.Result[0].Unitname);
+
           setGetUnit(response.data.Result[0].Unitname);
 
-          setSelectedOption(response.data.Result[0].Unitname);
+          // setSelectedOption(response.data.Result[0].Unitname);
+          setSelectedOption([{ UnitName: response.data.Result[0].Unitname }]);
           setGetCustomer(response.data.Result[0].CustName);
           setSelectedCustOption(response.data.Result[0].CustName);
 
@@ -932,6 +937,8 @@ export default function NewForm() {
           HO_PrvId: response.data[0].HOPrvId,
           Description: response.data[0].Description,
           TxnType: response.data[0].TxnType,
+          HoRefDate: rowData ? vdate : inputValue,
+          Unitname: selectedOption[0].UnitName,
         },
 
         firstTableArray: [],
@@ -1132,11 +1139,19 @@ export default function NewForm() {
   };
 
   const cancelYes = () => {
-    if (reason.length > 15) {
+    // if (reason.length > 15) {
+    //   setCancelPopup(false);
+    //   cancelllationSubmit();
+    // } else {
+    //   toast.error("Need more than 15 chracters");
+    // }
+    const trimmedReason = reason.trim(); // Remove leading and trailing whitespace
+
+    if (trimmedReason.length > 15) {
       setCancelPopup(false);
       cancelllationSubmit();
     } else {
-      toast.error("Need more than 15 chracters");
+      toast.error("Reason must have more than 15 valid characters.");
     }
   };
 

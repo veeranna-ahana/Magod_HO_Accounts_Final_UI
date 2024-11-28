@@ -19,6 +19,7 @@ export default function CreateNewForm() {
     : 0;
 
   const adj_unitname = adj_unit;
+  console.log("unit nameeeeeeeeeeeeeeeeeeeeee", adj_unit);
 
   let fixedOnaccount = adjustmentRows
     ? parseInt(adjustmentRows.fixedOnaccount)
@@ -1427,6 +1428,10 @@ export default function CreateNewForm() {
           Description: response.data[0].Description,
           TxnType: response.data[0].TxnType,
           On_account: response.data[0].On_account,
+          HoRefDate: adjustmentRows
+            ? adjustmentRows.Formatted_Recd_PV_Date
+            : "",
+          Unitname: "HQ",
         },
 
         firstTableArray: [],

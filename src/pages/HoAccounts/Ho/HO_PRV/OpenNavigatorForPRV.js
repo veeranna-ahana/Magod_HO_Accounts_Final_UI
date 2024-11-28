@@ -172,7 +172,8 @@ export default function OpenNavigatorForPRV() {
 
   const handleSelectUnit = (selected) => {
     const selectedCustomer = selected[0];
-    setSelectedOption(selected); // Update selected option state
+    setSelectedOption(selected);
+    setSelectedOption(unitFromDraft);
     setGetUnit(selectedCustomer ? selectedCustomer.UnitName : ""); // Update selected name
   };
 
@@ -671,7 +672,7 @@ export default function OpenNavigatorForPRV() {
           <label className="form-label" style={{ whiteSpace: "nowrap" }}>
             Select Unit{" "}
           </label>
-          <Typeahead
+          {/* <Typeahead
             className="ip-select"
             id="basic-example"
             labelKey={(option) =>
@@ -686,7 +687,8 @@ export default function OpenNavigatorForPRV() {
                 ? rvData.postData.Status
                 : ""
             }
-          />
+          /> */}
+          <input className="in-field" name="" value={unitFromDraft} />
         </div>
 
         <div className="d-flex col-md-4" style={{ gap: "32px" }}>
@@ -717,16 +719,18 @@ export default function OpenNavigatorForPRV() {
           <label className="form-label" style={{ whiteSpace: "nowrap" }}>
             Transaction Type
           </label>
-          <select
+          {/* <select
             className="ip-select"
             name="TxnType"
             id="TxnType"
             onChange={PaymentReceipts}
             value={rvData.postData.TxnType}
+            // value="Adjustment"
             disabled
           >
             <option value="">Select</option>
-          </select>
+          </select> */}
+          <input className="in-field" name="HORefNo" value="Adjustment" />
         </div>
 
         <div className="d-flex col-md-2" style={{ gap: "10px" }}>
