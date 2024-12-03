@@ -7,6 +7,7 @@ import { useLocation } from "react-router-dom";
 //import PdfReceipts from './PdfReceipts';
 import PdfAdjustment from "./PdfAdjustment";
 import { baseURL } from "../../../../../api/baseUrl";
+import { toast } from "react-toastify";
 
 export default function PdfModal({
   data,
@@ -82,8 +83,6 @@ export default function PdfModal({
     // }
   };
 
-  
-
   const savePdfToServer = async () => {
     try {
       // Generate the Blob from PdfAdjustment
@@ -96,7 +95,10 @@ export default function PdfModal({
 
       // Create a FormData object
       const formData = new FormData();
+
+      const adjustment = "Adjustment_Invoices"; // Replace with the actual name you want to send
       formData.append("file", file);
+      formData.append("adjustment", adjustment);
 
       // Send the PDF to the backend
       const response = await axios.post(baseURL + `/PDF/save-pdf`, formData, {
@@ -104,7 +106,7 @@ export default function PdfModal({
       });
 
       if (response.status === 200) {
-        alert("PDF saved successfully!");
+        toast.success("PDF saved successfully!");
       }
     } catch (error) {
       console.error("Error saving PDF to server:", error);
@@ -118,14 +120,13 @@ export default function PdfModal({
             style={{
               fontSize: "12px",
               display: "flex",
-              justifyContent: "space-between", // Distributes space between elements
-              width: "100%", // Ensures the title spans full width
+              justifyContent: "space-between",
+              width: "100%",
               alignItems: "center",
             }}
           >
             Magod HO Accounts
             <div>
-              {" "}
               <Button
                 variant="primary"
                 //   onClick={handleDueGeneratePDF}

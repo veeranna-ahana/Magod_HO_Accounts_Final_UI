@@ -296,67 +296,86 @@ export default function PdfAdjustment({ data }) {
         </View>
 
         <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "70px" }}>
-            Unit : <Text>{data.receipt_data.Unitname}</Text>
-          </Text>
-          <Text style={{ marginLeft: "130px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold", width: "100px" }}>
-              Received From:
-            </Text>
-            {data.receipt_data.CustName} ({data.receipt_data.Cust_code})
-          </Text>
-        </View>
+          <View>
+            <View style={styles.bttmgap}>
+              <Text style={{ marginLeft: "70px" }}>
+                Unit : <Text>{data.receipt_data.Unitname}</Text>
+              </Text>
+            </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "30px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Voucher No : </Text>
-            {data.receipt_data.HORef}
-            {/* {data.receipt_data.HORefNo} */}
-          </Text>
-        </View>
+            <View style={styles.bttmgap}>
+              <Text style={{ marginLeft: "30px" }}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                  Voucher No :{" "}
+                </Text>
+                {data.receipt_data.HORef
+                  ? data.receipt_data.HORef
+                  : data.receipt_data.HORefNo}
+                {/* {data.receipt_data.HORefNo} */}
+              </Text>
+            </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "65px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Date : </Text>
-            {/* {currentDate} */}
-            {data.receipt_data.HoRefDate
-              ? data.receipt_data.HoRefDate
-              : data.receipt_data.vdate}
-          </Text>
-          <Text style={{ marginLeft: "130px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Vide : </Text>{" "}
-            {data.receipt_data.Description}{" "}
-          </Text>
-        </View>
+            <View style={styles.bttmgap}>
+              <Text style={{ marginLeft: "65px" }}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>Date : </Text>
+                {/* {currentDate} */}
+                {data.receipt_data.HoRefDate
+                  ? data.receipt_data.HoRefDate
+                  : data.receipt_data.vdate}
+              </Text>
+            </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "30px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>
-              Transaction Type:{" "}
-            </Text>{" "}
-            {data.receipt_data.TxnType}
-          </Text>
-        </View>
+            <View>
+              <Text style={{ marginLeft: "30px" }}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                  Transaction Type:{" "}
+                </Text>
+                {data.receipt_data.TxnType}
+              </Text>
+            </View>
+          </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "330px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Amount: </Text>{" "}
-            {formatAmount(data.receipt_data.Amount)}
-          </Text>
-        </View>
+          <View>
+            <View style={{ marginBottom: "20px" }}>
+              <Text style={{ marginLeft: "100px", width: "300px" }}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                  Received From:
+                </Text>
+                {data.receipt_data.CustName} ({data.receipt_data.Cust_code})
+              </Text>
+            </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "330px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Adjusted: </Text>{" "}
-            {formatAmount(totalReceiveNow)}
-          </Text>
-        </View>
+            <View style={{ marginBottom: "20px" }}>
+              <Text style={{ marginLeft: "100px", width: "300px" }}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>Vide : </Text>
+                {data.receipt_data.Description}
+              </Text>
+            </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "330px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}> On Account: </Text>
-            {/* {(data.receipt_data.On_account)} */} 0.00
-          </Text>
+            <View style={styles.head4}>
+              <Text style={{ marginLeft: "200px" }}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>Amount: </Text>{" "}
+                {formatAmount(data.receipt_data.Amount)}
+              </Text>
+            </View>
+
+            <View style={styles.head4}>
+              <Text style={{ marginLeft: "195px" }}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>Adjusted: </Text>{" "}
+                {formatAmount(totalReceiveNow)}
+              </Text>
+            </View>
+
+            <View style={styles.head4}>
+              <Text style={{ marginLeft: "180px" }}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                  {" "}
+                  On Account:{" "}
+                </Text>
+                {/* {(data.receipt_data.On_account)} */}0.00
+              </Text>
+            </View>
+          </View>
         </View>
 
         <View style={styles.tableDisplay}>
@@ -485,7 +504,6 @@ export default function PdfAdjustment({ data }) {
   const itemsPerPageForOtherPages = 15;
   return (
     <>
-      
       <Document>
         {data.receipt_details.map((pageData, pageIndex) => {
           const startItem = pageIndex * itemsPerPageForOtherPages;
