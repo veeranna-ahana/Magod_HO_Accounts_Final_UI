@@ -2,20 +2,15 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
-import ReactToPrint from "react-to-print";
-import PaymentReceiptVoucherPdf from "../../../../PDF/PaymentReceiptVoucher";
+
 import { useNavigate } from "react-router-dom";
 import { baseURL } from "../../../../api/baseUrl";
 import PdfVoucherModal from "./PdfVoucherModal";
 
 export default function UnitReceiptListForm() {
-  const contentRef = React.useRef();
-
-  // Create a reference for the ReactToPrint component
-  const printRef = React.useRef();
   const [getClosedInvoices, setGetClosedInvoices] = useState([]);
   const [openInvoices, setOpenInvoices] = useState([]);
-  const [printButtonClicked, setPrintButtonClicked] = useState(false);
+
   const location = useLocation();
   //  const selectRow = location.state.selectRow || '';
   const selectRow = location.state ? location.state.selectRow || "" : "";
@@ -38,7 +33,6 @@ export default function UnitReceiptListForm() {
       })
       .then((res) => {
         setGetClosedInvoices(res.data.Result);
-        console.log("re", res.data.Result);
       })
       .catch((err) => {
         console.log("err", err);
@@ -180,15 +174,7 @@ export default function UnitReceiptListForm() {
           <label className="form-label" style={{ whiteSpace: "nowrap" }}>
             Transaction Type
           </label>
-          <select
-            className="ip-select"
-            // disabled={selectRow.Recd_PVNo === "Draft"}
-            disabled
-          >
-            {/* <option value="option 1">{selectRow.TxnType}</option>
-                                                <option value="option 2">Online Payment</option>
-                                                <option value="option 3">Cheque</option> */}
-          </select>
+          <input className="in-field" value={selectRow.TxnType} disabled />
         </div>
 
         <div className="d-flex col-md-2" style={{ gap: "10px" }}>

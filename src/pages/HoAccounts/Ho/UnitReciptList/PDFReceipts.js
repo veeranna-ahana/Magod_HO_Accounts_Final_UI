@@ -306,63 +306,86 @@ export default function PDFReceipts({ data, selectRow }) {
           </View>
         </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "70px" }}>
-            Unit :<Text>{selectRow.Unitname}</Text>
-          </Text>
-          <Text style={{ marginLeft: "130px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Received From:</Text>
-            {selectRow.CustName} ({selectRow.Cust_code})
-          </Text>
-        </View>
+        <View>
+          <View style={styles.mrgnbttm}>
+            <View>
+              <View style={styles.bttmgap}>
+                <Text style={{ marginLeft: "70px" }}>
+                  Unit : <Text>{selectRow.Unitname}</Text>
+                </Text>
+              </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "30px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Voucher No : </Text>
-            {selectRow.Recd_PVNo}
-          </Text>
-        </View>
+              <View style={styles.bttmgap}>
+                <Text style={{ marginLeft: "30px" }}>
+                  <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                    Voucher No :{" "}
+                  </Text>
+                  {selectRow.Recd_PVNo}
+                </Text>
+              </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "65px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Date : </Text>
-            {/* {currentDate} */}
-            {new Date(selectRow.Recd_PV_Date).toLocaleDateString("en-GB")}
-          </Text>
-          <Text style={{ marginLeft: "130px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Vide : </Text>{" "}
-            {selectRow.Description}
-          </Text>
-        </View>
+              <View style={styles.bttmgap}>
+                <Text style={{ marginLeft: "65px" }}>
+                  <Text style={{ fontFamily: "Helvetica-Bold" }}>Date : </Text>
+                  {/* {currentDate}{" "} */}
+                  {new Date(selectRow.Recd_PV_Date).toLocaleDateString("en-GB")}
+                </Text>
+              </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "30px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>
-              Transaction Type:{" "}
-            </Text>{" "}
-            {selectRow.TxnType}
-          </Text>
-        </View>
+              <View>
+                <Text style={{ marginLeft: "30px" }}>
+                  <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                    Transaction Type:{" "}
+                  </Text>
+                  {selectRow.TxnType}
+                </Text>
+              </View>
+            </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "330px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Amount: </Text>{" "}
-            {formatAmount(selectRow.Amount)}
-          </Text>
-        </View>
+            <View>
+              <View style={{ marginBottom: "20px" }}>
+                <Text style={{ marginLeft: "100px", width: "300px" }}>
+                  <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                    Received From:
+                  </Text>
+                  {selectRow.CustName} ({selectRow.Cust_code})
+                </Text>
+              </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "330px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Adjusted: </Text>{" "}
-            {formatAmount(totalReceiveNow)}
-          </Text>
-        </View>
+              <View style={{ marginBottom: "20px" }}>
+                <Text style={{ marginLeft: "100px", width: "300px" }}>
+                  <Text style={{ fontFamily: "Helvetica-Bold" }}>Vide : </Text>
+                  {selectRow.Description}
+                </Text>
+              </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "330px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}> On Account: </Text>
-            {formatAmount(selectRow.On_account)}
-          </Text>
+              <View style={styles.head4}>
+                <Text style={{ marginLeft: "200px" }}>
+                  <Text style={{ fontFamily: "Helvetica-Bold" }}>Amount: </Text>{" "}
+                  {formatAmount(selectRow.Amount)}
+                </Text>
+              </View>
+
+              <View style={styles.head4}>
+                <Text style={{ marginLeft: "195px" }}>
+                  <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                    Adjusted:{" "}
+                  </Text>{" "}
+                  {formatAmount(totalReceiveNow)}
+                </Text>
+              </View>
+
+              <View style={styles.head4}>
+                <Text style={{ marginLeft: "180px" }}>
+                  <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                    {" "}
+                    On Account:{" "}
+                  </Text>
+                  {formatAmount(selectRow.On_account)}
+                </Text>
+              </View>
+            </View>
+          </View>
         </View>
 
         <View style={styles.tableDisplay}>
@@ -478,78 +501,6 @@ export default function PDFReceipts({ data, selectRow }) {
           </View>
         </View>
       </View>
-
-      {/* <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: '70px' }}>
-            Unit :
-          </Text>
-          <Text style={{ marginLeft: '130px' ,width:'340px'}}>
-
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Received From:</Text>{selectRow.CustName} ({selectRow.Cust_code})
-
-
-          </Text>
-        </View>
-
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: '30px' }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Voucher No :  </Text>{selectRow.Recd_PVNo}
-          </Text>
-
-
-
-        </View>
-
-
-
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: '65px' }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Date :  </Text>{currentDate}
-
-          </Text>
-          
-        </View>
-
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: '30px' }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Transaction Type: </Text> {selectRow.TxnType}
-
-          </Text>
-
-          <Text style={{ marginLeft: '100px',width:'300px' }}>
-
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Vibe : </Text> {selectRow.Description}
-          </Text>
-
-        </View>
-
-
-        <View style={styles.head4}>
-                <Text style={{ marginLeft: '400px' }}>
-                  <Text style={{ fontFamily: "Helvetica-Bold" }}>Amount:   </Text>  {formatAmount(selectRow.Amount)}
-
-                </Text>
-
-              </View>
-
-              <View style={styles.head4}>
-                <Text style={{ marginLeft: '395px', }}>
-
-                  <Text style={{ fontFamily: "Helvetica-Bold" }}>Adjusted:    </Text> {formatAmount(totalReceiveNow)}
-
-                </Text>
-
-              </View>
-
-
-          
-
-              <View style={styles.head4}>
-                <Text style={{ marginLeft: '377px', }}>
-
-                  <Text style={{ fontFamily: "Helvetica-Bold" }}> On Account:     </Text>{formatAmount(selectRow.On_account)}
-                </Text>
-              </View> */}
     </>
   );
 

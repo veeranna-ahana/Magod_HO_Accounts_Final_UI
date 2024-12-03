@@ -2,9 +2,10 @@ import React, { useState, useEffect, Fragment } from "react";
 import { Button, Modal } from "react-bootstrap";
 import axios from "axios";
 
-import { PDFViewer, StyleSheet, Image } from "@react-pdf/renderer";
+import { PDFViewer, StyleSheet, Image, pdf } from "@react-pdf/renderer";
 import { useLocation } from "react-router-dom";
 import PDFReceipts from "./PDFReceipts";
+import { baseURL } from "../../../../api/baseUrl";
 
 export default function PdfVoucherModal({
   getClosedInvoices,
@@ -49,11 +50,64 @@ export default function PdfVoucherModal({
     // ... component logic
   }
   const location = useLocation();
+
+  const savePdfToServer = async () => {
+    try {
+      // Generate the Blob from PdfAdjustment
+      const blob = await pdf(
+        <PDFReceipts data={getClosedInvoices} selectRow={selectRow} />
+      ).toBlob();
+
+      // Convert Blob to File
+      const file = new File([blob], "GeneratedPDF.pdf", {
+        type: "application/pdf",
+      });
+
+      // Create a FormData object
+      const formData = new FormData();
+
+      const adjustment = "Adjustment_Invoices"; // Replace with the actual name you want to send
+      formData.append("file", file);
+      formData.append("adjustment", adjustment);
+
+      // Send the PDF to the backend
+      const response = await axios.post(baseURL + `/PDF/save-pdf`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (response.status === 200) {
+        alert("PDF saved successfully!");
+      }
+    } catch (error) {
+      console.error("Error saving PDF to server:", error);
+    }
+  };
   return (
     <>
       <Modal show={pdfVoucher} fullscreen>
         <Modal.Header closeButton onClick={handleClose}>
-          <Modal.Title>Magod Unit Accounts</Modal.Title>
+          <Modal.Title
+            style={{
+              fontSize: "12px",
+              display: "flex",
+              justifyContent: "space-between", // Distributes space between elements
+              width: "100%", // Ensures the title spans full width
+              alignItems: "center",
+            }}
+          >
+            Magod Unit Accounts
+            <div>
+              {" "}
+              <Button
+                variant="primary"
+                //   onClick={handleDueGeneratePDF}
+                style={{ fontSize: "10px", marginRight: "35px" }}
+                onClick={savePdfToServer}
+              >
+                Save to Server
+              </Button>
+            </div>
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Fragment>

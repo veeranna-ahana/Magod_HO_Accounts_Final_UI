@@ -61,8 +61,8 @@ export default function CreateNewForm() {
       RecdPVID: "",
       Recd_PVNo: "Draft",
       HO_PrvId: "",
-      // HoRefDate: new Date().toLocaleDateString("en-GB").split("/").join("-"),
-      HoRefDate: adjustmentRows ? adjustmentRows.Formatted_Recd_PV_Date : "",
+      HoRefDate: new Date().toLocaleDateString("en-GB").split("/").join("-"),
+      // HoRefDate: adjustmentRows ? adjustmentRows.Formatted_Recd_PV_Date : "",
 
       HORefNo: "Draft",
       HORef: "Draft",
@@ -78,6 +78,7 @@ export default function CreateNewForm() {
       PVSrlID: "",
       InvUpdated: 0,
       Sync_Hold: 0,
+      Unitname: adj_unit ? adj_unit : "",
     },
     data: {
       inv_data: [],
@@ -1405,7 +1406,8 @@ export default function CreateNewForm() {
       const response = await axios.post(baseURL + "/hoCreateNew/postInvoice", {
         HO_PrvId: rvData.postData.HO_PrvId,
         srlType: srlType,
-        unit: unit,
+        // unit: unit,
+        unit: adj_unit,
         receipt_details: rvData.data.receipt_details,
         onacc: onAccountValue22,
         id: id,
@@ -1431,7 +1433,8 @@ export default function CreateNewForm() {
           HoRefDate: adjustmentRows
             ? adjustmentRows.Formatted_Recd_PV_Date
             : "",
-          Unitname: "HQ",
+          // Unitname: "HQ",
+          Unitname: adj_unit,
         },
 
         firstTableArray: [],
