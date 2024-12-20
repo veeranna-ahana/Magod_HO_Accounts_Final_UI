@@ -5,6 +5,7 @@ import { baseURL } from "../../../../../api/baseUrl";
 import { PDFViewer, StyleSheet, Image, pdf } from "@react-pdf/renderer";
 import { useLocation } from "react-router-dom";
 import CustomerPDF from "./CustomerPDF";
+import { toast } from "react-toastify";
 
 export default function ModalPDF({
   setPdfOpen,
@@ -87,7 +88,10 @@ export default function ModalPDF({
 
   const savePdfToServer = async () => {
     try {
-      // Generate the Blob from PdfAdjustment
+      const adjustment = "Customer_Outstanding"; // Replace with the actual name you want to send
+
+      // Step 1: Call the API to set the adjustment name
+      await axios.post(baseURL + `/PDF/set-adjustment-name`, { adjustment });
       const blob = await pdf(
         <CustomerPDF
           dataBasedOnCust={filterData}
@@ -96,25 +100,20 @@ export default function ModalPDF({
         />
       ).toBlob();
 
-      // Convert Blob to File
       const file = new File([blob], "GeneratedPDF.pdf", {
         type: "application/pdf",
       });
 
-      // Create a FormData object
       const formData = new FormData();
 
-      const adjustment = "Adjustment_Invoices"; // Replace with the actual name you want to send
       formData.append("file", file);
-      formData.append("adjustment", adjustment);
 
-      // Send the PDF to the backend
       const response = await axios.post(baseURL + `/PDF/save-pdf`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       if (response.status === 200) {
-        alert("PDF saved successfully!");
+        toast.success("PDF saved successfully!");
       }
     } catch (error) {
       console.error("Error saving PDF to server:", error);
