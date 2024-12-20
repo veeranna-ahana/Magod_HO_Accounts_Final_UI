@@ -611,6 +611,7 @@ export default function OpenNavigatorForPRV() {
       setCancelPopup(true);
     }
   };
+  console.log(rvData.data.receipt_data?.TxnType, "rvData.data");
 
   return (
     <>
@@ -730,7 +731,16 @@ export default function OpenNavigatorForPRV() {
           >
             <option value="">Select</option>
           </select> */}
-          <input className="in-field" name="HORefNo" value="Adjustment" />
+          <input
+            className="in-field"
+            name="HORefNo"
+            // value="Adjustment"
+            value={
+              rvData.data.receipt_data?.TxnType
+                ? rvData.data.receipt_data?.TxnType
+                : ""
+            }
+          />
         </div>
 
         <div className="d-flex col-md-2" style={{ gap: "10px" }}>

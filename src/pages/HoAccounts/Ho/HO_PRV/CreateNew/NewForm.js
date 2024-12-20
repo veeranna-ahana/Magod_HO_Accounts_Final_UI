@@ -12,6 +12,7 @@ import PdfModal from "./PdfModal";
 export default function NewForm() {
   const navigate = useNavigate();
   const location = useLocation();
+  let customerCode = "";
 
   // const rowData = location.state ? location.state : "";
   const { HOPrvId, unitname, date } = location.state ? location.state : {};
@@ -176,7 +177,6 @@ export default function NewForm() {
 
     setGetUnit(selectedCustomer ? selectedCustomer.UnitName : ""); // Update selected name
   };
-  console.log("selected option in crete nw ", selectedOption);
 
   const [cust, setCust] = useState();
 
@@ -187,6 +187,8 @@ export default function NewForm() {
     setGetCustCode(selectedCustomer ? selectedCustomer.Cust_Code : ""); // Update selected Code
 
     let cust = selectedCustomer.Cust_Code;
+    customerCode = selectedCustomer.Cust_Code;
+    console.log("cust codeeeeeeeeeeeeeeeee", customerCode);
 
     setRvData((prevState) => ({
       ...prevState,
@@ -906,7 +908,8 @@ export default function NewForm() {
       setSumofReceive(sum);
 
       const srlType = "HO PaymentRV";
-      const unit = "HQ";
+      // const unit = "HQ";
+      const unit = getUnit ? getUnit : unitFromDraft;
       const response = await axios.post(
         baseURL + "/createNew/postInvoiceCreateNew",
         {

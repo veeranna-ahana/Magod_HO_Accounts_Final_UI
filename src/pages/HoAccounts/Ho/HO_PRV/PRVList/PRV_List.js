@@ -63,6 +63,7 @@ export default function PRV_List() {
       toast.error("Select Row");
     }
   };
+  console.log("txn type ");
 
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const requestSort = (key) => {

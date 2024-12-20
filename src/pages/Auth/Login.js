@@ -3,17 +3,18 @@ import "./Login.css";
 import Logo from "../Auth/Magod Laser Logo - Default [2500].png";
 import { useNavigate } from "react-router-dom";
 import { baseURL } from "../../api/baseUrl";
- 
+
 const apiKey = process.env.REACT_APP_API_KEY;
- 
+
 function Login() {
   const navigate = useNavigate();
   let [username, setUsername] = useState("");
   let [formPassword, setPassword] = useState("");
+
   const handleLogin = () => {
     navigate("/home");
   };
- 
+
   const postRequest = async (url, body, callback) => {
     let response = await fetch(url, {
       method: "POST",
@@ -26,7 +27,7 @@ function Login() {
     let content = await response.json();
     callback(content);
   };
- 
+
   function submitLogin() {
     postRequest(
       // "http://localhost:5001/user/login",
@@ -43,7 +44,7 @@ function Login() {
       }
     );
   }
- 
+
   return (
     <>
       <div
@@ -137,5 +138,5 @@ function Login() {
     </>
   );
 }
- 
+
 export default Login;

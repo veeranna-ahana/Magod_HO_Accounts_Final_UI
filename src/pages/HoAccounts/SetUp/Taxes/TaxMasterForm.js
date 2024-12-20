@@ -210,7 +210,7 @@ export default function TaxMasterForm() {
             <div>
               <div
                 style={{
-                  height: "260px",
+                  height: "420px",
                   overflowY: "scroll",
                   overflowX: "scroll",
                 }}

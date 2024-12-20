@@ -442,7 +442,7 @@ export default function UnitDetails() {
         <div
           className="col-md-4"
           style={{
-            height: "270px",
+            height: "380px",
             overflowY: "scroll",
           }}
         >
