@@ -119,6 +119,23 @@ export default function NewForm() {
 
   console.log("input date and vdate ", inputValue, vdate);
 
+  const [txnTypes, setTxnTypes] = useState([]);
+  useEffect(() => {
+    const fetchTxnTypes = async () => {
+      try {
+        const res = await axios.get(baseURL + "/createnew/txntypes/");
+        if (res.data && res.data.Result && res.data.Result.length > 0) {
+          setTxnTypes(res.data.Result);
+        } else {
+          console.error("Response data structure is unexpected:", res.data);
+        }
+      } catch (error) {
+        console.error("Error fetching transaction types:", error);
+      }
+    }
+    fetchTxnTypes();
+  }, []);
+
   const deletecall = () => {
     if (rvData.postData.CustName) {
       setDeleteOverAllData(true);
@@ -1166,6 +1183,7 @@ export default function NewForm() {
         HO_PrvId: rvData.postData.HO_PrvId,
         custName: rvData.postData.CustName,
         totalReceiveNow: sumofReceive,
+        unit:unitFromDraft
       }
     );
 
@@ -1308,19 +1326,15 @@ export default function NewForm() {
             // }
           >
             <option value="">Select</option>
-            <option value="Bank">Bank</option>
-            <option value="Cash">Cash</option>
-            <option value="Adjustment">Adjustment</option>
-            <option value="Rejection">Rejection</option>
-            <option value="TDS Receivable">TDS Receivable</option>
-            <option value="Rate Difference">Rate Difference</option>
-            <option value="Short Supply">Short Supply</option>
-            <option value="Balance Recoverable">Balance Recoverable</option>
-            <option value="Other Income">Other Income</option>
-            <option value="Balance Not Recoverable">
-              Balance Not Recoverable
-            </option>
-            <option value="QR Code and RTGS">QR Code and RTGS</option>
+    {txnTypes.length > 0 ? (
+      txnTypes.map((txn, index) => (
+        <option key={index} value={txn.TxnType}>
+        {txn.TxnType}
+      </option>
+      ))
+    ) : (
+      <option value="">No transaction types available</option>
+    )}
           </select>
         </div>
 

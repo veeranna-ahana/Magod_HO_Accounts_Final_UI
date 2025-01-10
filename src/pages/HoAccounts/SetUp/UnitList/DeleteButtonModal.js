@@ -46,7 +46,7 @@ export default function DeleteButtonModal({
             window.location.reload();
           }, 1000);
         } else {
-          alert("error");
+          toast.warn("Unable to Delete ")
         }
       })
       .catch((err) => console.log("select unit"));
