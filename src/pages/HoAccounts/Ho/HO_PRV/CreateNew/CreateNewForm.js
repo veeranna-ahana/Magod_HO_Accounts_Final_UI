@@ -115,6 +115,27 @@ export default function CreateNewForm() {
     }
   }, []);
 
+
+  const [txnTypes, setTxnTypes] = useState([]);
+  useEffect(() => {
+    const fetchTxnTypes = async () => {
+      try {
+        const res = await axios.get(baseURL + "/createnew/txntypes/");
+        if (res.data && res.data.Result && res.data.Result.length > 0) {
+          setTxnTypes(res.data.Result);
+        } else {
+          console.error("Response data structure is unexpected:", res.data);
+        }
+      } catch (error) {
+        console.error("Error fetching transaction types:", error);
+      }
+    };
+
+
+
+    fetchTxnTypes();
+  }, []);
+
   const insertToForm = async () => {
     const response = await axios.post(
       baseURL + "/createnew/insertToparentForm",
@@ -128,7 +149,9 @@ export default function CreateNewForm() {
 
     getleftandRightTabledata(
       insertedRecord[0].Cust_code,
-      insertedRecord[0].HOPrvId
+      insertedRecord[0].HOPrvId,
+       adj_unit,
+      
     );
 
     setRvData((prevRvData) => ({
@@ -147,15 +170,16 @@ export default function CreateNewForm() {
     }));
   };
 
-  const getleftandRightTabledata = async (cust_code, hoprvID) => {
+  const getleftandRightTabledata = async (cust_code, hoprvID,adj_unit) => {
     try {
       const resp = await axios.post(baseURL + "/createnew/getleftTable", {
         receipt_id: hoprvID,
+        unit:adj_unit
       });
 
       try {
         const response = await axios.get(
-          baseURL + `/createnew/ho_openInvoicesADJUST?customercode=${cust_code}`
+          baseURL + `/createnew/ho_openInvoicesAdjust?customercode=${cust_code}`
         );
 
         setRvData((prevRvData) => ({
@@ -1014,7 +1038,7 @@ export default function CreateNewForm() {
   const cancelllationSubmit = async () => {
     const cancelData = await axios.post(baseURL + "/createNew/cancelUpdate", {
       HO_PrvId: rvData.postData.HO_PrvId,
-
+unitname:adj_unit ? adj_unit : "",
       custName: rvData.postData.CustName,
       totalReceiveNow: sumofReceive,
       id: id,
@@ -1627,7 +1651,7 @@ export default function CreateNewForm() {
             value={rvData.postData.TxnType}
             disabled
           >
-            <option value="">Select</option>
+           {/* <option value="">Select</option>
             <option value="Bank">Bank</option>
             <option value="Cash">Cash</option>
             <option value="Adjustment">Adjustment</option>
@@ -1640,7 +1664,17 @@ export default function CreateNewForm() {
             <option value="Balance Not Recoverable">
               Balance Not Recoverable
             </option>
-            <option value="QR Code and RTGS">QR Code and RTGS</option>
+            <option value="QR Code and RTGS">QR Code and RTGS</option> */}
+            <option value="">Select</option>
+    {txnTypes.length > 0 ? (
+      txnTypes.map((txn, index) => (
+        <option key={index} value={txn.TxnType}>
+        {txn.TxnType}
+      </option>
+      ))
+    ) : (
+      <option value="">No transaction types available</option>
+    )}
           </select>
         </div>
 

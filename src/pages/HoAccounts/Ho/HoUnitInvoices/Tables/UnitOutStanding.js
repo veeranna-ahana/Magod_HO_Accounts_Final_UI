@@ -157,7 +157,7 @@ export default function UnitOutStanding({ unitname }) {
             <th onClick={() => requestSort("Branch")}>Branch</th>
             <th
               onClick={() => requestSort("OutStandingAmount")}
-              style={{ textAlign: "right" }}
+              style={{ textAlign: "center" }}
             >
               Out_Standing_Amount
             </th>
@@ -195,10 +195,10 @@ export default function UnitOutStanding({ unitname }) {
                   <td>{item.Cust_Code}</td>
                   <td>{item.Cust_name}</td>
                   <td>{item.Branch}</td>
-                  <td style={{ textAlign: "right" }}>
+                  <td style={{ textAlign: "center" }}>
                     {formatAmount(item.OutStandingAmount)}
                   </td>
-                  <td style={{ textAlign: "right" }}>
+                  <td style={{ textAlign: "center" }}>
                     {formatAmount(item.OutStandingInvoiceCount)}
                   </td>
                 </tr>

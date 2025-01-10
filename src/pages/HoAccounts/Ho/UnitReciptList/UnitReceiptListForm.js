@@ -13,7 +13,13 @@ export default function UnitReceiptListForm() {
 
   const location = useLocation();
   //  const selectRow = location.state.selectRow || '';
-  const selectRow = location.state ? location.state.selectRow || "" : "";
+    const selectRow = location.state ? location.state.selectRow || "" : "";
+   
+ 
+   
+
+
+console.log("selec ", selectRow);
 
   useEffect(() => {
     if (selectRow) {
@@ -25,10 +31,12 @@ export default function UnitReceiptListForm() {
   const navigate = useNavigate();
 
   const getInvoiceList = () => {
+   
     axios
       .get(baseURL + "/unitReceiptList/getInvoices", {
         params: {
           RecdPVID: selectRow.RecdPVID,
+          unitName:selectRow.Unitname
         },
       })
       .then((res) => {
@@ -317,23 +325,7 @@ export default function UnitReceiptListForm() {
             </thead>
 
             <tbody className="tablebody">
-              {/* {openInvoices.map((item, index) => {
-                return (
-                  <tr>
-                    <td>
-                      <input type="checkBox" />
-                    </td>
-                    <td>{item.DC_InvType}</td>
-                    <td>{item.DC_Inv_No}</td>
-                    <td style={{ whiteSpace: "nowrap" }}>
-                      {item.Formatted_Inv_Date}
-                    </td>
-                    <td>{item.GrandTotal}</td>
-                    <td>{item.PymtAmtRecd}</td>
-                    <td>{item.Balance}</td>
-                  </tr>
-                );
-              })} */}
+             
             </tbody>
           </Table>
         </div>
