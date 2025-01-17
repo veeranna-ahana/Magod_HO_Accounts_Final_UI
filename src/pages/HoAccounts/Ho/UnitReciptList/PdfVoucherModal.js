@@ -13,6 +13,7 @@ export default function PdfVoucherModal({
   pdfVoucher,
   setPdfVoucher,
   selectRow,
+  unitData
 }) {
   const handleClose = () => {
     setPdfVoucher(false);
@@ -59,7 +60,7 @@ export default function PdfVoucherModal({
       // Step 1: Call the API to set the adjustment name
       await axios.post(baseURL + `/PDF/set-adjustment-name`, { adjustment });
       const blob = await pdf(
-        <PDFReceipts data={getClosedInvoices} selectRow={selectRow} />
+        <PDFReceipts data={getClosedInvoices} selectRow={selectRow} unitData={unitData}/>
       ).toBlob();
 
       const file = new File([blob], "GeneratedPDF.pdf", {
@@ -111,7 +112,7 @@ export default function PdfVoucherModal({
         <Modal.Body>
           <Fragment>
             <PDFViewer width="1200" height="600">
-              <PDFReceipts data={getClosedInvoices} selectRow={selectRow} />
+              <PDFReceipts data={getClosedInvoices} selectRow={selectRow} unitData={unitData}/>
             </PDFViewer>
           </Fragment>
         </Modal.Body>

@@ -1582,6 +1582,30 @@ unitname:adj_unit ? adj_unit : "",
     return dataCopy;
   };
 
+
+  //fetching unit address
+  useEffect(() => {
+    if (adj_unitname) {
+      fetchUnitAddress();
+    }
+  }, [adj_unitname]);
+  const [unitAddress, setUnitAddress] = useState([]);
+  const fetchUnitAddress = () => {
+    
+    axios
+      .post(baseURL + "/createnew/getAddress", {
+        adj_unitname,
+      })
+      .then((res) => {
+        setUnitAddress(res.data.Result);
+      })
+      .catch((err) => {
+        console.log("errin pdf address", err);
+      });
+  };
+
+  
+
   return (
     <>
       {pdfVoucher && (
@@ -1591,6 +1615,7 @@ unitname:adj_unit ? adj_unit : "",
           data={rvData.data}
           data2={rvData.postData}
           setRvData={setRvData}
+          unitData={unitAddress}
         />
       )}
 

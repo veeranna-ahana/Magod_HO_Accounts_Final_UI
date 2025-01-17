@@ -207,6 +207,9 @@ export default function TabData() {
         console.log("errin pdf address", err);
       });
   };
+
+  console.log("aadress ", unitAddress);
+  
   return (
     <>
       {pdfOpen && (
@@ -221,7 +224,7 @@ export default function TabData() {
           setFilterData={setFilterData}
           filterData={filterData}
           selectedUnitName={selectedUnitName}
-          unitAddress={unitAddress}
+          unitData={unitAddress}
         />
       )}
 

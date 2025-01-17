@@ -613,6 +613,26 @@ export default function OpenNavigatorForPRV() {
   };
   console.log(rvData.data.receipt_data?.TxnType, "rvData.data");
 
+
+  useEffect(() => {
+    if (unitFromDraft) {
+      fetchUnitAddress();
+    }
+  }, [unitFromDraft]);
+  const [unitAddress, setUnitAddress] = useState([]);
+  const fetchUnitAddress = () => {
+    
+    axios
+      .post(baseURL + "/createnew/getAddress", {
+        adj_unitname: unitFromDraft,
+      })
+      .then((res) => {
+        setUnitAddress(res.data.Result);
+      })
+      .catch((err) => {
+        console.log("errin pdf address", err);
+      });
+  };
   return (
     <>
       {pdfVoucher && (
@@ -622,6 +642,7 @@ export default function OpenNavigatorForPRV() {
           data={rvData.data}
           data2={rvData.postData}
           setRvData={setRvData}
+          unitData={unitAddress}
         />
       )}
 

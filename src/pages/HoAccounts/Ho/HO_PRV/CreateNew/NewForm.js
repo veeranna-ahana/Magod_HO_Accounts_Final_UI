@@ -1017,6 +1017,10 @@ export default function NewForm() {
       const invoiceAmount = parseFloat(selectedRow.Inv_Amount || 0);
       const amountReceived = parseFloat(selectedRow.Amt_received || 0);
 
+      console.log("ReceveNOW, ",formattedValue);
+      console.log("Inv Amount, ",invoiceAmount);
+      console.log("amountReceived, ",amountReceived);
+      console.log("differnce, ",(invoiceAmount - amountReceived));
       if (formattedValue > invoiceAmount - amountReceived) {
         toast.error("Cannot Receive More than Invoice Amount");
         return;
@@ -1202,6 +1206,27 @@ export default function NewForm() {
     }));
   };
 
+
+   //fetching unit address
+   useEffect(() => {
+    if (unitFromDraft) {
+      fetchUnitAddress();
+    }
+  }, [unitFromDraft]);
+  const [unitAddress, setUnitAddress] = useState([]);
+  const fetchUnitAddress = () => {
+    
+    axios
+      .post(baseURL + "/createnew/getAddress", {
+        adj_unitname: unitFromDraft,
+      })
+      .then((res) => {
+        setUnitAddress(res.data.Result);
+      })
+      .catch((err) => {
+        console.log("errin pdf address", err);
+      });
+  };
   // sorting functionality for the  rvData.data.inv_data   and rvData.data.receipt_details
 
   return (
@@ -1213,6 +1238,7 @@ export default function NewForm() {
           data={rvData.data}
           data2={rvData.postData}
           setRvData={setRvData}
+          unitData={unitAddress}
         />
       )}
 

@@ -17,7 +17,7 @@ export default function ModalPDF({
   setFlag,
   filterData,
   selectedUnitName,
-  unitAddress,
+  unitData
 }) {
   const [dataBasedOnCust, setDataBasedOnCust] = useState([]);
   const handleClose = () => {
@@ -84,7 +84,7 @@ export default function ModalPDF({
   }
   const location = useLocation();
 
-  console.log("adresss", unitAddress);
+  console.log("adresss in modal",  unitData);
 
   const savePdfToServer = async () => {
     try {
@@ -96,7 +96,7 @@ export default function ModalPDF({
         <CustomerPDF
           dataBasedOnCust={filterData}
           unit={selectedUnitName[0]?.UnitName}
-          unitAddress={unitAddress}
+          unitData={unitData}
         />
       ).toBlob();
 
@@ -152,7 +152,7 @@ export default function ModalPDF({
               <CustomerPDF
                 dataBasedOnCust={filterData}
                 unit={selectedUnitName[0]?.UnitName}
-                unitAddress={unitAddress}
+                unitData={unitData}
               />
             </PDFViewer>
           </Fragment>
