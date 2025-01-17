@@ -12,14 +12,7 @@ import MagodIMAGE from "../../../../../Logo/MagodLogo.png";
 import axios from "axios";
 import { baseURL } from "../../../../../api/baseUrl";
 const styles = StyleSheet.create({
-  pageHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginLeft: "10px",
-    marginRight: "10px",
-    marginBottom: "10px",
-  },
+  
 
   page: {
     fontSize: 11,
@@ -65,8 +58,9 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: "13px",
     fontWeight: "bold",
-    marginTop: "30px",
+    marginTop: "2px",
     marginLeft: "20px",
+    fontFamily: "Helvetica-Bold",
   },
 
   headerText1: {
@@ -199,11 +193,20 @@ const styles = StyleSheet.create({
   divide: {
     paddingBottom: 3,
   },
+  // header part css
   pageHeader: {
-    marginBottom: 5,
-    height: "80px",
     flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginLeft: "10px",
+    marginRight: "10px",
+    marginBottom: "10px",
     borderBottom: 1,
+  },
+  headerTextContainer: {
+    flex: 1, // Allow this view to take the remaining space
+    textAlign: "center", // Center text horizontally
+     marginTop:'5px'
   },
   logo: {
     marginTop: "20px",
@@ -217,10 +220,30 @@ const styles = StyleSheet.create({
   underline: {
     textDecoration: "underline",
   },
+
+  addressText: {
+    fontSize: 10,
+    marginTop: 5,
+  },
+
+  unitInvoiceList:{
+    textDecoration:'underline',
+    fontWeight:'1000',
+    marginBottom:'2px',
+    fontFamily: "Helvetica-Bold",
+  },
+  gstNo:{
+    fontWeight:'bold',
+    fontFamily: "Helvetica-Bold",
+  },
+  cinNo:{
+    fontWeight:'bold',
+    fontFamily: "Helvetica-Bold",
+  }
 });
 
-export default function CustomerPDF({ dataBasedOnCust, unit, unitAddress }) {
-  console.log("pdf data", unit, unitAddress);
+export default function CustomerPDF({ dataBasedOnCust, unit, unitData }) {
+  console.log("pdf data",  unitData[0]?.RegistredOfficeAddress);
   const [currentDate, setCurrentDate] = useState("");
 
   useEffect(() => {
@@ -238,19 +261,34 @@ export default function CustomerPDF({ dataBasedOnCust, unit, unitAddress }) {
   const Header22 = () => (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View style={styles.pageHeader}>
-          <Image src={MagodIMAGE} style={styles.logo} />
-          <View>
-            <Text style={styles.headerText}>Magod Laser Private Limited </Text>
-            <Text style={{ marginLeft: "30px", marginTop: "5px" }}>{unit}</Text>
+      <View style={styles.pageHeader}>
+        {/* Logo */}
+        <Image src={MagodIMAGE} style={styles.logo} />
+
+        {/* Header details */}
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.unitInvoiceList}> UNIT INVOICE LIST</Text>
+          <Text style={[styles.headerText, {marginBottom:'3px'}]}>Magod Laser Private Limited</Text>
+          <View style={{ display: 'flex', flexDirection: 'row',  alignItems: 'center', justifyContent:'center' , gap:'10px'}}>
+          <Text style={styles.gstNo}>GST: {unitData[0]?.GST_No}</Text>
+          <Text style={styles.cinNo}>CIN_No: {unitData[0]?.CIN_No}</Text>
           </View>
-          {/* Adjust the styles as needed for the address */}
-          <Text style={styles.head1234}>
+        
+          <Text style={[styles.addressText, {marginBottom:'3px'}]}>
             {/* Plot NO 72, Phase || KIADB Industrial Area Jigani, Anekal Taluk
             Bangalore Pin: Karnataka */}
-            {unitAddress[0]?.RegistredOfficeAddress}
+            {unitData[0]?.Unit_Address}
+            
           </Text>
+
+          <View style={{ display: 'flex', flexDirection: 'row',  alignItems: 'center', justifyContent:'center' , gap:'5px'}}>
+          <Text > {unitData[0]?.PhonePrimary}</Text>
+          <Text > {unitData[0]?.PhoneSecondary}</Text>
+          <Text > {unitData[0]?.URL}</Text>
+          <Text > {unitData[0]?.Email}</Text>
+          </View>
         </View>
+      </View>
 
         <View style={styles.header}>
           <Text style={[styles.headerText1]}>
@@ -267,22 +305,33 @@ export default function CustomerPDF({ dataBasedOnCust, unit, unitAddress }) {
 
   const Header = (dataBasedOnCust) => (
     <View style={styles.pageHeader}>
-      <Image src={MagodIMAGE} style={styles.logo} />
-      <View>
-        <Text style={styles.headerText}>Magod Laser Private Limited </Text>
-        <Text style={{ marginLeft: "30px", marginTop: "5px" }}>{unit}</Text>
+        {/* Logo */}
+        <Image src={MagodIMAGE} style={styles.logo} />
+
+        {/* Header details */}
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.unitInvoiceList}> UNIT INVOICE LIST</Text>
+          <Text style={[styles.headerText, {marginBottom:'3px'}]}>Magod Laser Private Limited</Text>
+          <View style={{ display: 'flex', flexDirection: 'row',  alignItems: 'center', justifyContent:'center' , gap:'10px'}}>
+          <Text style={styles.gstNo}>GST: {unitData[0]?.GST_No}</Text>
+          <Text style={styles.cinNo}>CIN_No: {unitData[0]?.CIN_No}</Text>
+          </View>
+        
+          <Text style={[styles.addressText, {marginBottom:'3px'}]}>
+            {/* Plot NO 72, Phase || KIADB Industrial Area Jigani, Anekal Taluk
+            Bangalore Pin: Karnataka */}
+            {unitData[0]?.Unit_Address}
+            
+          </Text>
+
+          <View style={{ display: 'flex', flexDirection: 'row',  alignItems: 'center', justifyContent:'center' , gap:'5px'}}>
+          <Text > {unitData[0]?.PhonePrimary}</Text>
+          <Text > {unitData[0]?.PhoneSecondary}</Text>
+          <Text > {unitData[0]?.URL}</Text>
+          <Text > {unitData[0]?.Email}</Text>
+          </View>
+        </View>
       </View>
-      {/* Adjust the styles as needed for the address */}
-      <Text style={styles.head1234}>
-        {/* Plot NO 72, Phase || KIADB Industrial Area Jigani, Anekal Taluk
-        Bangalore Pin:
-        {dataBasedOnCust && dataBasedOnCust.length >= 0
-          ? dataBasedOnCust[0]?.PIN_Code
-          : ""}
-        Karnataka */}
-        {unitAddress[0]?.RegistredOfficeAddress}
-      </Text>
-    </View>
   );
   const uniquePONos = new Set();
 
@@ -378,29 +427,8 @@ export default function CustomerPDF({ dataBasedOnCust, unit, unitAddress }) {
 
           return (
             <Page key={index} size="A4" style={styles.page}>
-              <View style={styles.pageHeader}>
-                <Image src={MagodIMAGE} style={styles.logo} />
-
-                <View>
-                  <Text style={styles.headerText}>
-                    Magod Laser Private Limited{" "}
-                  </Text>
-                  <Text style={{ marginLeft: "30px", marginTop: "5px" }}>
-                    {/* Jigani */}
-                    {unit}
-                  </Text>
-                </View>
-
-                <Text style={styles.head1234}>
-                  {/* Plot NO 72, Phase || KIADB Industrial Area Jigani, Anekal
-                  Taluk Bangalore Pin:
-                  {dataBasedOnCust && dataBasedOnCust.length >= 0
-                    ? dataBasedOnCust[0]?.PIN_Code
-                    : ""}
-                  Karnataka */}
-                  {unitAddress[0]?.RegistredOfficeAddress}
-                </Text>
-              </View>
+              
+              <Header/>
 
               {index === 0 && (
                 <>

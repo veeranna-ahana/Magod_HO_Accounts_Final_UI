@@ -19,7 +19,7 @@ export default function UnitReceiptListForm() {
    
 
 
-console.log("selec ", selectRow);
+console.log("selec onacc ", selectRow);
 
   useEffect(() => {
     if (selectRow) {
@@ -115,6 +115,31 @@ console.log("selec ", selectRow);
     return dataCopy;
   };
 
+   //fetching unit address
+   useEffect(() => {
+    if (selectRow.Unitname) {
+      fetchUnitAddress();
+    }
+  }, [selectRow.Unitname]);
+  const [unitAddress, setUnitAddress] = useState([]);
+  const fetchUnitAddress = () => {
+    
+    axios
+      .post(baseURL + "/createnew/getAddress", {
+        adj_unitname:selectRow.Unitname,
+      })
+      .then((res) => {
+        setUnitAddress(res.data.Result);
+      })
+      .catch((err) => {
+        console.log("errin pdf address", err);
+      });
+  };
+
+  console.log("select row ", selectRow.Unitname);
+  
+
+
   return (
     <div>
       {pdfVoucher && (
@@ -123,6 +148,7 @@ console.log("selec ", selectRow);
           setPdfVoucher={setPdfVoucher}
           pdfVoucher={pdfVoucher}
           selectRow={selectRow}
+          unitData={unitAddress}
         />
       )}
 

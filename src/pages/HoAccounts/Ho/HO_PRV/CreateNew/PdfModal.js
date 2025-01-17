@@ -15,6 +15,7 @@ export default function PdfModal({
   setPdfVoucher,
   data2,
   setRvData,
+  unitData
 }) {
   console.log("pdf voucher1", data.receipt_details);
 
@@ -68,41 +69,14 @@ export default function PdfModal({
   }
   const location = useLocation();
 
-  // const savePdfToServer = async () => {
-  //   try {
-
-  //     const blob = await pdf(<PdfAdjustment data={data} />).toBlob();
-
-  //     const file = new File([blob], "GeneratedPDF.pdf", {
-  //       type: "application/pdf",
-  //     });
-
-  //     const formData = new FormData();
-
-  //     const adjustment = "Adjustment_Invoices";
-
-  //     formData.append("file", file);
-  //     formData.append("adjustment", adjustment);
-
-  //     const response = await axios.post(baseURL + `/PDF/save-pdf`, formData, {
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //     });
-
-  //     if (response.status === 200) {
-  //       toast.success("PDF saved successfully!");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error saving PDF to server:", error);
-  //   }
-  // };
-
+ 
   const savePdfToServer = async () => {
     try {
       const adjustment = "Adjustment_Invoices"; // Replace with the actual name you want to send
 
       // Step 1: Call the API to set the adjustment name
       await axios.post(baseURL + `/PDF/set-adjustment-name`, { adjustment });
-      const blob = await pdf(<PdfAdjustment data={data} />).toBlob();
+      const blob = await pdf(<PdfAdjustment data={data}  unitData={unitData}/>).toBlob();
 
       const file = new File([blob], "GeneratedPDF.pdf", {
         type: "application/pdf",
@@ -152,7 +126,7 @@ export default function PdfModal({
         <Modal.Body>
           <Fragment>
             <PDFViewer width="1200" height="600">
-              <PdfAdjustment data={data} />
+              <PdfAdjustment data={data}  unitData={unitData}/>
             </PDFViewer>
           </Fragment>
         </Modal.Body>
