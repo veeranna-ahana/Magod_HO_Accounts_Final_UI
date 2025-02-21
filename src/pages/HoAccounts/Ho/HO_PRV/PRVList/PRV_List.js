@@ -63,6 +63,7 @@ export default function PRV_List() {
       toast.error("Select Row");
     }
   };
+  console.log("txn type ");
 
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const requestSort = (key) => {
@@ -165,15 +166,15 @@ export default function PRV_List() {
 
       <div
         className="mt-2"
-        style={{ overflowY: "scroll", overflowX: "scroll", height: "300px" }}
+        style={{ overflowY: "scroll", overflowX: "scroll", height: "350px" }}
       >
         <Table striped className="table-data border">
           <thead className="tableHeaderBGColor">
             <tr style={{ whiteSpace: "nowrap" }}>
-              <th>HO Ref</th>
+              <th onClick={() => requestSort("HORef")}>HO Ref</th>
               <th onClick={() => requestSort("HoRefDate")}>Date</th>
 
-              <th>Unitname</th>
+              <th onClick={() => requestSort("Unitname")}>Unitname</th>
               <th onClick={() => requestSort("CustName")}>Customer</th>
               <th
                 onClick={() => requestSort("Amount")}
@@ -181,7 +182,7 @@ export default function PRV_List() {
               >
                 Amount
               </th>
-              <th>Description</th>
+              <th onClick={() => requestSort("Description")}>Description</th>
               <th>Status</th>
             </tr>
           </thead>

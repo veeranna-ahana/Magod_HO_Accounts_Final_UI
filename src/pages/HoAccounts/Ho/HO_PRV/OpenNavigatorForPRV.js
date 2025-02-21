@@ -172,7 +172,8 @@ export default function OpenNavigatorForPRV() {
 
   const handleSelectUnit = (selected) => {
     const selectedCustomer = selected[0];
-    setSelectedOption(selected); // Update selected option state
+    setSelectedOption(selected);
+    setSelectedOption(unitFromDraft);
     setGetUnit(selectedCustomer ? selectedCustomer.UnitName : ""); // Update selected name
   };
 
@@ -610,7 +611,28 @@ export default function OpenNavigatorForPRV() {
       setCancelPopup(true);
     }
   };
+  console.log(rvData.data.receipt_data?.TxnType, "rvData.data");
 
+
+  useEffect(() => {
+    if (unitFromDraft) {
+      fetchUnitAddress();
+    }
+  }, [unitFromDraft]);
+  const [unitAddress, setUnitAddress] = useState([]);
+  const fetchUnitAddress = () => {
+    
+    axios
+      .post(baseURL + "/createnew/getAddress", {
+        adj_unitname: unitFromDraft,
+      })
+      .then((res) => {
+        setUnitAddress(res.data.Result);
+      })
+      .catch((err) => {
+        console.log("errin pdf address", err);
+      });
+  };
   return (
     <>
       {pdfVoucher && (
@@ -620,6 +642,7 @@ export default function OpenNavigatorForPRV() {
           data={rvData.data}
           data2={rvData.postData}
           setRvData={setRvData}
+          unitData={unitAddress}
         />
       )}
 
@@ -671,7 +694,7 @@ export default function OpenNavigatorForPRV() {
           <label className="form-label" style={{ whiteSpace: "nowrap" }}>
             Select Unit{" "}
           </label>
-          <Typeahead
+          {/* <Typeahead
             className="ip-select"
             id="basic-example"
             labelKey={(option) =>
@@ -686,7 +709,8 @@ export default function OpenNavigatorForPRV() {
                 ? rvData.postData.Status
                 : ""
             }
-          />
+          /> */}
+          <input className="in-field" name="" value={unitFromDraft} />
         </div>
 
         <div className="d-flex col-md-4" style={{ gap: "32px" }}>
@@ -717,16 +741,27 @@ export default function OpenNavigatorForPRV() {
           <label className="form-label" style={{ whiteSpace: "nowrap" }}>
             Transaction Type
           </label>
-          <select
+          {/* <select
             className="ip-select"
             name="TxnType"
             id="TxnType"
             onChange={PaymentReceipts}
             value={rvData.postData.TxnType}
+            // value="Adjustment"
             disabled
           >
             <option value="">Select</option>
-          </select>
+          </select> */}
+          <input
+            className="in-field"
+            name="HORefNo"
+            // value="Adjustment"
+            value={
+              rvData.data.receipt_data?.TxnType
+                ? rvData.data.receipt_data?.TxnType
+                : ""
+            }
+          />
         </div>
 
         <div className="d-flex col-md-2" style={{ gap: "10px" }}>
@@ -1052,139 +1087,7 @@ export default function OpenNavigatorForPRV() {
         </div>
       </div>
 
-      {/* <Modal show={showPostModal} onHide={handlePostModalClose} size="md">
-        <Modal.Header closeButton>
-          <Modal.Title style={{fontSize:'12px'}}>HO Accounts</Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body style={{fontSize:'12px'}}>
-          Do You wish to create a HO voucher now?. Details cannot be changed
-          once created
-        </Modal.Body>
-
-        <Modal.Footer>
-          <button
-            className="button-style"
-           // style={{ width: "50px" }}
-            onClick={handlePostYes}
-            style={{fontSize:'12px'}}
-          >
-            Yes
-          </button>
-
-          <button
-            className="button-style"
-            style={{ fontSize:'12px', backgroundColor: "rgb(173, 173, 173)" }}
-            onClick={handlePostModalClose}
-          >
-            No
-          </button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal size="lg" show={cancelPopup} onHide={handleCancelClose}>
-        <Modal.Header closeButton>
-          <Modal.Title style={{fontSize:'12px'}}>Magod Laser: Invoice Cancellation Form</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="col-md-12">
-            <div className="">
-              <div className="row">
-                <div className="col-md-3">
-                  <div className="">
-                    <label className="form-label">
-                      {" "}
-                      HO Receipt No<span> :</span>
-                    </label>
-                  </div>
-
-                  <div className="">
-                    <label className="form-label">
-                      Customer<span className="ms-1"> :</span>
-                    </label>
-                  </div>
-
-                  <div className="">
-                    <label className="form-label">
-                      Value<span style={{ marginLeft: "38px" }}> :</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div className="col-md-4">
-                  <div className="mt-2">
-                    <input
-                       className="in-field"
-                      disabled
-                      name="HORefNo"
-                      value={rvData.postData.HORefNo}
-                    />
-                  </div>
-
-                  <div className="mt-2">
-                    <input
-                       className="in-field"
-                      name="Customer"
-                      value={rvData.postData.CustName}
-                      disabled
-                    />
-                  </div>
-
-                  <div className="mt-2">
-                    <input
-                      className="in-field"
-                      value={rvData.postData.Amount}
-                      disabled
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-4 mt-2 ms-2">
-                <label className="form-label">Reason for Cancellation </label>
-                <textarea
-                  className="in-field"
-                  style={{ width: "500px", height: "100px", resize: "none" }}
-                  type="textarea"
-                  onChange={handleReasonChange}
-                />
-              </div>
-
-              <div className="col-md-4 mt-2 mb-3 ms-2">
-                <Button variant="primary" type="submit" onClick={cancelYes} style={{fontSize:'12px'}}>
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Modal.Body>
-      </Modal>
-
-      <Modal show={deleteOverAllData} onHide={handleDeletePopup} size="md">
-        <Modal.Header closeButton>
-          <Modal.Title style={{fontSize:'12px'}}>HO Accounts</Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body style={{fontSize:'12px'}}>Are you want to Delete ?</Modal.Body>
-
-        <Modal.Footer>
-          <button
-            className="button-style"
-           // style={{ width: "50px" }}
-           style={{fontSize:'12px'}}
-            onClick={deleteButton}
-          >
-            Yes
-          </button>
-
-          <button
-            className="button-style"
-            style={{ fontSize:'12px', backgroundColor: "rgb(173, 173, 173)" }}
-            //  onClick={handlePostModalClose}
-          >
-            No
-          </button>
-        </Modal.Footer>
-      </Modal> */}
+      
     </>
   );
 }

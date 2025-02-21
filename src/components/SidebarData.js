@@ -175,11 +175,11 @@ export const customerSidebar = [
         icon: <BsFillCloudArrowUpFill />,
         path: "/HOAccounts/Sync/SyncExport",
       },
-      {
-        title: "Show Sync Status",
-        icon: <FiCloudSnow />,
-        path: "/HOAccounts/Sync/ShowSync",
-      },
+      // {
+      //   title: "Show Sync Status",
+      //   icon: <FiCloudSnow />,
+      //   path: "/HOAccounts/Sync/ShowSync",
+      // },
     ],
   },
 ];

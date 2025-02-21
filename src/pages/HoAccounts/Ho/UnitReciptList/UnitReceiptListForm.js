@@ -2,23 +2,24 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
-import ReactToPrint from "react-to-print";
-import PaymentReceiptVoucherPdf from "../../../../PDF/PaymentReceiptVoucher";
+
 import { useNavigate } from "react-router-dom";
 import { baseURL } from "../../../../api/baseUrl";
 import PdfVoucherModal from "./PdfVoucherModal";
 
 export default function UnitReceiptListForm() {
-  const contentRef = React.useRef();
-
-  // Create a reference for the ReactToPrint component
-  const printRef = React.useRef();
   const [getClosedInvoices, setGetClosedInvoices] = useState([]);
   const [openInvoices, setOpenInvoices] = useState([]);
-  const [printButtonClicked, setPrintButtonClicked] = useState(false);
+
   const location = useLocation();
   //  const selectRow = location.state.selectRow || '';
-  const selectRow = location.state ? location.state.selectRow || "" : "";
+    const selectRow = location.state ? location.state.selectRow || "" : "";
+   
+ 
+   
+
+
+console.log("selec onacc ", selectRow);
 
   useEffect(() => {
     if (selectRow) {
@@ -30,15 +31,16 @@ export default function UnitReceiptListForm() {
   const navigate = useNavigate();
 
   const getInvoiceList = () => {
+   
     axios
       .get(baseURL + "/unitReceiptList/getInvoices", {
         params: {
           RecdPVID: selectRow.RecdPVID,
+          unitName:selectRow.Unitname
         },
       })
       .then((res) => {
         setGetClosedInvoices(res.data.Result);
-        console.log("re", res.data.Result);
       })
       .catch((err) => {
         console.log("err", err);
@@ -113,6 +115,31 @@ export default function UnitReceiptListForm() {
     return dataCopy;
   };
 
+   //fetching unit address
+   useEffect(() => {
+    if (selectRow.Unitname) {
+      fetchUnitAddress();
+    }
+  }, [selectRow.Unitname]);
+  const [unitAddress, setUnitAddress] = useState([]);
+  const fetchUnitAddress = () => {
+    
+    axios
+      .post(baseURL + "/createnew/getAddress", {
+        adj_unitname:selectRow.Unitname,
+      })
+      .then((res) => {
+        setUnitAddress(res.data.Result);
+      })
+      .catch((err) => {
+        console.log("errin pdf address", err);
+      });
+  };
+
+  console.log("select row ", selectRow.Unitname);
+  
+
+
   return (
     <div>
       {pdfVoucher && (
@@ -121,6 +148,7 @@ export default function UnitReceiptListForm() {
           setPdfVoucher={setPdfVoucher}
           pdfVoucher={pdfVoucher}
           selectRow={selectRow}
+          unitData={unitAddress}
         />
       )}
 
@@ -180,15 +208,7 @@ export default function UnitReceiptListForm() {
           <label className="form-label" style={{ whiteSpace: "nowrap" }}>
             Transaction Type
           </label>
-          <select
-            className="ip-select"
-            // disabled={selectRow.Recd_PVNo === "Draft"}
-            disabled
-          >
-            {/* <option value="option 1">{selectRow.TxnType}</option>
-                                                <option value="option 2">Online Payment</option>
-                                                <option value="option 3">Cheque</option> */}
-          </select>
+          <input className="in-field" value={selectRow.TxnType} disabled />
         </div>
 
         <div className="d-flex col-md-2" style={{ gap: "10px" }}>
@@ -331,23 +351,7 @@ export default function UnitReceiptListForm() {
             </thead>
 
             <tbody className="tablebody">
-              {/* {openInvoices.map((item, index) => {
-                return (
-                  <tr>
-                    <td>
-                      <input type="checkBox" />
-                    </td>
-                    <td>{item.DC_InvType}</td>
-                    <td>{item.DC_Inv_No}</td>
-                    <td style={{ whiteSpace: "nowrap" }}>
-                      {item.Formatted_Inv_Date}
-                    </td>
-                    <td>{item.GrandTotal}</td>
-                    <td>{item.PymtAmtRecd}</td>
-                    <td>{item.Balance}</td>
-                  </tr>
-                );
-              })} */}
+             
             </tbody>
           </Table>
         </div>

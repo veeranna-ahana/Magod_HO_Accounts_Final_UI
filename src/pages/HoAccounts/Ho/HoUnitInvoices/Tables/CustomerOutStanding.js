@@ -217,7 +217,7 @@ export default function CustomerOutStanding({
                 >
                   Invoice_Date
                 </th>
-                <th onClick={() => requestSort("GrandTotal")}>Total</th>
+                <th onClick={() => requestSort("GrandTotal")} style={{ textAlign: "center" }}>Total</th>
                 <th
                   onClick={() => requestSort("Balance")}
                   style={{ textAlign: "right" }}
@@ -234,32 +234,7 @@ export default function CustomerOutStanding({
               </tr>
             </thead>
 
-            {/* <tbody className="tablebody">
-              {sortedData().map((item, index) => (
-                <tr
-                  onClick={() => handleRowSelect(item.DC_Inv_No)}
-                  key={index}
-                  className={
-                    selectedRow === item.DC_Inv_No ? "selcted-row-clr" : ""
-                  }
-                >
-                  <td style={{ whiteSpace: "nowrap" }}>{item.DC_InvType}</td>
-                  <td>{item.Inv_No}</td>
-                  <td>{item.InvoiceFor}</td>
-                  <td>{new Date(item.Inv_Date).toLocaleDateString("en-GB")}</td>
-                  <td style={{ textAlign: "right" }}>
-                    {formatAmount(item.GrandTotal)}
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    {formatAmount(item.Balance)}
-                  </td>
-                  <td style={{ textAlign: "center" }}>{item.duedays}</td>
-                  <td>{item.DCStatus}</td>
-                </tr>
-              ))}
-
-              {}
-            </tbody> */}
+            
             <tbody className="tablebody">
               {sortedData().length > 0 ? (
                 sortedData().map((item, index) => (
@@ -276,10 +251,10 @@ export default function CustomerOutStanding({
                     <td>
                       {new Date(item.Inv_Date).toLocaleDateString("en-GB")}
                     </td>
-                    <td style={{ textAlign: "right" }}>
+                    <td style={{ textAlign: "center" }}>
                       {formatAmount(item.GrandTotal)}
                     </td>
-                    <td style={{ textAlign: "right" }}>
+                    <td style={{ textAlign: "center" }}>
                       {formatAmount(item.Balance)}
                     </td>
                     <td style={{ textAlign: "center" }}>{item.duedays}</td>

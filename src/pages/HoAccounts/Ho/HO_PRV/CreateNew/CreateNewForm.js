@@ -19,6 +19,7 @@ export default function CreateNewForm() {
     : 0;
 
   const adj_unitname = adj_unit;
+  console.log("unit nameeeeeeeeeeeeeeeeeeeeee", adj_unit);
 
   let fixedOnaccount = adjustmentRows
     ? parseInt(adjustmentRows.fixedOnaccount)
@@ -60,8 +61,8 @@ export default function CreateNewForm() {
       RecdPVID: "",
       Recd_PVNo: "Draft",
       HO_PrvId: "",
-      // HoRefDate: new Date().toLocaleDateString("en-GB").split("/").join("-"),
-      HoRefDate: adjustmentRows ? adjustmentRows.Formatted_Recd_PV_Date : "",
+      HoRefDate: new Date().toLocaleDateString("en-GB").split("/").join("-"),
+      // HoRefDate: adjustmentRows ? adjustmentRows.Formatted_Recd_PV_Date : "",
 
       HORefNo: "Draft",
       HORef: "Draft",
@@ -77,6 +78,7 @@ export default function CreateNewForm() {
       PVSrlID: "",
       InvUpdated: 0,
       Sync_Hold: 0,
+      Unitname: adj_unit ? adj_unit : "",
     },
     data: {
       inv_data: [],
@@ -113,6 +115,27 @@ export default function CreateNewForm() {
     }
   }, []);
 
+
+  const [txnTypes, setTxnTypes] = useState([]);
+  useEffect(() => {
+    const fetchTxnTypes = async () => {
+      try {
+        const res = await axios.get(baseURL + "/createnew/txntypes/");
+        if (res.data && res.data.Result && res.data.Result.length > 0) {
+          setTxnTypes(res.data.Result);
+        } else {
+          console.error("Response data structure is unexpected:", res.data);
+        }
+      } catch (error) {
+        console.error("Error fetching transaction types:", error);
+      }
+    };
+
+
+
+    fetchTxnTypes();
+  }, []);
+
   const insertToForm = async () => {
     const response = await axios.post(
       baseURL + "/createnew/insertToparentForm",
@@ -126,7 +149,9 @@ export default function CreateNewForm() {
 
     getleftandRightTabledata(
       insertedRecord[0].Cust_code,
-      insertedRecord[0].HOPrvId
+      insertedRecord[0].HOPrvId,
+       adj_unit,
+      
     );
 
     setRvData((prevRvData) => ({
@@ -145,15 +170,16 @@ export default function CreateNewForm() {
     }));
   };
 
-  const getleftandRightTabledata = async (cust_code, hoprvID) => {
+  const getleftandRightTabledata = async (cust_code, hoprvID,adj_unit) => {
     try {
       const resp = await axios.post(baseURL + "/createnew/getleftTable", {
         receipt_id: hoprvID,
+        unit:adj_unit
       });
 
       try {
         const response = await axios.get(
-          baseURL + `/createnew/ho_openInvoicesADJUST?customercode=${cust_code}`
+          baseURL + `/createnew/ho_openInvoicesAdjust?customercode=${cust_code}`
         );
 
         setRvData((prevRvData) => ({
@@ -996,11 +1022,13 @@ export default function CreateNewForm() {
   };
 
   const cancelYes = () => {
-    if (reason.length > 15) {
+    const trimmedReason = reason.trim(); // Remove leading and trailing whitespace
+
+    if (trimmedReason.length > 15) {
       setCancelPopup(false);
       cancelllationSubmit();
     } else {
-      toast.error("Need more than 15 chracters");
+      toast.error("Reason must have more than 15 valid characters.");
     }
   };
 
@@ -1010,7 +1038,7 @@ export default function CreateNewForm() {
   const cancelllationSubmit = async () => {
     const cancelData = await axios.post(baseURL + "/createNew/cancelUpdate", {
       HO_PrvId: rvData.postData.HO_PrvId,
-
+unitname:adj_unit ? adj_unit : "",
       custName: rvData.postData.CustName,
       totalReceiveNow: sumofReceive,
       id: id,
@@ -1402,7 +1430,8 @@ export default function CreateNewForm() {
       const response = await axios.post(baseURL + "/hoCreateNew/postInvoice", {
         HO_PrvId: rvData.postData.HO_PrvId,
         srlType: srlType,
-        unit: unit,
+        // unit: unit,
+        unit: adj_unit,
         receipt_details: rvData.data.receipt_details,
         onacc: onAccountValue22,
         id: id,
@@ -1425,6 +1454,11 @@ export default function CreateNewForm() {
           Description: response.data[0].Description,
           TxnType: response.data[0].TxnType,
           On_account: response.data[0].On_account,
+          HoRefDate: adjustmentRows
+            ? adjustmentRows.Formatted_Recd_PV_Date
+            : "",
+          // Unitname: "HQ",
+          Unitname: adj_unit,
         },
 
         firstTableArray: [],
@@ -1548,6 +1582,30 @@ export default function CreateNewForm() {
     return dataCopy;
   };
 
+
+  //fetching unit address
+  useEffect(() => {
+    if (adj_unitname) {
+      fetchUnitAddress();
+    }
+  }, [adj_unitname]);
+  const [unitAddress, setUnitAddress] = useState([]);
+  const fetchUnitAddress = () => {
+    
+    axios
+      .post(baseURL + "/createnew/getAddress", {
+        adj_unitname,
+      })
+      .then((res) => {
+        setUnitAddress(res.data.Result);
+      })
+      .catch((err) => {
+        console.log("errin pdf address", err);
+      });
+  };
+
+  
+
   return (
     <>
       {pdfVoucher && (
@@ -1557,6 +1615,7 @@ export default function CreateNewForm() {
           data={rvData.data}
           data2={rvData.postData}
           setRvData={setRvData}
+          unitData={unitAddress}
         />
       )}
 
@@ -1615,8 +1674,9 @@ export default function CreateNewForm() {
             id="TxnType"
             onChange={PaymentReceipts}
             value={rvData.postData.TxnType}
+            disabled
           >
-            <option value="">Select</option>
+           {/* <option value="">Select</option>
             <option value="Bank">Bank</option>
             <option value="Cash">Cash</option>
             <option value="Adjustment">Adjustment</option>
@@ -1629,7 +1689,17 @@ export default function CreateNewForm() {
             <option value="Balance Not Recoverable">
               Balance Not Recoverable
             </option>
-            <option value="QR Code and RTGS">QR Code and RTGS</option>
+            <option value="QR Code and RTGS">QR Code and RTGS</option> */}
+            <option value="">Select</option>
+    {txnTypes.length > 0 ? (
+      txnTypes.map((txn, index) => (
+        <option key={index} value={txn.TxnType}>
+        {txn.TxnType}
+      </option>
+      ))
+    ) : (
+      <option value="">No transaction types available</option>
+    )}
           </select>
         </div>
 
@@ -1668,6 +1738,7 @@ export default function CreateNewForm() {
             name="HORefNo"
             onChange={PaymentReceipts}
             value={rvData.postData.HORefNo}
+            disabled
           />
         </div>
 
@@ -1676,7 +1747,7 @@ export default function CreateNewForm() {
           <input
             class="in-field"
             name="Status"
-            onChange={PaymentReceipts}
+            //  onChange={PaymentReceipts}
             disabled={
               rvData && rvData.postData.Status !== "Draft"
                 ? rvData.postData.Status

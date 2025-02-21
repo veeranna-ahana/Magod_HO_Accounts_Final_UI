@@ -2,9 +2,10 @@ import React, { useState, useEffect, Fragment } from "react";
 import { Button, Modal } from "react-bootstrap";
 import axios from "axios";
 import { baseURL } from "../../../../../api/baseUrl";
-import { PDFViewer, StyleSheet, Image } from "@react-pdf/renderer";
+import { PDFViewer, StyleSheet, Image, pdf } from "@react-pdf/renderer";
 import { useLocation } from "react-router-dom";
 import CustomerPDF from "./CustomerPDF";
+import { toast } from "react-toastify";
 
 export default function ModalPDF({
   setPdfOpen,
@@ -16,7 +17,7 @@ export default function ModalPDF({
   setFlag,
   filterData,
   selectedUnitName,
-  unitAddress,
+  unitData
 }) {
   const [dataBasedOnCust, setDataBasedOnCust] = useState([]);
   const handleClose = () => {
@@ -83,12 +84,67 @@ export default function ModalPDF({
   }
   const location = useLocation();
 
-  console.log("adresss", unitAddress);
+  console.log("adresss in modal",  unitData);
+
+  const savePdfToServer = async () => {
+    try {
+      const adjustment = "Customer_Outstanding"; // Replace with the actual name you want to send
+
+      // Step 1: Call the API to set the adjustment name
+      await axios.post(baseURL + `/PDF/set-adjustment-name`, { adjustment });
+      const blob = await pdf(
+        <CustomerPDF
+          dataBasedOnCust={filterData}
+          unit={selectedUnitName[0]?.UnitName}
+          unitData={unitData}
+        />
+      ).toBlob();
+
+      const file = new File([blob], "GeneratedPDF.pdf", {
+        type: "application/pdf",
+      });
+
+      const formData = new FormData();
+
+      formData.append("file", file);
+
+      const response = await axios.post(baseURL + `/PDF/save-pdf`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (response.status === 200) {
+        toast.success("PDF saved successfully!");
+      }
+    } catch (error) {
+      console.error("Error saving PDF to server:", error);
+    }
+  };
   return (
     <>
       <Modal show={pdfOpen} fullscreen>
         <Modal.Header closeButton onClick={handleClose}>
-          <Modal.Title>Magod Unit Accounts</Modal.Title>
+          <Modal.Title
+            style={{
+              fontSize: "12px",
+              display: "flex",
+              justifyContent: "space-between", // Distributes space between elements
+              width: "100%", // Ensures the title spans full width
+              alignItems: "center",
+            }}
+          >
+            Magod HO Accounts
+            <div>
+              {" "}
+              <Button
+                variant="primary"
+                //   onClick={handleDueGeneratePDF}
+                style={{ fontSize: "10px", marginRight: "35px" }}
+                onClick={savePdfToServer}
+              >
+                Save to Server
+              </Button>
+            </div>
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Fragment>
@@ -96,7 +152,7 @@ export default function ModalPDF({
               <CustomerPDF
                 dataBasedOnCust={filterData}
                 unit={selectedUnitName[0]?.UnitName}
-                unitAddress={unitAddress}
+                unitData={unitData}
               />
             </PDFViewer>
           </Fragment>

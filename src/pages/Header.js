@@ -73,7 +73,7 @@ function Header({ user }) {
                 }}
                 onClick={logout}
               >
-                Sign Out
+                Sign Out(v0.0126-11-24)
               </button>
             </>
           ) : (

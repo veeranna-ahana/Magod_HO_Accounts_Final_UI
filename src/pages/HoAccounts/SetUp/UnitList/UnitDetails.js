@@ -89,7 +89,7 @@ export default function UnitDetails() {
         } else if (res.data.status === "query") {
           console.log("22");
 
-          toast.error("Unit Initial length should be less than 3 ");
+          toast.error("Error in sql query or table structure ");
         } else if (res.data.status === "success") {
           console.log("qwertyuio");
           toast.success("  Unit data added Successfully");
@@ -442,7 +442,7 @@ export default function UnitDetails() {
         <div
           className="col-md-4"
           style={{
-            height: "270px",
+            height: "380px",
             overflowY: "scroll",
           }}
         >

@@ -1,5 +1,4 @@
-import Axios from "axios";
-import React, { useContext, useState,useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { baseURL } from "../api/baseUrl";
 
@@ -16,60 +15,81 @@ const AuthProvider = ({ children }) => {
   const [post, setPost] = React.useState([]);
 
   //Schedulelist Profile
-  const [schedulelistdata,setSchedulelistdata]=useState([])
-  const [schedulelistdatas,setSchedulelistdatas]=useState([])
+  const [schedulelistdata, setSchedulelistdata] = useState([]);
+  const [schedulelistdatas, setSchedulelistdatas] = useState([]);
 
   //Schedulelist Service
-  const [schedulelistservicedata,setSchedulelistservicedata]=useState([])
-  const [schedulelistservicedatas,setSchedulelistservicedatas]=useState([])
+  const [schedulelistservicedata, setSchedulelistservicedata] = useState([]);
+  const [schedulelistservicedatas, setSchedulelistservicedatas] = useState([]);
 
   // Schedulelist fabrication
-  const [schedulelistfabricationdata,setSchedulelistfabricationdata]=useState([])
-  const [schedulelistfabricationdatas,setSchedulelistfabricationdatas]=useState([])
+  const [schedulelistfabricationdata, setSchedulelistfabricationdata] =
+    useState([]);
+  const [schedulelistfabricationdatas, setSchedulelistfabricationdatas] =
+    useState([]);
 
   //Profile
-  const getSchedulistdata=()=>{
-    axios.get(baseURL + "/scheduleListProfile/schedulesList").then((response) => {
-          setSchedulelistdata(response.data); 
-          setSchedulelistdatas(response.data);
-          // console.log(response.data)
-        });
-  }
+  const getSchedulistdata = () => {
+    axios
+      .get(baseURL + "/scheduleListProfile/schedulesList")
+      .then((response) => {
+        setSchedulelistdata(response.data);
+        setSchedulelistdatas(response.data);
+        // console.log(response.data)
+      });
+  };
 
   //fabrication
-  const getSchedulistfabricationdata=()=>{
-    axios.get(baseURL + "/scheduleListFabrication/schedulesList").then((response) => {
-      setSchedulelistfabricationdata(response.data); 
-      setSchedulelistfabricationdatas(response.data);
-            // console.log(response.data)
-        });
-  }
+  const getSchedulistfabricationdata = () => {
+    axios
+      .get(baseURL + "/scheduleListFabrication/schedulesList")
+      .then((response) => {
+        setSchedulelistfabricationdata(response.data);
+        setSchedulelistfabricationdatas(response.data);
+        // console.log(response.data)
+      });
+  };
 
   //service
-  const getSchedulistservicedata=()=>{
-    axios.get(baseURL + "/scheduleListService/schedulesList").then((response) => {
-          setSchedulelistservicedata(response.data);
-          setSchedulelistservicedatas(response.data); 
-          // console.log(response.data)
-        });
-  }
+  const getSchedulistservicedata = () => {
+    axios
+      .get(baseURL + "/scheduleListService/schedulesList")
+      .then((response) => {
+        setSchedulelistservicedata(response.data);
+        setSchedulelistservicedatas(response.data);
+        // console.log(response.data)
+      });
+  };
 
-//Machine Setup
-  const MachineTabledata=()=>{
+  //Machine Setup
+  const MachineTabledata = () => {
     axios.get(baseURL + "/productionSetup/getallmachines").then((response) => {
       setPost(response.data);
       // console.log(response.data)
     });
-  }
+  };
 
   return (
     <AppContext.Provider
       value={{
-        post,setPost,MachineTabledata,schedulelistdata,setSchedulelistdata,
-        getSchedulistdata,schedulelistdatas,setSchedulelistdatas,
-        schedulelistservicedata,setSchedulelistservicedata,getSchedulistservicedata,
-        schedulelistfabricationdata,setSchedulelistfabricationdata,getSchedulistfabricationdata,
-        schedulelistfabricationdatas,setSchedulelistfabricationdatas,schedulelistservicedatas,setSchedulelistservicedatas
+        post,
+        setPost,
+        MachineTabledata,
+        schedulelistdata,
+        setSchedulelistdata,
+        getSchedulistdata,
+        schedulelistdatas,
+        setSchedulelistdatas,
+        schedulelistservicedata,
+        setSchedulelistservicedata,
+        getSchedulistservicedata,
+        schedulelistfabricationdata,
+        setSchedulelistfabricationdata,
+        getSchedulistfabricationdata,
+        schedulelistfabricationdatas,
+        setSchedulelistfabricationdatas,
+        schedulelistservicedatas,
+        setSchedulelistservicedatas,
       }}
     >
       {children}

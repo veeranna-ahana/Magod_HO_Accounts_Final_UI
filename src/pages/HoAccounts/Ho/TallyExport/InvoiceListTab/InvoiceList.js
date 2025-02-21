@@ -75,14 +75,14 @@ export default function InvoiceList({
               selectedUnitName: selectedUnitName?.UnitName,
             }
           );
-          console.log("company", company.data.Result[0].Tally_account_Name);
+          //console.log("company", company.data.Result[0].Tally_account_Name);
 
           if (company.data.Status === "Success") {
             setCmpName(company.data.Result[0].Tally_account_Name);
             //setCompanyAndGuid(company.data.Result);
           }
         } catch (error) {
-          console.error("Error fetching company:", error);
+          // console.error("Error fetching company:", error);
         }
       }
     };
@@ -100,20 +100,19 @@ export default function InvoiceList({
         { cmp: cmpName }
       );
 
-      console.log("cmp resultttt", companiesfromtally.data);
+      //console.log("cmp resultttt", companiesfromtally.data);
       if (companiesfromtally.data.company === "companyExist") {
         return companiesfromtally.data.company;
       } else if (companiesfromtally.data.company === "companyNot") {
         return companiesfromtally.data.company;
       }
     } catch (error) {
-      console.error("Error in companyFromTallyy:", error.response.data.message);
+      //console.error("Error in companyFromTallyy:", error.response.data.message);
       return error.response.data.message;
     }
   };
 
   const invoiceTaxDetails = (dcNo) => {
-    console.log("dc noo", dcNo);
     if (dcNo) {
       axios
         .get(baseURL + "/tallyExport/getInvoiceTaxDetails", {
@@ -123,7 +122,7 @@ export default function InvoiceList({
           },
         })
         .then((res) => {
-          console.log("inv based on dc inv number 2", res.data.Result);
+          //console.log("inv based on dc inv number 2", res.data.Result);
 
           if (res.data.Result.length > 0) {
             setTaxInvoiceData(res.data.Result);
@@ -132,7 +131,7 @@ export default function InvoiceList({
           }
         })
         .catch((err) => {
-          console.log("err", err);
+          //  console.log("err", err);
         });
     }
   };
@@ -175,8 +174,6 @@ export default function InvoiceList({
         },
       })
       .then((res) => {
-        console.log("inv based tax for xml", res.data.Result.length);
-
         if (res.data.Result.length > 0) {
           setTaxDataForXML(res.data.Result);
         } else {
@@ -184,7 +181,7 @@ export default function InvoiceList({
         }
       })
       .catch((err) => {
-        console.log("err", err);
+        // console.log("err", err);
       });
   };
 
@@ -216,8 +213,6 @@ export default function InvoiceList({
     }
   }, [invoiceListData, flag]);
 
-  console.log("invoce list data yyyyyyyyyy ", invoiceListData);
-
   const tableToXml = () => {
     const xmlData = {
       ENVELOPE: {
@@ -229,8 +224,8 @@ export default function InvoiceList({
             REQUESTDESC: {
               REPORTNAME: { _text: "Vouchers" },
               STATICVARIABLES: {
-                //SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
-                SVCURRENTCOMPANY: { _text: "Magod_Trail" },
+                SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+                // SVCURRENTCOMPANY: { _text: "Magod_Trail" },
               },
             },
             TALLYMESSAGE: invoiceListData.map((voucher, index) => {
@@ -436,8 +431,6 @@ export default function InvoiceList({
 
       const cm = await companyFromTally();
 
-      console.log("company does not exit or not ", cm);
-
       if (cm === "companyExist") {
         await createXmlForEachData();
       } else if (cm === "Tally_server_off") {
@@ -454,7 +447,8 @@ export default function InvoiceList({
   const createXmlForEachData = async () => {
     // Filter invoiceListData based on the condition voucher.DC_InvType
     const filteredSalesInvoices = invoiceListData.filter(
-      (voucher) => voucher.DC_InvType === "Sales" || "Misc Sales"
+      (voucher) =>
+        voucher.DC_InvType === "Sales" || voucher.DC_InvType === "Misc Sales"
     );
 
     const filteredServiceInvoices = invoiceListData.filter(
@@ -472,7 +466,6 @@ export default function InvoiceList({
 
       // Ensure xml is a string
       if (Array.isArray(xml)) {
-        console.error("Error: XML data is an array. Converting to string.");
         return xml[0] || ""; // Assuming the array has one item
       }
 
@@ -480,7 +473,6 @@ export default function InvoiceList({
 
       // Remove newline characters and extra spaces
       const formattedXmlData = xmlString.replace(/[\n\r]/g, "").trim();
-      console.log("formated xml for misc ", formattedXmlData);
 
       return formattedXmlData;
     });
@@ -492,7 +484,6 @@ export default function InvoiceList({
 
       // Ensure xml is a string
       if (Array.isArray(xml)) {
-        console.error("Error: XML data is an array. Converting to string.");
         return xml[0] || ""; // Assuming the array has one item
       }
 
@@ -511,7 +502,6 @@ export default function InvoiceList({
 
       // Ensure xml is a string
       if (Array.isArray(xml)) {
-        console.error("Error: XML data is an array. Converting to string.");
         return xml[0] || ""; // Assuming the array has one item
       }
 
@@ -530,38 +520,46 @@ export default function InvoiceList({
       ...xmlResultsJobWork,
     ];
 
-    console.log("Sending XML data individually to backend...");
-
     // Use forEach to send each XML individually to the backend
     allXmlResults.forEach(async (xmlData, index) => {
+      console.log(`Response for invoice ${index + 1}:`);
       try {
         // Ensure xmlData is a string
         if (typeof xmlData === "string") {
           // Remove additional unwanted characters and trim
           const formattedXmlData = xmlData.replace(/[\n\r]/g, "").trim();
 
-          console.log("formatted xml data serviceee ", formattedXmlData);
           // Check if formattedXmlData is empty or invalid
           if (formattedXmlData) {
             // Send each XML string to the backend one by one
             const response = await exportInvoices(formattedXmlData);
-
-            console.log(`Response for invoice ${index + 1}:`, response);
           } else {
             console.error(
               `Error: Formatted XML data is empty for invoice ${index + 1}`
             );
           }
         } else {
-          console.error(
-            `Error: xmlData is not a string for invoice ${index + 1}`,
-            xmlData
-          );
+          // console.error(
+          //   `Error: xmlData is not a string for invoice ${index + 1}`,
+          //   xmlData
+          // );
         }
       } catch (error) {
-        console.error(`Error exporting invoice ${index + 1}:`, error);
+        //console.error(`Error exporting invoice ${index + 1}:`, error);
       }
     });
+
+    // for (const [index, xmlData] of allXmlResults.entries()) {
+    //   console.log(`Response for invoice ${index + 1}:`);
+    //   try {
+    //     if (typeof xmlData === "string" && xmlData.trim()) {
+    //       const response = await exportInvoices(xmlData.trim());
+    //       console.log(`Response for invoice after vexport:`, response);
+    //     }
+    //   } catch (error) {
+    //     console.error(`Error exporting invoice ${index + 1}:`, error);
+    //   }
+    // }
   };
 
   const createXml = (filteredInvoices) => {
@@ -720,9 +718,8 @@ export default function InvoiceList({
                 REPORTNAME: { _text: "Vouchers" },
                 STATICVARIABLES: {
                   // SVCURRENTCOMPANY: { _text: cmpName },
-                  // SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+                  //SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
                   SVCURRENTCOMPANY: { _text: "Magod Laser_Ahana 1" },
-                  // SVCURRENTCOMPANY: { _text: "Magod_Trail" },
                 },
               },
               TALLYMESSAGE: {
@@ -755,13 +752,11 @@ export default function InvoiceList({
         toast.error(`Company Account Name and GUID Mismatch for ${cmpName}`);
       } else if (response.data.message === "alter") {
         if (response.data.guids && response.data.guids.length > 0) {
-          console.log("Received GUIDs:", response.data.guids);
-
           response.data.guids.forEach((guid) => {
             const matchingInvoice = invoiceListData.find(
               (invoice) => invoice.DC_Inv_No === Number(guid)
             );
-            console.log("guid 686:", guid, matchingInvoice.DC_Inv_No);
+            // console.log("guid 686:", guid, matchingInvoice.DC_Inv_No);
 
             setDummyArray((prev) => {
               if (!prev.includes(matchingInvoice.DC_Inv_No)) {
@@ -770,7 +765,7 @@ export default function InvoiceList({
               }
               return prev; // Return unchanged array if already present
             });
-            console.log("dummy array altered 222222222:", dummyArray);
+
             if (matchingInvoice) {
               // Invoice is already present
               toast.warn(`Invoice ${guid} is already present.`);
@@ -793,17 +788,19 @@ export default function InvoiceList({
               }
               return prev; // Return unchanged array if already present
             });
-            console.log("dummy array 222222222:", dummyArray);
+
             if (matchingInvoice) {
               toast.success(`Invoice ${guid} is Created.`);
+              //  toast.success("Invoices are Created.");
             } else {
               toast.success("Export succesfully");
             }
           });
         }
       } else if (response.data.message === "Exception") {
-        console.log("message ===Exception ");
+        // console.log("message ===Exception ");
       }
+      //return response;
     } catch (error) {
       console.error("Error sending XML data to Tally:", error);
       // Handle error
@@ -905,8 +902,6 @@ export default function InvoiceList({
     }
     return dataCopyReceipt;
   };
-
-  console.log("dummy array and their length, ", dummyArray, dummyArray.length);
 
   return (
     <>

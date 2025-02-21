@@ -173,7 +173,7 @@ export default function Draft_List() {
 
       <div
         className="mt-2"
-        style={{ overflowY: "scroll", overflowX: "scroll", height: "300px" }}
+        style={{ overflowY: "scroll", overflowX: "scroll", height: "350px" }}
       >
         <Table striped className="table-data border">
           <thead className="tableHeaderBGColor">

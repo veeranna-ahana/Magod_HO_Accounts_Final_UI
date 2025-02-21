@@ -142,10 +142,16 @@ export default function OpenVoucher() {
     if (invoiceListData.length > 0) {
       const firstRowData = invoiceListData[0];
       navigate("/HOAccounts/HO/Openvoucher", {
-        state: { selectRow: firstRowData },
+        state: {
+           selectRow: firstRowData,
+        
+           },
       });
     }
   };
+
+  console.log("selected unitname in recept list ",getName);
+  
 
   const handleUnitSelect = (selected) => {
     const selectedCustomer = selected[0];
@@ -182,6 +188,9 @@ export default function OpenVoucher() {
     }
     setSortConfig({ key, direction });
   };
+
+  console.log("current page data unit recept ", currentPageData);
+  
 
   const sortedData = () => {
     const dataCopy = [...currentPageData];
@@ -285,19 +294,19 @@ export default function OpenVoucher() {
       >
         <Table striped className="table-data border">
           <thead className="tableHeaderBGColor">
-            <tr style={{ whiteSpace: "nowrap" }}>
+            <tr style={{ whiteSpace: "nowrap", textAlign:'center' }}>
               <th onClick={() => requestSort("Recd_PVNo")}>Receipt VrNo</th>
               <th>Receipt Status</th>
 
               {/* <th onClick={() => requestSort("Formatted_Recd_PV_Date")}>
                 Date
               </th> */}
-              <th onClick={() => requestSort("Recd_PV_Date")}>Date</th>
-              <th onClick={() => requestSort("CustName")}>Customer</th>
-              <th onClick={() => requestSort("TxnType")}>Transaction Type</th>
-              <th onClick={() => requestSort("Amount")}>Amount</th>
+              <th onClick={() => requestSort("Recd_PV_Date")} >Date</th>
+              <th onClick={() => requestSort("CustName")} >Customer</th>
+              <th onClick={() => requestSort("TxnType")} >Transaction Type</th>
+              <th onClick={() => requestSort("Amount")} >Amount</th>
               <th onClick={() => requestSort("On_account")}>On Account</th>
-              <th onClick={() => requestSort("Description")}>Description</th>
+              <th onClick={() => requestSort("Description")} style={{textAlign:'left'}}>Description</th>
             </tr>
           </thead>
 
@@ -310,9 +319,10 @@ export default function OpenVoucher() {
                     console.log("items", item);
                   }}
                   className={key === selectRow?.index ? "selcted-row-clr" : ""}
+                  style={{ whiteSpace: "nowrap", textAlign:'center' }}
                 >
                   <td>{item.Recd_PVNo}</td>
-                  <td></td>
+                  <td>{item.PRV_Status}</td>
                   <td style={{ whiteSpace: "nowrap" }}>
                     {/* {item.Formatted_Recd_PV_Date} */}
                     {new Date(item.Recd_PV_Date).toLocaleDateString("en-GB")}
@@ -321,7 +331,7 @@ export default function OpenVoucher() {
                   <td>{item.TxnType}</td>
                   <td>{item.Amount}</td>
                   <td>{item.On_account}</td>
-                  <td>{item.Description}</td>
+                  <td style={{textAlign:'left'}}>{item.Description}</td>
                 </tr>
               );
             })}

@@ -50,13 +50,13 @@ const styles = StyleSheet.create({
     height: "80px",
     paddingTop: "10px",
   },
-  // headerText: {
-  //   fontSize: 16,
-  //   fontWeight: "bold",
-  //   marginBottom: 5,
-  //   textAlign:'center'
-
-  // },
+  headerText: {
+    fontSize: "13px",
+    fontWeight: "bold",
+    marginTop: "2px",
+    marginLeft: "20px",
+    fontFamily: "Helvetica-Bold",
+  },
 
   headerText1: {
     textAlign: "center",
@@ -208,10 +208,47 @@ const styles = StyleSheet.create({
   bttmgap: {
     marginBottom: "5px",
   },
+  pageHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginLeft: "10px",
+    marginRight: "10px",
+    marginBottom: "10px",
+    borderBottom: 1,
+  },
+  addressText: {
+    fontSize: 10,
+    marginTop: 5,
+  },
+
+  paymentReceiptVoucher:{
+    textDecoration:'underline',
+    fontWeight:'1000',
+    marginBottom:'2px',
+    fontFamily: "Helvetica-Bold",
+  },
+  gstNo:{
+    fontWeight:'bold',
+    fontFamily: "Helvetica-Bold",
+  },
+  cinNo:{
+    fontWeight:'bold',
+    fontFamily: "Helvetica-Bold",
+  } ,
+   headerTextContainer: {
+    flex: 1, // Allow this view to take the remaining space
+    textAlign: "center", // Center text horizontally
+     marginTop:'5px'
+  },
 });
 
-export default function PdfAdjustment({ data }) {
-  console.log(">>>>>>>pdf", data.receipt_data);
+export default function PdfAdjustment({ data ,unitData}) {
+  console.log(
+    ">>>>>>>pdf  recept data",
+    unitData
+  );
+  console.log("> data", data.receipt_data);
 
   const [currentDate, setCurrentDate] = useState("");
   // const [totalReceiveNow, setTotalReceiveNow] = useState(0);
@@ -248,110 +285,147 @@ export default function PdfAdjustment({ data }) {
   }
 
   const Header = () => (
-    <View style={styles.row11}>
-      <Image style={styles.logo} src={MagodLOGO} />
-      <View>
-        <Text
-          style={{
-            marginLeft: "200px",
-            fontFamily: "Helvetica-Bold",
-            marginTop: "10px",
-            marginBottom: "2px",
-          }}
-        >
-          Magod Laser Machining Pvt Ltd
-        </Text>
-        <Text style={{ marginLeft: "210px", marginBottom: "5px" }}>
-          Payment Receipt Voucher
-        </Text>
+    <View style={styles.pageHeader}>
+    {/* Logo */}
+    <Image src={MagodLOGO} style={styles.logo} />
+
+    {/* Header details */}
+    <View style={styles.headerTextContainer}>
+      <Text style={styles.paymentReceiptVoucher}> PAYMENT RECEIPT VOUCHER</Text>
+      <Text style={[styles.headerText, {marginBottom:'3px'}]}>Magod Laser Private Limited</Text>
+      <View style={{ display: 'flex', flexDirection: 'row',  alignItems: 'center', justifyContent:'center' , gap:'10px'}}>
+      <Text style={styles.gstNo}>GST: {unitData[0]?.GST_No}</Text>
+      <Text style={styles.cinNo}>CIN_No: {unitData[0]?.CIN_No}</Text>
+      </View>
+    
+      <Text style={[styles.addressText, {marginBottom:'3px'}]}>
+        
+        {unitData[0]?.Unit_Address}
+        
+      </Text>
+
+      <View style={{ display: 'flex', flexDirection: 'row',  alignItems: 'center', justifyContent:'center' , gap:'5px'}}>
+      <Text > {unitData[0]?.PhonePrimary}</Text>
+      <Text > {unitData[0]?.PhoneSecondary}</Text>
+      <Text > {unitData[0]?.URL}</Text>
+      <Text > {unitData[0]?.Email}</Text>
       </View>
     </View>
+  </View>
   );
 
   const Header22 = () => (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View style={styles.row11}>
-          <Image style={styles.logo} src={MagodLOGO} />
+      <View style={styles.pageHeader}>
+    {/* Logo */}
+    <Image src={MagodLOGO} style={styles.logo} />
+
+    {/* Header details */}
+    <View style={styles.headerTextContainer}>
+      <Text style={styles.paymentReceiptVoucher}> PAYMENT RECEIPT VOUCHER</Text>
+      <Text style={[styles.headerText, {marginBottom:'3px'}]}>Magod Laser Private Limited</Text>
+      <View style={{ display: 'flex', flexDirection: 'row',  alignItems: 'center', justifyContent:'center' , gap:'10px'}}>
+      <Text style={styles.gstNo}>GST: {unitData[0]?.GST_No}</Text>
+      <Text style={styles.cinNo}>CIN_No: {unitData[0]?.CIN_No}</Text>
+      </View>
+    
+      <Text style={[styles.addressText, {marginBottom:'3px'}]}>
+        
+        {unitData[0]?.Unit_Address}
+        
+      </Text>
+
+      <View style={{ display: 'flex', flexDirection: 'row',  alignItems: 'center', justifyContent:'center' , gap:'5px'}}>
+      <Text > {unitData[0]?.PhonePrimary}</Text>
+      <Text > {unitData[0]?.PhoneSecondary}</Text>
+      <Text > {unitData[0]?.URL}</Text>
+      <Text > {unitData[0]?.Email}</Text>
+      </View>
+    </View>
+  </View>
+
+        <View style={styles.mrgnbttm}>
           <View>
-            <Text
-              style={{
-                marginLeft: "200px",
-                fontFamily: "Helvetica-Bold",
-                marginTop: "10px",
-                marginBottom: "2px",
-              }}
-            >
-              Magod Laser Machining Pvt Ltd
-            </Text>
-            <Text style={{ marginLeft: "210px", marginBottom: "5px" }}>
-              Payment Receipt Voucher
-            </Text>
+            <View style={styles.bttmgap}>
+              <Text style={{ marginLeft: "70px" }}>
+                Unit : <Text>{data.receipt_data.Unitname}</Text>
+              </Text>
+            </View>
+
+            <View style={styles.bttmgap}>
+              <Text style={{ marginLeft: "30px" }}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                  Voucher No :{" "}
+                </Text>
+                {data.receipt_data.HORef
+                  ? data.receipt_data.HORef
+                  : data.receipt_data.HORefNo}
+                {/* {data.receipt_data.HORefNo} */}
+              </Text>
+            </View>
+
+            <View style={styles.bttmgap}>
+              <Text style={{ marginLeft: "65px" }}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>Date : </Text>
+                {/* {currentDate} */}
+                {data.receipt_data.HoRefDate
+                  ? data.receipt_data.HoRefDate
+                  : data.receipt_data.vdate}
+              </Text>
+            </View>
+
+            <View>
+              <Text style={{ marginLeft: "30px" }}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                  Transaction Type:{" "}
+                </Text>
+                {data.receipt_data.TxnType}
+              </Text>
+            </View>
           </View>
-        </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "70px" }}>
-            Unit : <Text>{data.receipt_details[0]?.Unitname}</Text>
-          </Text>
-          <Text style={{ marginLeft: "130px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold", width: "100px" }}>
-              Received From:
-            </Text>
-            {data.receipt_data.CustName} ({data.receipt_data.Cust_code})
-          </Text>
-        </View>
+          <View>
+            <View style={{ marginBottom: "20px" }}>
+              <Text style={{ marginLeft: "100px", width: "300px" }}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                  Received From:
+                </Text>
+                {data.receipt_data.CustName} ({data.receipt_data.Cust_code})
+              </Text>
+            </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "30px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Voucher No : </Text>
-            {data.receipt_data.HORef}
-            {/* {data.receipt_data.HORefNo} */}
-          </Text>
-        </View>
+            <View style={{ marginBottom: "20px" }}>
+              <Text style={{ marginLeft: "100px", width: "300px" }}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>Vide : </Text>
+                {data.receipt_data.Description}
+              </Text>
+            </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "65px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Date : </Text>
-            {/* {currentDate} */}
-            {data.receipt_data.HoRefDate
-              ? data.receipt_data.HoRefDate
-              : data.receipt_data.vdate}
-          </Text>
-          <Text style={{ marginLeft: "130px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Vide : </Text>{" "}
-            {data.receipt_data.Description}{" "}
-          </Text>
-        </View>
+            <View style={styles.head4}>
+              <Text style={{ marginLeft: "200px" }}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>Amount: </Text>{" "}
+                {formatAmount(data.receipt_data.Amount)}
+              </Text>
+            </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "30px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>
-              Transaction Type:{" "}
-            </Text>{" "}
-            {data.receipt_data.TxnType}
-          </Text>
-        </View>
+            <View style={styles.head4}>
+              <Text style={{ marginLeft: "195px" }}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>Adjusted: </Text>{" "}
+                {formatAmount(totalReceiveNow)}
+              </Text>
+            </View>
 
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "330px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Amount: </Text>{" "}
-            {formatAmount(data.receipt_data.Amount)}
-          </Text>
-        </View>
-
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "330px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>Adjusted: </Text>{" "}
-            {formatAmount(totalReceiveNow)}
-          </Text>
-        </View>
-
-        <View style={styles.mrgnbttm}>
-          <Text style={{ marginLeft: "330px" }}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}> On Account: </Text>
-            {/* {(data.receipt_data.On_account)} */} 0.00
-          </Text>
+            <View style={styles.head4}>
+              <Text style={{ marginLeft: "180px" }}>
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                  {" "}
+                  On Account:{" "}
+                </Text>
+                {/* {(data.receipt_data.On_account)} */}0.00
+              </Text>
+            </View>
+          </View>
         </View>
 
         <View style={styles.tableDisplay}>
@@ -392,7 +466,7 @@ export default function PdfAdjustment({ data }) {
         <View>
           <View style={styles.bttmgap}>
             <Text style={{ marginLeft: "70px" }}>
-              Unit : <Text>{data.receipt_details[0]?.Unitname}</Text>
+              Unit : <Text>{data.receipt_data.Unitname}</Text>
             </Text>
           </View>
 
