@@ -102,7 +102,6 @@ export default function UnitUpdate() {
 
   useEffect(() => {
     console.log("hmkiu", report);
-    // useEffect will run when Inv is updated
     try {
       if (
         report.ho_paymentrv_register_data.length > 0 ||
