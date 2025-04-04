@@ -14,7 +14,7 @@ export default function CreateNewForm() {
   const location = useLocation();
 
   const { adjustmentRows, adj_unit } = location.state ? location.state : "";
-  let onAccountValue1 = adjustmentRows
+  let before_update_onAccountValue = adjustmentRows
     ? parseInt(adjustmentRows.On_account)
     : 0;
 
@@ -46,8 +46,8 @@ export default function CreateNewForm() {
 
   const [alertCancel, setAlertCancel] = useState(false);
 
-  let onAccountValue = onAccountValue1;
-  const [onAccountValue22, setOnAccountValue] = useState(onAccountValue1);
+  let onAccountValue = before_update_onAccountValue;
+  const [updateOaccountValue, setUpdateOaccountValue] = useState(before_update_onAccountValue);
 
   const [rvData, setRvData] = useState({
     apiData: null,
@@ -299,11 +299,11 @@ export default function CreateNewForm() {
 
   const handleSave = async () => {
     let val =
-      onAccountValue1 === 0 ||
-      onAccountValue22 === 0 ||
-      onAccountValue1 !== fixedOnaccount
+      before_update_onAccountValue === 0 ||
+      updateOaccountValue === 0 ||
+      before_update_onAccountValue !== fixedOnaccount
         ? fixedOnaccount
-        : onAccountValue1;
+        : before_update_onAccountValue;
     let stopExecution = false;
 
     try {
@@ -431,12 +431,12 @@ export default function CreateNewForm() {
         }
         //update on account value in magod_hq_mis.unit_payment_recd_voucher_register
 
-        console.log("update onaccount in hnadleSave only ", onAccountValue22);
+        console.log("update onaccount in hnadleSave only ", updateOaccountValue);
 
         const updateOnaccount = await axios.put(
           baseURL + "/createnew/updateOnaccountValue",
           {
-            on_account: onAccountValue22,
+            on_account: updateOaccountValue,
             id: id,
           }
         );
@@ -446,11 +446,11 @@ export default function CreateNewForm() {
 
   const handleSaveOnAccountUpdate = async () => {
     let val =
-      onAccountValue1 === 0 ||
-      onAccountValue22 === 0 ||
-      onAccountValue1 !== fixedOnaccount
+      before_update_onAccountValue === 0 ||
+      updateOaccountValue === 0 ||
+      before_update_onAccountValue !== fixedOnaccount
         ? fixedOnaccount
-        : onAccountValue1;
+        : before_update_onAccountValue;
     let stopExecution = false;
 
     try {
@@ -552,12 +552,12 @@ export default function CreateNewForm() {
         }
         //update on account value in magod_hq_mis.unit_payment_recd_voucher_register
 
-        console.log("update onaccount in hnadleSave only ", onAccountValue22);
+        console.log("update onaccount in hnadleSave only ", updateOaccountValue);
 
         const updateOnaccount = await axios.put(
           baseURL + "/createnew/updateOnaccountValue",
           {
-            on_account: onAccountValue22,
+            on_account: updateOaccountValue,
             id: id,
           }
         );
@@ -610,11 +610,11 @@ export default function CreateNewForm() {
 
   const deleteWholeForm = () => {
     let val =
-      onAccountValue1 === 0 ||
-      onAccountValue22 === 0 ||
-      onAccountValue1 !== fixedOnaccount
+      before_update_onAccountValue === 0 ||
+      updateOaccountValue === 0 ||
+      before_update_onAccountValue !== fixedOnaccount
         ? fixedOnaccount
-        : onAccountValue1;
+        : before_update_onAccountValue;
     let sumOfReceive_Now = 0;
     let sum = 0;
     let stopExecution = false;
@@ -651,7 +651,7 @@ export default function CreateNewForm() {
       });
 
       if (stopExecution) return;
-      sum = sumOfReceive_Now + onAccountValue22;
+      sum = sumOfReceive_Now + updateOaccountValue;
 
       axios
         .delete(
@@ -720,7 +720,7 @@ export default function CreateNewForm() {
   };
 
   const addInvoice = async () => {
-    onAccountValue = onAccountValue22;
+    onAccountValue = updateOaccountValue;
 
     /////////
 
@@ -728,11 +728,11 @@ export default function CreateNewForm() {
 
     if (rvData.data.receipt_details) {
       let val =
-        onAccountValue1 === 0 ||
-        onAccountValue22 === 0 ||
-        onAccountValue1 !== fixedOnaccount
+        before_update_onAccountValue === 0 ||
+        updateOaccountValue === 0 ||
+        before_update_onAccountValue !== fixedOnaccount
           ? fixedOnaccount
-          : onAccountValue1;
+          : before_update_onAccountValue;
       rvData.data.receipt_details.forEach((selectedRow) => {
         if (stopExecution) return;
         // Your code logic for each item goes here
@@ -798,7 +798,7 @@ export default function CreateNewForm() {
               onAccountValue - (diff >= onAccountValue ? onAccountValue : diff);
           }
 
-          setOnAccountValue(onAccountValue);
+          setUpdateOaccountValue(onAccountValue);
           // Moved here to log updated value
         }
       }
@@ -911,20 +911,20 @@ export default function CreateNewForm() {
       parseInt(rvData.postData.Amount) > 0
         ? parseInt(rvData.postData.Amount)
         : 0;
-    let w = parseInt(onAccountValue1) + amt;
+    let w = parseInt(before_update_onAccountValue) + amt;
 
     rvData.data.receipt_details.forEach((item) => {
       if (item.Dc_inv_no === rowData.Dc_inv_no) {
-        // setOnAccountValue(onAccountValue1 - totalReceiveNow)
+        // setUpdateOaccountValue(before_update_onAccountValue - totalReceiveNow)
         console.log(
           "fixedOnaccount - totalReceiveNow",
           fixedOnaccount - totalReceiveNow
         );
-        setOnAccountValue(fixedOnaccount - totalReceiveNow);
+        setUpdateOaccountValue(fixedOnaccount - totalReceiveNow);
       }
       //  else {
       //   console.log("w - totalReceiveNow", w - totalReceiveNow);
-      //   // setOnAccountValue(w - totalReceiveNow);
+      //   // setUpdateOaccountValue(w - totalReceiveNow);
       // }
     });
 
@@ -979,11 +979,11 @@ export default function CreateNewForm() {
 
   const canacleButton = () => {
     let val =
-      onAccountValue1 === 0 ||
-      onAccountValue22 === 0 ||
-      onAccountValue1 !== fixedOnaccount
+      before_update_onAccountValue === 0 ||
+      updateOaccountValue === 0 ||
+      before_update_onAccountValue !== fixedOnaccount
         ? fixedOnaccount
-        : onAccountValue1;
+        : before_update_onAccountValue;
     let stopExecution = false;
 
     if (rvData.data.receipt_details) {
@@ -1078,19 +1078,19 @@ unitname:adj_unit ? adj_unit : "",
       }, 0);
 
       // Only proceed to update if there were no issues (stopExecution is false)
-      if (!stopExecution && sumofRecv <= onAccountValue1) {
+      if (!stopExecution && sumofRecv <= before_update_onAccountValue) {
         console.log(
           "onaccount in useEffect receive now ",
-          onAccountValue22,
+          updateOaccountValue,
           "sumRecv",
           sumofRecv,
-          "onAccountValue1",
-          onAccountValue1
+          "before_update_onAccountValue",
+          before_update_onAccountValue
         );
         const updateOnAccountValue = async () => {
           try {
             await axios.put(baseURL + "/createnew/updateOnaccountValue", {
-              on_account: onAccountValue22, // Using sumofRecv directly
+              on_account: updateOaccountValue, // Using sumofRecv directly
               id: id,
             });
             console.log("Database updated successfully.");
@@ -1102,7 +1102,7 @@ unitname:adj_unit ? adj_unit : "",
         updateOnAccountValue(); // Call the async function once
       }
     }
-  }, [rvData.data.receipt_details, onAccountValue22, id]);
+  }, [rvData.data.receipt_details, updateOaccountValue, id]);
 
   // useEffect(() => {
   //   const updateOnAccountValue = async () => {
@@ -1112,17 +1112,17 @@ unitname:adj_unit ? adj_unit : "",
   //     );
   //     console.log(
   //       "onaccount in useEffect receive now ",
-  //       onAccountValue22,
+  //       updateOaccountValue,
   //       "sumRecv",
   //       sumofRecv,
-  //       "onAccountValue1",
-  //       onAccountValue1
+  //       "before_update_onAccountValue",
+  //       before_update_onAccountValue
   //     );
 
-  //     if (sumofRecv <= onAccountValue1) {
+  //     if (sumofRecv <= before_update_onAccountValue) {
   //       try {
   //         await axios.put(baseURL + "/createnew/updateOnaccountValue", {
-  //           on_account: onAccountValue22,
+  //           on_account: updateOaccountValue,
   //           id: id,
   //         });
   //       } catch (error) {
@@ -1132,16 +1132,16 @@ unitname:adj_unit ? adj_unit : "",
   //   };
 
   //   updateOnAccountValue();
-  // }, [rvData.data.receipt_details, onAccountValue22]);
+  // }, [rvData.data.receipt_details, updateOaccountValue]);
 
   const removeInvoice = async () => {
-    // let val=onAccountValue22===0 || onAccountValue1==0 ? fixedOnaccount  : onAccountValue1
+    // let val=updateOaccountValue===0 || before_update_onAccountValue==0 ? fixedOnaccount  : before_update_onAccountValue
     let val =
-      onAccountValue1 === 0 ||
-      onAccountValue22 === 0 ||
-      onAccountValue1 !== fixedOnaccount
+      before_update_onAccountValue === 0 ||
+      updateOaccountValue === 0 ||
+      before_update_onAccountValue !== fixedOnaccount
         ? fixedOnaccount
-        : onAccountValue1;
+        : before_update_onAccountValue;
     let stopExecution = false;
 
     try {
@@ -1261,32 +1261,32 @@ unitname:adj_unit ? adj_unit : "",
       let totalamnt = 0;
       if (totalReceiveNow <= val) {
         if (totalReceiveNow === invamount) {
-          totalamnt = totalReceiveNow + onAccountValue22;
+          totalamnt = totalReceiveNow + updateOaccountValue;
 
-          setOnAccountValue(totalamnt);
+          setUpdateOaccountValue(totalamnt);
         } else if (
           totalReceiveNow < invamount &&
-          invamount !== onAccountValue1
+          invamount !== before_update_onAccountValue
         ) {
           console.log(
             "recev now and onaccnt22",
-            receiveNowValue + onAccountValue22
+            receiveNowValue + updateOaccountValue
           );
-          totalamnt = receiveNowValue + onAccountValue22;
+          totalamnt = receiveNowValue + updateOaccountValue;
 
-          setOnAccountValue(totalamnt);
+          setUpdateOaccountValue(totalamnt);
         } else if (totalReceiveNow < invamount) {
-          totalamnt = totalReceiveNow + onAccountValue22;
+          totalamnt = totalReceiveNow + updateOaccountValue;
 
-          setOnAccountValue(totalamnt);
+          setUpdateOaccountValue(totalamnt);
         } else {
-          totalamnt = invamount - receviedCoulumn + onAccountValue22;
-          setOnAccountValue(totalamnt);
+          totalamnt = invamount - receviedCoulumn + updateOaccountValue;
+          setUpdateOaccountValue(totalamnt);
         }
       }
 
       // set(amnttt)
-      console.log("onaccount value after remove invoice ", onAccountValue22);
+      console.log("onaccount value after remove invoice ", updateOaccountValue);
       console.log(" totalamnt 222", totalamnt);
       console.log("totalreceive now----", totalReceiveNow);
       console.log("invAmount-----", invamount);
@@ -1294,7 +1294,7 @@ unitname:adj_unit ? adj_unit : "",
       const updateOnaccount = await axios.put(
         baseURL + "/createnew/updateOnaccountValue",
         {
-          // on_account: onAccountValue22,
+          // on_account: updateOaccountValue,
           on_account: totalamnt,
 
           id: id,
@@ -1332,11 +1332,11 @@ unitname:adj_unit ? adj_unit : "",
     }
 
     let val =
-      onAccountValue1 === 0 ||
-      onAccountValue22 === 0 ||
-      onAccountValue1 !== fixedOnaccount
+      before_update_onAccountValue === 0 ||
+      updateOaccountValue === 0 ||
+      before_update_onAccountValue !== fixedOnaccount
         ? fixedOnaccount
-        : onAccountValue1;
+        : before_update_onAccountValue;
 
     let stopExecution = false;
 
@@ -1384,11 +1384,11 @@ unitname:adj_unit ? adj_unit : "",
 
   const handlePostYes = async () => {
     let val =
-      onAccountValue1 === 0 ||
-      onAccountValue22 === 0 ||
-      onAccountValue1 !== fixedOnaccount
+      before_update_onAccountValue === 0 ||
+      updateOaccountValue === 0 ||
+      before_update_onAccountValue !== fixedOnaccount
         ? fixedOnaccount
-        : onAccountValue1;
+        : before_update_onAccountValue;
 
     setShowPostModal(false);
     let stopExecution = false;
@@ -1433,7 +1433,7 @@ unitname:adj_unit ? adj_unit : "",
         // unit: unit,
         unit: adj_unit,
         receipt_details: rvData.data.receipt_details,
-        onacc: onAccountValue22,
+        onacc: updateOaccountValue,
         id: id,
       });
 
