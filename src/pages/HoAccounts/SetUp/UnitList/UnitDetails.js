@@ -48,7 +48,7 @@ export default function UnitDetails() {
   //  const [postState, setPostState] = useState(initial_state);
   useEffect(() => {
     async function fetchData() {
-      console.log("werg");
+   
       await UnitGetDta();
     }
     fetchData();
@@ -503,6 +503,8 @@ export default function UnitDetails() {
                 value={selectRow?.UnitID || postData.UnitID}
                 disabled={selectRow.UnitID !== ""}
                 onChange={unitFormChange}
+                maxLength={40}
+                 autoComplete="off"
               />
             </div>
 
@@ -521,6 +523,7 @@ export default function UnitDetails() {
                 maxLength={15}
                 value={selectRow.GST_No || postData.GST_No}
                 onChange={unitFormChange}
+                autoComplete="off"
               />
             </div>
           </div>
@@ -538,6 +541,8 @@ export default function UnitDetails() {
                 id="UnitName"
                 onChange={unitFormChange}
                 value={selectRow?.UnitName || postData.UnitName}
+                maxLength={40}
+                autoComplete="off"
               />
             </div>
 
@@ -555,6 +560,8 @@ export default function UnitDetails() {
                   selectRow.Tally_account_Name || postData.Tally_account_Name
                 }
                 onChange={unitFormChange}
+                maxLength={100}
+                autoComplete="off"
               />
             </div>
           </div>
@@ -569,6 +576,8 @@ export default function UnitDetails() {
                 name="Gm_Mail_Id"
                 value={selectRow.Gm_Mail_Id || postData.Gm_Mail_Id}
                 onChange={unitFormChange}
+                autoComplete="off"
+                maxLength={50}
               />
             </div>
 
@@ -581,6 +590,8 @@ export default function UnitDetails() {
                 name="UnitIntial"
                 value={selectRow.UnitIntial || postData.UnitIntial}
                 onChange={unitFormChange}
+                maxLength={3}
+                autoComplete="off"
               />
             </div>
           </div>
@@ -595,6 +606,8 @@ export default function UnitDetails() {
                 name="City"
                 value={selectRow.City || postData.City}
                 onChange={unitFormChange}
+                autoComplete="off"
+                maxLength={100}
               />
             </div>
 
@@ -629,6 +642,7 @@ export default function UnitDetails() {
                 maxLength={6}
                 value={selectRow.PIN_Code || postData.PIN_Code}
                 onChange={pincodehandleChange}
+                autoComplete="off"
               />
             </div>
 
@@ -668,6 +682,8 @@ export default function UnitDetails() {
                 style={{ height: "60px", resize: "none", width: "250px" }}
                 onChange={unitFormChange}
                 value={selectRow.Unit_Address || postData.Unit_Address}
+                autoComplete="off"
+                maxLength={200}
               ></textarea>
             </div>
 
@@ -688,6 +704,8 @@ export default function UnitDetails() {
                   selectRow.Unit_contactDetails || postData.Unit_contactDetails
                 }
                 onChange={unitFormChange}
+                maxLength={200}
+                autoComplete="off"
                 style={{
                   height: "60px",
                   resize: "none",
@@ -707,6 +725,8 @@ export default function UnitDetails() {
               name="Country"
               value={selectRow.Country || postData.Country}
               onChange={unitFormChange}
+              maxLength={100}
+              autoComplete="off"
             />
           </div>
         </div>

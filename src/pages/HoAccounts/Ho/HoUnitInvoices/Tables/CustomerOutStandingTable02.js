@@ -8,6 +8,7 @@ export default function CustomerOutStandingTable02({
   selectedDCInvNo,
   selectedDCType,
   flag,
+  unitname
 }) {
   const [table2Data, setTable2Data] = useState([]);
 
@@ -26,6 +27,7 @@ export default function CustomerOutStandingTable02({
         .get(baseURL + "/customerOutstanding/getDataTable2", {
           params: {
             selectedDCInvNo: selectedDCInvNo,
+            unitname:unitname
           },
         })
         .then((res) => {

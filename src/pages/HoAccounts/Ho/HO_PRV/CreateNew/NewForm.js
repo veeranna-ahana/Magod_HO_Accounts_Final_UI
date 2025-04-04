@@ -704,7 +704,8 @@ export default function NewForm() {
 
           stopExecution = true;
           return;
-        } else {
+        }
+         else {
           axios
             .post(
               baseURL + "/createnew/deleteButton",
@@ -748,8 +749,11 @@ export default function NewForm() {
             });
         }
       });
-      toast.success("Deleted Successfully");
-    } else {
+      //  toast.success("Deleted Successfully 11");
+      //  navigate("/HOAccounts")
+    } 
+    
+    else {
       axios
         .post(
           baseURL + "/createnew/deleteButton",
@@ -788,7 +792,8 @@ export default function NewForm() {
             setSelectedCustOption([]);
             setSelectedOption([]);
 
-            toast.success("Deleted Successfully");
+            // toast.success("Deleted Successfully22");
+            // navigate("/HOAccounts")
           }
         })
         .catch((error) => {
@@ -969,6 +974,8 @@ export default function NewForm() {
     }
   };
 
+
+  
   const getDCNo = async () => {
     const srlType = "HO PaymentRV";
     const ResetPeriod = "FinanceYear";
@@ -1366,7 +1373,7 @@ export default function NewForm() {
 
         <div className="d-flex col-md-2" style={{ gap: "10px" }}>
           <label className="form-label" style={{ whiteSpace: "nowrap" }}>
-            HO Reference
+            HO Reference 
           </label>
           <input
             className="in-field"
@@ -1439,6 +1446,8 @@ export default function NewForm() {
                 : ""
             }
             style={{ height: "70px", resize: "none", width: "200px" }}
+            maxLength={200}
+            autoComplete="off"
           ></textarea>
         </div>
 

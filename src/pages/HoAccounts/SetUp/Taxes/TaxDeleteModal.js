@@ -51,7 +51,7 @@ export default function TaxDeleteModal({ deleteID, setDeleteID, selectRow }) {
             Yes
           </Button>
           <Button
-            variant="secondary"
+            variant="primary"
             onClick={handleClose}
             style={{ fontSize: "12px" }}
           >

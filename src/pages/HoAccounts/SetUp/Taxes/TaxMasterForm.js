@@ -97,9 +97,21 @@ export default function TaxMasterForm() {
   const updateTaxData = () => {
     if (selectRow.Tax_Percent === "") {
       toast("Tax_Percent can not be empty");
-    } else if (selectRow.EffectiveFrom === "" || selectRow.EffectiveTO === "") {
+    } 
+    
+    if (selectRow.EffectiveFrom === "" || selectRow.EffectiveTO === "") {
       toast("Date can not be empty");
-    } else {
+    } 
+     // Convert dates to comparable format
+  const effectiveFromDate = new Date(selectRow.EffectiveFrom);
+  const effectiveToDate = new Date(selectRow.EffectiveTO);
+
+  if (effectiveToDate < effectiveFromDate) {
+    toast.error("Effective To date must be greater than or equal to Effective From date");
+    return;
+  }
+    
+    else {
       axios
         .put(baseURL + "/taxMaster/taxDataUpdate/" + selectRow.TaxID, selectRow)
         .then((res) => {
@@ -127,12 +139,24 @@ export default function TaxMasterForm() {
 
     if (taxPostData.Tax_Percent === "" || taxPostData.Tax_Percent === 0) {
       toast.error("Tax_Percent can not be empty");
-    } else if (
+    }
+    if (
       taxPostData.EffectiveFrom === "" ||
       taxPostData.EffectiveTO === ""
-    ) {
+    ) 
+    {
       toast.error("Date can not be empty");
-    } else {
+    } 
+    
+     // Convert dates to comparable format
+  const effectiveFromDate = new Date(taxPostData.EffectiveFrom);
+  const effectiveToDate = new Date(taxPostData.EffectiveTO);
+
+  if (effectiveToDate < effectiveFromDate) {
+    toast.error("Effective To date must be greater than or equal to Effective From date");
+    return;
+  }
+    else {
       axios
         .post(baseURL + "/taxMaster/postTaxMaster", taxPostData)
         .then((res) => {
@@ -394,6 +418,8 @@ export default function TaxMasterForm() {
                 value={selectRow.TaxName || taxPostData.TaxName}
                 onChange={handleOnChange}
                 name="TaxName"
+                maxLength={50}
+                autoComplete="off"
               />
             </div>
 
@@ -406,6 +432,8 @@ export default function TaxMasterForm() {
                 name="TaxPrintName"
                 value={selectRow.TaxPrintName || taxPostData.TaxPrintName}
                 onChange={handleOnChange}
+                maxLength={50}
+                autoComplete="off"
               />
             </div>
           </div>
@@ -441,6 +469,8 @@ export default function TaxMasterForm() {
                 name="TaxOn"
                 value={selectRow.TaxOn || taxPostData.TaxOn}
                 onChange={handleOnChange}
+                maxLength={250}
+                autoComplete="off"
               />
             </div>
           </div>
@@ -483,6 +513,8 @@ export default function TaxMasterForm() {
                 name="AcctHead"
                 value={selectRow.AcctHead || taxPostData.AcctHead}
                 onChange={handleOnChange}
+                maxLength={45}
+                autoComplete="off"
               />
             </div>
 
@@ -495,6 +527,8 @@ export default function TaxMasterForm() {
                 name="UnderGroup"
                 value={selectRow.UnderGroup || taxPostData.UnderGroup}
                 onChange={handleOnChange}
+                maxLength={45}
+                autoComplete="off"
               />
             </div>
           </div>
@@ -508,8 +542,8 @@ export default function TaxMasterForm() {
                   selectRow.Service === 1
                     ? true
                     : false || taxPostData.Service === 1
-                    ? true
-                    : false
+                      ? true
+                      : false
                 }
                 name="Service"
                 id="flexCheckDefault"
@@ -531,8 +565,8 @@ export default function TaxMasterForm() {
                   selectRow.Sales === 1
                     ? true
                     : false || taxPostData.Sales === 1
-                    ? true
-                    : false
+                      ? true
+                      : false
                 }
                 name="Sales"
                 id="flexCheckDefault"
@@ -554,8 +588,8 @@ export default function TaxMasterForm() {
                   selectRow.JobWork === 1
                     ? true
                     : false || taxPostData.JobWork === 1
-                    ? true
-                    : false
+                      ? true
+                      : false
                 }
                 name="JobWork"
                 onChange={handleOnChange}
@@ -577,8 +611,8 @@ export default function TaxMasterForm() {
                   selectRow.IGST === 1
                     ? true
                     : false || taxPostData.IGST === 1
-                    ? true
-                    : false
+                      ? true
+                      : false
                 }
                 name="IGST"
                 onChange={handleOnChange}
@@ -600,8 +634,8 @@ export default function TaxMasterForm() {
                   selectRow.TallyAcctCreated === 1
                     ? true
                     : false || taxPostData.TallyAcctCreated === 1
-                    ? true
-                    : false
+                      ? true
+                      : false
                 }
                 name="TallyAcctCreated"
                 onChange={handleOnChange}

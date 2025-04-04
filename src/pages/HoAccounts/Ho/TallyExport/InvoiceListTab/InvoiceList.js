@@ -440,7 +440,7 @@ export default function InvoiceList({
       }
       setChildDownloadFunction(false);
     } catch (error) {
-      alert(`Error in handleExport: ${error.message}`);
+      toast.warn(`Error in handleExport: ${error.message}`);
     }
   };
 
@@ -957,7 +957,7 @@ export default function InvoiceList({
                       <td>{item.TallyRef}</td>
                       <td>{item.Cust_Code}</td>
                       <td>{<input type="checkBox" disabled />}</td>
-                      <td>{typeof item.DC_Inv_No}</td>
+                      
                     </tr>
                   );
                 })}

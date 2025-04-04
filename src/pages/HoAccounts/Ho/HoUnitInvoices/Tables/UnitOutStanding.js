@@ -199,7 +199,7 @@ export default function UnitOutStanding({ unitname }) {
                     {formatAmount(item.OutStandingAmount)}
                   </td>
                   <td style={{ textAlign: "center" }}>
-                    {formatAmount(item.OutStandingInvoiceCount)}
+                    {(item.OutStandingInvoiceCount)}
                   </td>
                 </tr>
               </>

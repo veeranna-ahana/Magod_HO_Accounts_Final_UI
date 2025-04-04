@@ -178,7 +178,7 @@ export default function SaveChangesModal({
             Yes
           </Button>
           <Button
-            variant="secondary"
+             variant="primary"
             onClick={handleClose}
             style={{ fontSize: "12px" }}
           >

@@ -1774,6 +1774,8 @@ unitname:adj_unit ? adj_unit : "",
             onChange={PaymentReceipts}
             value={rvData.postData.Description}
             style={{ height: "70px", resize: "none", width: "100%" }}
+            autoComplete="off"
+            maxLength={200}
           ></textarea>
         </div>
 
@@ -2132,7 +2134,7 @@ unitname:adj_unit ? adj_unit : "",
             className="button-style"
             style={{
               fontSize: "12px",
-              backgroundColor: "rgb(173, 173, 173)",
+              // backgroundColor: "rgb(173, 173, 173)",
             }}
             onClick={alertformClose}
           >
