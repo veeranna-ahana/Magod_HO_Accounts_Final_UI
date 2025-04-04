@@ -41,11 +41,11 @@ export default function OpenVoucher() {
     }
   }, [selectedCustCode, selectUnit]);
 
-  useEffect(() => {
-    if (selectRow) {
-      handleNavigation(selectRow);
-    }
-  }, [selectRow]);
+  // useEffect(() => {
+  //   if (selectRow) {
+  //     handleNavigation(selectRow);
+  //   }
+  // }, [selectRow]);
 
   const handleSearch = (event) => {
     const inputValue = event.target.value;
@@ -74,6 +74,7 @@ export default function OpenVoucher() {
   };
 
   console.log("filteerr dara", filteredData);
+  
   const customers = () => {
     axios
       .get(baseURL + "/unitReceiptList/getcustomerdata")
@@ -85,22 +86,8 @@ export default function OpenVoucher() {
       });
   };
 
-  const basedOnCustomer = () => {
-    axios
-      .get(baseURL + "/unitReceiptList/receiptBasedOnCustomer", {
-        params: {
-          selectedCustCode: selectedCustCode,
-          selectedUnitName: selectedUnitName[0]?.UnitName,
-        },
-      })
-      .then((res) => {
-        setInvoiceListData(res.data.Result);
-        setFilteredData(res.data.Result);
-      })
-      .catch((err) => {
-        console.log("err");
-      });
-  };
+
+
   const navigate = useNavigate();
   //console.log("cust", invoiceListData);
 
@@ -125,6 +112,7 @@ export default function OpenVoucher() {
   };
 
   const selectedRowFun = (item, index) => {
+    
     let list = { ...item, index: index };
     //  setSelectRow(initial)
 
@@ -190,7 +178,25 @@ export default function OpenVoucher() {
   };
 
   console.log("current page data unit recept ", currentPageData);
-  
+
+    
+  const basedOnCustomer = () => {
+    axios
+      .get(baseURL + "/unitReceiptList/receiptBasedOnCustomer", {
+        params: {
+          selectedCustCode: selectedCustCode,
+          selectedUnitName: selectedUnitName[0]?.UnitName,
+        },
+      })
+      .then((res) => {
+        setInvoiceListData(res.data.Result);
+        setFilteredData(res.data.Result);
+      })
+      .catch((err) => {
+        console.log("err");
+      });
+  };
+  console.log("seect unit receipt list", selectedUnitName[0]?.UnitName);
 
   const sortedData = () => {
     const dataCopy = [...currentPageData];

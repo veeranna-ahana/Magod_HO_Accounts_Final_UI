@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
 });
 
 export default function CustomerPDF({ dataBasedOnCust, unit, unitData }) {
-  console.log("pdf data",  unitData[0]?.RegistredOfficeAddress);
+  console.log("pdf data",  unitData[0]?.RegistredOfficeAddress, unitData[0]?.URL);
   const [currentDate, setCurrentDate] = useState("");
 
   useEffect(() => {

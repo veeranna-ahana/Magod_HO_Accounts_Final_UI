@@ -81,6 +81,7 @@ export default function PaymentReceiptFormTable({
       toast.error("Turn on Tally server");
     }
   };
+
   const PaymentReceiptSubmit = () => {
     axios
       .get(
@@ -626,6 +627,7 @@ export default function PaymentReceiptFormTable({
     return dataCopyTax;
   };
 
+  
   return (
     <div>
       <div className="d-flex col-md-12">

@@ -202,6 +202,7 @@ export default function TabData() {
       })
       .then((res) => {
         setUnitAddress(res.data.Result);
+        console.log("pdf address ", res.data.Result);
       })
       .catch((err) => {
         console.log("errin pdf address", err);

@@ -23,7 +23,7 @@ export default function PdfModal({
     setPdfVoucher(false);
   };
 
-  console.log("dataaaaaaa11112233 in PdfNodal", data.receipt_data);
+ 
 
   //  useEffect(() => {
   //   setRvData(prevState => ({

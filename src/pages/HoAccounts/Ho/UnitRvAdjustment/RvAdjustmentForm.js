@@ -211,6 +211,14 @@ export default function RvAdjustmentForm() {
     return dataCopy;
   };
 
+//   const fixedonaccount= async ()=>{
+//  const res= await  axios .post(baseURL + "/unitRV_Adjustment/updateFixedOnAccount")
+    
+//    console.log("resuklt update fixed onaccount", res.data.status);
+   
+
+//   }
+
   return (
     <div>
       <div className="row">
@@ -271,6 +279,18 @@ export default function RvAdjustmentForm() {
           >
             Adjustment Voucher
           </button>
+
+          {/* ---------------- */}
+          {/* <button
+            className="button-style group-button"
+            onClick={
+              fixedonaccount
+            }
+          >
+            update fixedanccoint
+          </button> */}
+
+          {/* ------------ */}
 
           <button
             className="button-style group-button"

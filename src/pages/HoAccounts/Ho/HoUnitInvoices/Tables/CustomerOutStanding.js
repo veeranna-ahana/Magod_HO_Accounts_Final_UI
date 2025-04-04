@@ -91,9 +91,10 @@ export default function CustomerOutStanding({
             } else if (res.data.Result === "cust dont have dc") {
               toast.error("Customer dont have  DC Inv Type");
             } else {
+              console.log("salessssss123", res.data.Result);
               setDataBasedOnCust(res.data.Result);
             }
-            console.log("salessssss123", res.data.Result);
+            
           })
           .catch((err) => {
             console.log("errin cust cosde", err);
@@ -101,6 +102,7 @@ export default function CustomerOutStanding({
       } catch (error) {}
     }
   };
+  console.log("job work profile", dataBasedOnCust);
 
   // const filteredInvoiceNumbers = dataBasedOnCust.filter((row) =>
   //     row['Inv_No'].includes(searchQuery)
@@ -115,7 +117,9 @@ export default function CustomerOutStanding({
     setFilterData(filteredInvoiceNumbers);
   }, [dataBasedOnCust, searchQuery, setFilterData]);
 
-  console.log("FilteredData", filterData);
+  console.log("search query ",searchQuery);
+  
+  
 
   // Function to fetch invoices based on PO_No
   function getInvoicesByPO(poNumber) {
@@ -154,6 +158,7 @@ export default function CustomerOutStanding({
   const endIndex = startIndex + itemsPerPage;
 
   // Get the data for the current page
+  console.log("FilteredData", filterData);
   const currentPageData = filterData.slice(startIndex, endIndex);
   console.log(currentPageData, "currentPageData");
 
@@ -171,7 +176,8 @@ export default function CustomerOutStanding({
   };
 
   const sortedData = () => {
-    const dataCopy = [...currentPageData];
+    // const dataCopy = [...currentPageData];
+    const dataCopy = [...filterData];
 
     if (sortConfig.key) {
       dataCopy.sort((a, b) => {
@@ -272,7 +278,7 @@ export default function CustomerOutStanding({
           </Table>
         </div>
 
-        <ReactPaginate
+        {/* <ReactPaginate
           previousLabel={"previous"}
           nextLabel={"next"}
           breakLabel={"..."}
@@ -283,7 +289,7 @@ export default function CustomerOutStanding({
           containerClassName={"pagination"}
           subContainerClassName={"pages pagination"}
           activeClassName={"active"}
-        />
+        /> */}
       </div>
 
       <div className="box col-md-6">
@@ -292,6 +298,7 @@ export default function CustomerOutStanding({
           selectedDCInvNo={selectedDCInvNo}
           flag={flag}
           selectedDCType={selectedDCType}
+          unitname={unitname}
         />
       </div>
     </div>
