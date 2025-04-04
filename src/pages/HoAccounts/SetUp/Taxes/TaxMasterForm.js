@@ -134,6 +134,8 @@ export default function TaxMasterForm() {
     }
   };
 
+  console.log("tax master");
+  
   const postTaxSubmit = () => {
     console.log("POST", taxPostData);
 
