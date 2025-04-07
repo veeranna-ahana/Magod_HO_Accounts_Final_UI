@@ -135,14 +135,14 @@ export default function ModalPDF({
             Magod HO Accounts
             <div>
               {" "}
-              <Button
-                variant="primary"
+              <button
+                className="button-style  group-button"
                 //   onClick={handleDueGeneratePDF}
                 style={{ fontSize: "10px", marginRight: "35px" }}
                 onClick={savePdfToServer}
               >
                 Save to Server
-              </Button>
+              </button>
             </div>
           </Modal.Title>
         </Modal.Header>

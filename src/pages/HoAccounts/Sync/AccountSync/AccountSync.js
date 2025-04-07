@@ -482,13 +482,17 @@ export default function AccountSync() {
          </Modal.Body> 
 
         <Modal.Footer>
-        <Button variant="primary" onClick={yesmailSubmit} style={{fontSize:'12px'}}
+        <button 
+       className="button-style  group-button"
+        onClick={yesmailSubmit} style={{fontSize:'12px'}}
           >
             Yes
-          </Button>
-          <Button variant="secondary" onClick={handleClose} style={{fontSize:'12px'}}>
+          </button>
+          <button
+          className="button-style  group-button"
+           onClick={handleClose} style={{fontSize:'12px'}}>
             No
-          </Button>
+          </button>
          
         </Modal.Footer>
       </Modal>

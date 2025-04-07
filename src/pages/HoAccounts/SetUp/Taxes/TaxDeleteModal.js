@@ -43,20 +43,20 @@ export default function TaxDeleteModal({ deleteID, setDeleteID, selectRow }) {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button
-            variant="primary"
+          <button
+           className="button-style  group-button"
             onClick={(e) => deleteTaxID(selectRow.TaxID)}
             style={{ fontSize: "12px" }}
           >
             Yes
-          </Button>
-          <Button
-            variant="primary"
+          </button>
+          <button
+           className="button-style  group-button"
             onClick={handleClose}
             style={{ fontSize: "12px" }}
           >
             No
-          </Button>
+          </button>
         </Modal.Footer>
       </Modal>
     </div>
