@@ -70,7 +70,7 @@ export default function InvoiceList({
       if (selectedUnitName) {
         try {
           const company = await axios.post(
-            baseURL + "/tallyExport/getCompanyGuid",
+            baseURL + "/tallyExport/getCompanyName",
             {
               selectedUnitName: selectedUnitName?.UnitName,
             }
@@ -224,8 +224,8 @@ export default function InvoiceList({
             REQUESTDESC: {
               REPORTNAME: { _text: "Vouchers" },
               STATICVARIABLES: {
-                SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
-                // SVCURRENTCOMPANY: { _text: "Magod_Trail" },
+               // SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
+                 SVCURRENTCOMPANY: { _text: "Magod_Trail" },
               },
             },
             TALLYMESSAGE: invoiceListData.map((voucher, index) => {
@@ -440,7 +440,7 @@ export default function InvoiceList({
       }
       setChildDownloadFunction(false);
     } catch (error) {
-      toast.warn(`Error in handleExport: ${error.message}`);
+      toast.warn(`Error in Tally`);
     }
   };
 
@@ -719,7 +719,7 @@ export default function InvoiceList({
                 STATICVARIABLES: {
                   // SVCURRENTCOMPANY: { _text: cmpName },
                   //SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
-                  SVCURRENTCOMPANY: { _text: "Magod Laser_Ahana 1" },
+                  SVCURRENTCOMPANY: { _text: "Magod_Trail" },
                 },
               },
               TALLYMESSAGE: {

@@ -2102,8 +2102,8 @@ unitname:adj_unit ? adj_unit : "",
           </button>
 
           <button
-            className="button-style"
-            style={{ fontSize: "12px", backgroundColor: "rgb(173, 173, 173)" }}
+            className="button-style  group-button"
+            style={{ fontSize: "12px",}}
             onClick={handlePostModalClose}
           >
             No

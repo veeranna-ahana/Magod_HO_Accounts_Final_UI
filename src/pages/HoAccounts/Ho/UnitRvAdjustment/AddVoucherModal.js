@@ -26,12 +26,16 @@ export default function AddVoucherModal({setAddVoucherPopup, addVoucherPopup}) {
             </Modal.Body> 
 
         <Modal.Footer>
-          <Button variant="primary"   >
+          <button 
+          className="button-style  group-button"
+           >
             Yes
-          </Button>
-          <Button variant="secondary" onClick={handleClose}>
+          </button>
+          <button 
+         className="button-style  group-button"
+          onClick={handleClose}>
             No
-          </Button>
+          </button>
         </Modal.Footer>
       </Modal>
 

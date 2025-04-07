@@ -1823,14 +1823,14 @@ export default function NewForm() {
               </div>
 
               <div className="col-md-4 mt-2 mb-3 ms-2">
-                <Button
-                  variant="primary"
+                <button
+                  className="button-style  group-button"
                   type="submit"
                   onClick={cancelYes}
                   style={{ fontSize: "12px" }}
                 >
                   Cancel
-                </Button>
+                </button>
               </div>
             </div>
           </div>

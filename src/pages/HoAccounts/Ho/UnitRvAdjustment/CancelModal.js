@@ -78,9 +78,11 @@ export default function CancelModal({ cancelPopup, setCancelPopup }) {
                 </div>
   
                 <div className="col-md-4 mt-2 mb-3 ms-2">
-                  <Button variant="primary" type="submit" >
+                  <button
+                   className="button-style  group-button"
+                  type="submit" >
                     Cancel
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>

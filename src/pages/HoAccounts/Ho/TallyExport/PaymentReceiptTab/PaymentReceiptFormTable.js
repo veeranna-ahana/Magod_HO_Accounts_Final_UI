@@ -35,10 +35,11 @@ export default function PaymentReceiptFormTable({
 
   useEffect(() => {
     const fetchData = async () => {
+   
       if (selectedUnitName) {
         try {
           const company = await axios.post(
-            baseURL + "/tallyExport/getCompanyGuid",
+            baseURL + "/tallyExport/getCompanyName",
             {
               selectedUnitName: selectedUnitName?.UnitName,
             }
@@ -191,8 +192,8 @@ export default function PaymentReceiptFormTable({
               REPORTNAME: { _text: "Vouchers" },
               STATICVARIABLES: {
                 SVCURRENTCOMPANY: { _text: cmpName },
-                //SVCURRENTCOMPANY: { _text: "Magod_Trail" },
-                SVCURRENTCOMPANY: { _text: "Magod Laser_Ahana 1" },
+                SVCURRENTCOMPANY: { _text: "Magod_Trail" },
+               // SVCURRENTCOMPANY: { _text: "Magod Laser_Ahana 1" },
               },
             },
             TALLYMESSAGE: filterPaymentReceipts.map((voucher) => {
@@ -315,7 +316,7 @@ export default function PaymentReceiptFormTable({
       if (cm === "companyExist") {
         await createXmlForEachPaymentReceipt();
       } else if (cm === "Tally_server_off") {
-        toast.warn("Turn on tally server");
+        // toast.warn("Turn on tally server");
       } else if (cm === "companyNot") {
         //toast.warn("Company does not exist");
       }
@@ -375,8 +376,8 @@ export default function PaymentReceiptFormTable({
                 STATICVARIABLES: {
                   // SVCURRENTCOMPANY: { _text: cmpName },
                   // SVCURRENTCOMPANY: { _text: "MLMPL_Jigani_2023_24" },
-                  // SVCURRENTCOMPANY: { _text: "Magod_Trail" },
-                  SVCURRENTCOMPANY: { _text: "Magod Laser_Ahana 1" },
+                 SVCURRENTCOMPANY: { _text: "Magod_Trail" },
+                 // SVCURRENTCOMPANY: { _text: "Magod Laser_Ahana 1" },
                 },
               },
               TALLYMESSAGE: {
@@ -534,7 +535,7 @@ export default function PaymentReceiptFormTable({
   };
   useEffect(() => {
     if (child) {
-      handleExportPayment();
+       handleExportPayment();
     }
   }, [child]);
 

@@ -24,13 +24,13 @@ export default function ThreadErrorModal({
         </Modal.Body>
 
         <Modal.Footer>
-          <Button
-            variant="primary"
+          <button
+           className="button-style  group-button"
             onClick={handleClose}
             style={{ fontSize: "12px" }}
           >
             Ok
-          </Button>
+          </button>
         </Modal.Footer>
       </Modal>
     </div>
