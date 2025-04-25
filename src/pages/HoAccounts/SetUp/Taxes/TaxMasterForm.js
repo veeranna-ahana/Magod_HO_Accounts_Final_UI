@@ -166,7 +166,7 @@ export default function TaxMasterForm() {
           } else if (res.data.status === "query") {
             console.log("22");
 
-            toast.warn("You must add TaxPercent and Date fields");
+            toast.warn("Auto Increment in DB");
           } else if (res.data.status === "success") {
             toast.success("Tax Data saved Successfully");
 
@@ -290,6 +290,7 @@ export default function TaxMasterForm() {
                             className={
                               key === selectRow?.index ? "selcted-row-clr" : ""
                             }
+                            style={{whiteSpace:'nowrap'}}
                           >
                             <td>{item.TaxID} </td>
                             <td>{item.TaxName} </td>

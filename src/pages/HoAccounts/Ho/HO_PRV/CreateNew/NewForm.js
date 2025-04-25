@@ -309,7 +309,40 @@ export default function NewForm() {
   useEffect(() => {
     handleUnitNames();
     handleCustomerNames();
+    
   }, []);
+
+ 
+
+
+
+  //openReceipts after post and Cancel
+  const openInvoicesAfterPost= async (customerCode)=>{
+    console.log("after post open inv cust code111", customerCode)
+    console.log("after post get custcide2222", getCustCode);
+    console.log("unit name line no 323",getUnit);
+    
+      try {
+        const invoicesResponse = await axios.get(
+          baseURL +
+            `/createnew/ho_openInvoices?customercode=${getCustCode}&unitname=${getUnit}`
+        );
+
+        console.log("after post open inv", invoicesResponse.data);
+        
+  
+        setRvData((prevRvData) => ({
+          ...prevRvData,
+          data: {
+            ...prevRvData.data,
+            inv_data: invoicesResponse.data,
+          
+          },
+          
+        }));
+      } catch (error) {}
+    }
+
 
   const rowDataFetch = async () => {
     if (rowData !== "") {
@@ -750,7 +783,7 @@ export default function NewForm() {
         }
       });
       //  toast.success("Deleted Successfully 11");
-      //  navigate("/HOAccounts")
+        navigate("/HOAccounts")
     } 
     
     else {
@@ -969,6 +1002,9 @@ export default function NewForm() {
         firstTableArray: [],
         secondTableArray: [],
       }));
+
+      //call openInvoices after Post 
+      openInvoicesAfterPost(getCustCode)
     } catch (error) {
       console.error("Error removing voucher post button:", error);
     }
@@ -1211,6 +1247,8 @@ export default function NewForm() {
         Status: cancelData.data.StatusCancel,
       },
     }));
+    //call open invoices after cancel
+   await openInvoicesAfterPost(getCustCode)
   };
 
 

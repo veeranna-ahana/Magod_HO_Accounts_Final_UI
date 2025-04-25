@@ -192,7 +192,7 @@ export default function PaymentReceiptFormTable({
               REPORTNAME: { _text: "Vouchers" },
               STATICVARIABLES: {
                 SVCURRENTCOMPANY: { _text: cmpName },
-                SVCURRENTCOMPANY: { _text: "Magod_Trail" },
+                // SVCURRENTCOMPANY: { _text: "Magod_Trail" },
                // SVCURRENTCOMPANY: { _text: "Magod Laser_Ahana 1" },
               },
             },
@@ -515,7 +515,7 @@ export default function PaymentReceiptFormTable({
               );
               if (matchingInvoice) {
                 // Invoice is already present
-                //toast.success(`Payment ${guid} is created succefully`);
+                toast.success(`Payment ${guid} is created succefully`);
               } else {
                 //toast.success("export succesfully");
               }

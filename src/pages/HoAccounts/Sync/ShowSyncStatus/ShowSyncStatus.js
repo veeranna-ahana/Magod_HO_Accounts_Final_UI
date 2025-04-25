@@ -290,6 +290,7 @@ export default function ShowSyncStatus() {
         console.log("err in table", err);
       });
 
+      // down table data(payment receipts)
     await axios
       .get(baseURL + `/showSyncStatus/getUnitOpenInvAndReceipts/` + getName)
       .then((res) => {

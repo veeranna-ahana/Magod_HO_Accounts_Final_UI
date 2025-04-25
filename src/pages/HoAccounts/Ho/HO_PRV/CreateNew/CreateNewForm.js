@@ -13,13 +13,13 @@ export default function CreateNewForm() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { adjustmentRows, adj_unit } = location.state ? location.state : "";
+  const { adjustmentRows, adj_unit , CustCode} = location.state ? location.state : "";
   let before_update_onAccountValue = adjustmentRows
     ? parseInt(adjustmentRows.On_account)
     : 0;
 
   const adj_unitname = adj_unit;
-  console.log("unit nameeeeeeeeeeeeeeeeeeeeee", adj_unit);
+
 
   let fixedOnaccount = adjustmentRows
     ? parseInt(adjustmentRows.fixedOnaccount)
@@ -29,7 +29,7 @@ export default function CreateNewForm() {
 
   const [sumofReceive, setSumofReceive] = useState();
 
-  const [hoprvid, setHoprvid] = useState(0);
+  
   const [getUnit, setGetUnit] = useState("");
   const [getCustomer, setGetCustomer] = useState("");
   const [getCustCode, setGetCustCode] = useState("");
@@ -196,6 +196,26 @@ export default function CreateNewForm() {
     } catch (error) {}
   };
 
+
+  //get  open Invoices after Post 
+  const openInvoicesAfterPost= async (CustCode)=>{
+    try {
+      const response = await axios.get(
+        baseURL + `/createnew/ho_openInvoicesAdjust?customercode=${CustCode}`
+      );
+
+      setRvData((prevRvData) => ({
+        ...prevRvData,
+        data: {
+          ...prevRvData.data,
+          inv_data: response.data.Result,
+        
+        },
+        
+      }));
+    } catch (error) {}
+  }
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -227,75 +247,10 @@ export default function CreateNewForm() {
     setAlertCancel(false);
   };
 
-  const handleUnitNames = () => {
-    axios
-      .get(baseURL + "/hoCreateNew/unitNames")
-      .then((res) => {
-        setGetUnitNames(res.data);
-      })
-      .catch((err) => {});
-  };
+ 
 
-  const handleCustomerNames = () => {
-    axios
-      .get(baseURL + "/hoCreateNew/customerNames")
-      .then((res) => {
-        setGetCustNames(res.data);
-      })
-      .catch((err) => {});
-  };
-
-  const handleSelectUnit = (selected) => {
-    const selectedCustomer = selected[0];
-    setSelectedOption(selected); // Update selected option state
-    setGetUnit(selectedCustomer ? selectedCustomer.UnitName : ""); // Update selected name
-  };
-
-  const handleSelectCustomer = async (selected) => {
-    const selectedCustomer = selected[0];
-    setSelectedCustOption(selected); // Update selected option state
-    setGetCustomer(selectedCustomer ? selectedCustomer.Cust_Name : ""); // Update selected Name
-    setGetCustCode(selectedCustomer ? selectedCustomer.Cust_Code : ""); // Update selected Code
-
-    if (selected.length > 0) {
-      try {
-        const invoicesResponse = await axios.post(
-          baseURL + "/hoCreateNew/getInvoices",
-          {
-            unit: getUnit,
-            custCode: selectedCustomer.Cust_Code,
-          }
-        );
-
-        const hoprvIdResponse = await axios.post(
-          baseURL + "/hoCreateNew/getHOPrvId",
-          {
-            unit: getUnit,
-            custCode: selectedCustomer.Cust_Code,
-          }
-        );
-
-        // Update state based on API responses
-        setRvData((prevRvData) => ({
-          ...prevRvData,
-          data: {
-            ...prevRvData.data,
-            inv_data: invoicesResponse.data,
-          },
-          postData: {
-            ...prevRvData.data,
-            HO_PrvId: hoprvIdResponse.data[0]?.HOPrvId || "",
-            // Amount: hoprvIdResponse.data[0]?.Amount || 0,
-          },
-        }));
-      } catch (error) {}
-    }
-  };
-
-  useEffect(() => {
-    handleUnitNames();
-    handleCustomerNames();
-  }, []);
+ 
+  //save button functionality
 
   const handleSave = async () => {
     let val =
@@ -364,7 +319,7 @@ export default function CreateNewForm() {
       // If HO_PrvId is not present, it's an insert operation
       if (!rvData.postData.HO_PrvId) {
         const unitToStore =
-          getUnit === " " ? rvData.postData.UnitName : getUnit;
+          getUnit === " " ? rvData.postData.Unitname : getUnit;
         const custCodetostore =
           getCustCode === "" ? rvData.postData.Cust_code : getCustCode;
         const custnametostore =
@@ -444,130 +399,7 @@ export default function CreateNewForm() {
     } catch (error) {}
   };
 
-  const handleSaveOnAccountUpdate = async () => {
-    let val =
-      before_update_onAccountValue === 0 ||
-      updateOaccountValue === 0 ||
-      before_update_onAccountValue !== fixedOnaccount
-        ? fixedOnaccount
-        : before_update_onAccountValue;
-    let stopExecution = false;
-
-    try {
-      if (rvData.data.receipt_details) {
-        rvData.data.receipt_details.forEach((selectedRow) => {
-          if (stopExecution) return;
-          // Your code logic for each item goes here
-          if (parseFloat(selectedRow.Receive_Now) < 0) {
-            toast.error("Incorrect Value");
-            return;
-          }
-
-          const formattedValue = parseFloat(selectedRow.Receive_Now || 0);
-          const invoiceAmount = parseFloat(selectedRow.Inv_Amount || 0);
-          const amountReceived = parseFloat(selectedRow.Amt_received || 0);
-
-          if (formattedValue > invoiceAmount - amountReceived) {
-            toast.error("Cannot Receive More than Invoice Amount");
-            stopExecution = true; // Set flag to true to stop execution
-
-            return;
-          } else if (formattedValue > val) {
-            toast.error("Cannot Receive More than On_account Amount");
-            stopExecution = true;
-            return;
-          }
-        });
-      }
-
-      if (stopExecution) return;
-
-      if (!rvData.postData.TxnType) {
-        // toast.error("Please Select TxnType.");
-        return;
-      }
-
-      if (!rvData.postData.Description) {
-        // toast.error("Add Description for Voucher");
-        return;
-      }
-
-      if (!rvData.postData.Amount) {
-        // toast.error("Please provide valid Amount.");
-        return;
-      }
-
-      const sumofRecv = rvData.data.receipt_details.reduce(
-        (sum, obj) => sum + parseFloat(obj.Receive_Now),
-        0
-      );
-
-      if (sumofRecv > val) {
-        toast.error("Cannot Receive More than On_account Amount22");
-        stopExecution = true;
-        return;
-      }
-
-      // If HO_PrvId is not present, it's an insert operation
-      if (!rvData.postData.HO_PrvId) {
-        const unitToStore =
-          getUnit === " " ? rvData.postData.UnitName : getUnit;
-        const custCodetostore =
-          getCustCode === "" ? rvData.postData.Cust_code : getCustCode;
-        const custnametostore =
-          getCustomer === "" ? rvData.postData.CustName : getCustCode;
-      } else {
-        //  const unitToStore = getUnit === ' ' ? rvData.postData.UnitName : getUnit;
-        const custCodetostore =
-          getCustCode === "" ? rvData.postData.Cust_code : getCustCode;
-        const custnametostore =
-          getCustomer === "" ? rvData.postData.CustName : getCustCode;
-        const updateResponse = await axios.post(
-          baseURL + "/hoCreateNew/updateData",
-          {
-            unit: adj_unitname,
-            HO_PrvId: rvData.postData.HO_PrvId,
-            custCode: custCodetostore,
-            custName: custnametostore,
-            txnType: rvData.postData.TxnType,
-            description: rvData.postData.Description,
-            Amount: rvData.postData.Amount,
-          }
-        );
-
-        if (updateResponse.data.success) {
-          // toast.success("Data updated successfully!");
-        } else {
-          toast.error("Failed to update data. Please try again.");
-        }
-
-        //update the Receive_Now amount
-        if (rvData.data.receipt_details.length > 0) {
-          const updateReceive_Now = await axios.put(
-            baseURL + "/createnew/updateReceiveNowAmount",
-            {
-              receipt_details: rvData.data.receipt_details,
-            }
-          );
-        }
-        //update on account value in magod_hq_mis.unit_payment_recd_voucher_register
-
-        console.log("update onaccount in hnadleSave only ", updateOaccountValue);
-
-        const updateOnaccount = await axios.put(
-          baseURL + "/createnew/updateOnaccountValue",
-          {
-            on_account: updateOaccountValue,
-            id: id,
-          }
-        );
-      }
-    } catch (error) {}
-  };
-
-  const handleTxnTYpeChange = (event) => {
-    setSelectedTxntType(event.target.value);
-  };
+ 
 
   const handleCheckboxChangeSecondTable = (event, rowData) => {
     const isChecked = event.target.checked;
@@ -608,6 +440,7 @@ export default function CreateNewForm() {
     });
   };
 
+  //Delete Invoice button functionality
   const deleteWholeForm = () => {
     let val =
       before_update_onAccountValue === 0 ||
@@ -719,6 +552,7 @@ export default function CreateNewForm() {
     }
   };
 
+  //add Invoice button functionality
   const addInvoice = async () => {
     onAccountValue = updateOaccountValue;
 
@@ -1032,8 +866,8 @@ export default function CreateNewForm() {
     }
   };
 
-  const hprvd = rvData.postData.HO_PrvId;
-  const cu = rvData.postData.CustName;
+  
+  
 
   const cancelllationSubmit = async () => {
     const cancelData = await axios.post(baseURL + "/createNew/cancelUpdate", {
@@ -1052,6 +886,7 @@ unitname:adj_unit ? adj_unit : "",
         Status: cancelData.data.StatusCancel,
       },
     }));
+    openInvoicesAfterPost(CustCode)
   };
 
   useEffect(() => {
@@ -1464,6 +1299,10 @@ unitname:adj_unit ? adj_unit : "",
         firstTableArray: [],
         secondTableArray: [],
       }));
+
+      //call open Invoice after Post
+      openInvoicesAfterPost(CustCode)
+
     } catch (error) {}
   };
 
@@ -1506,7 +1345,7 @@ unitname:adj_unit ? adj_unit : "",
   const [reason, setReason] = useState("");
 
   const handleReasonChange = (event) => {
-    const newValue = event.target.value;
+   
     setReason(event.target.value);
   };
 
@@ -1676,20 +1515,7 @@ unitname:adj_unit ? adj_unit : "",
             value={rvData.postData.TxnType}
             disabled
           >
-           {/* <option value="">Select</option>
-            <option value="Bank">Bank</option>
-            <option value="Cash">Cash</option>
-            <option value="Adjustment">Adjustment</option>
-            <option value="Rejection">Rejection</option>
-            <option value="TDS Receivable">TDS Receivable</option>
-            <option value="Rate Difference">Rate Difference</option>
-            <option value="Short Supply">Short Supply</option>
-            <option value="Balance Recoverable">Balance Recoverable</option>
-            <option value="Other Income">Other Income</option>
-            <option value="Balance Not Recoverable">
-              Balance Not Recoverable
-            </option>
-            <option value="QR Code and RTGS">QR Code and RTGS</option> */}
+           
             <option value="">Select</option>
     {txnTypes.length > 0 ? (
       txnTypes.map((txn, index) => (
