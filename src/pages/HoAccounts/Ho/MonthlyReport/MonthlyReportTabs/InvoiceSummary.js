@@ -137,6 +137,12 @@ export default function InvoiceSummary({ getInvoiceValues }) {
             </tr>
           </thead>
           <tbody className="tablebody">
+          {sortedData().length === 0 && (
+                <tr style={{ textAlign: "center" }}>
+                  <td colSpan="12">No data found!</td>
+                </tr>
+              )}
+          
             {sortedData()?.map((item, key) => {
               return (
                 <tr
